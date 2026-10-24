@@ -2,11 +2,14 @@
 import { useCallback, useEffect, useState } from "react";
 import type { Content } from "@/lib/content";
 
-type Row = { id: string; createdAt: string; name: string; phone: string; date: string; time: string; guests: number; note: string; status: string };
+import SeatingMap from "@/components/SeatingMap";
+
+type Row = { id: string; createdAt: string; name: string; phone: string; date: string; time: string; guests: number; note: string; status: string; table?: string };
 type Json = string | number | boolean | null | Json[] | { [k: string]: Json };
 
 const TABS = [
   { id: "res", label: "Đặt bàn" },
+  { id: "map", label: "Sơ đồ chỗ ngồi" },
   { id: "site", label: "Thông tin chung" },
   { id: "t.en", label: "Chữ trên web (English)" },
   { id: "t.vi", label: "Chữ trên web (Tiếng Việt)" },
@@ -166,6 +169,16 @@ export default function Admin() {
     await fetch("/api/admin", { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ id, status }) });
     loadRows();
   }
+  async function setTable(id: string, table: string) {
+    setRows((rs) => rs.map((r) => (r.id === id ? { ...r, table } : r)));
+    await fetch("/api/admin", { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ id, table }) });
+  }
+  async function testTelegram() {
+    setMsg("Đang gửi tin thử…");
+    const r = await fetch("/api/admin?telegram=test");
+    const j = await r.json();
+    setMsg(j.ok ? "Đã gửi tin thử, kiểm tra Telegram." : `Telegram chưa hoạt động: ${j.error}`);
+  }
   async function del(id: string) {
     if (!confirm("Xoá đặt bàn này?")) return;
     await fetch("/api/admin", { method: "DELETE", headers: { "content-type": "application/json" }, body: JSON.stringify({ id }) });
@@ -221,19 +234,26 @@ export default function Admin() {
       </div>
       <nav className="flex flex-wrap gap-2 mb-6">
         {TABS.map((t) => (
-          <button key={t.id} onClick={() => { setTab(t.id); if (t.id === "res") loadRows(); }} className={`btn ${tab === t.id ? "bg-gold text-bg" : ""}`} style={tab === t.id ? { background: "#c9a15b", color: "#0d0a08" } : undefined}>{t.label}</button>
+          <button key={t.id} onClick={() => { setTab(t.id); setMsg(""); if (t.id === "res" || t.id === "map") loadRows(); }} className={`btn ${tab === t.id ? "bg-gold text-bg" : ""}`} style={tab === t.id ? { background: "#c9a15b", color: "#0d0a08" } : undefined}>{t.label}</button>
         ))}
       </nav>
 
-      {tab === "res" ? (
+      {tab === "map" ? (
+        <SeatingMap rows={rows} onTable={setTable} />
+      ) : tab === "res" ? (
         <div className="overflow-x-auto">
-          <p className="mb-3 text-muted">Tổng: {rows.length} yêu cầu đặt bàn</p>
+          <div className="mb-3 flex items-center gap-3 flex-wrap">
+            <p className="text-muted">Tổng: {rows.length} yêu cầu đặt bàn</p>
+            <button className="btn" onClick={testTelegram}>Gửi tin thử Telegram</button>
+            {msg && <span className="text-sm text-yellow-400">{msg}</span>}
+          </div>
           <table className="w-full text-sm text-left">
-            <thead className="text-muted"><tr><th className="p-2">Tên</th><th>SĐT / Zalo</th><th>Ngày</th><th>Giờ</th><th>Khách</th><th>Ghi chú</th><th>Trạng thái</th><th /></tr></thead>
+            <thead className="text-muted"><tr><th className="p-2">Tên</th><th>SĐT / Zalo</th><th>Ngày</th><th>Giờ</th><th>Khách</th><th>Ghi chú</th><th>Bàn</th><th>Trạng thái</th><th /></tr></thead>
             <tbody>
               {rows.map((r) => (
                 <tr key={r.id} className="border-t border-white/10">
                   <td className="p-2">{r.name}</td><td><a className="underline" href={`https://zalo.me/${r.phone.replace(/\s+/g, "")}`} target="_blank">{r.phone}</a></td><td>{r.date}</td><td>{r.time}</td><td>{r.guests}</td><td>{r.note}</td>
+                  <td><input key={r.table ?? ""} defaultValue={r.table ?? ""} placeholder="vd B3, B4" onBlur={(e) => e.target.value !== (r.table ?? "") && setTable(r.id, e.target.value)} className="inp w-28" /></td>
                   <td>
                     <select value={r.status} onChange={(e) => setStatus(r.id, e.target.value)} className="inp w-auto">
                       <option value="new">Mới</option><option value="confirmed">Đã xác nhận</option><option value="cancelled">Huỷ</option>

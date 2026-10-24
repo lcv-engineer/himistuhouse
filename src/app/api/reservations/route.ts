@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { readAll, writeAll, Reservation } from "@/lib/store";
+import { reservationText, sendTelegram } from "@/lib/telegram";
 
 export async function POST(req: Request) {
   const b = await req.json().catch(() => null);
@@ -9,9 +10,11 @@ export async function POST(req: Request) {
   const row: Reservation = {
     id: crypto.randomUUID(), createdAt: new Date().toISOString(),
     name: String(b.name).slice(0, 100), phone: String(b.phone).slice(0, 30),
-    date: String(b.date), time: String(b.time),
+    date: String(b.date).slice(0, 10), time: String(b.time).slice(0, 5),
     guests: Math.max(1, Math.min(100, Number(b.guests) || 2)), note: String(b.note || "").slice(0, 500), status: "new",
   };
   writeAll([row, ...readAll()]);
+  // Báo về Telegram; lỗi Telegram không làm hỏng việc đặt bàn.
+  await sendTelegram(reservationText(row));
   return NextResponse.json({ ok: true });
 }
