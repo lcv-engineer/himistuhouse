@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #0d0a08;
+  --fg: #efe6d8;
+  --gold: #c9a15b;
+  --muted: #9b8f80;
+  --card: #17120e;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-fg: var(--fg);
+  --color-gold: var(--gold);
+  --color-muted: var(--muted);
+  --color-card: var(--card);
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.logo-script {
+  font-family: "Snell Roundhand", "Segoe Script", "Brush Script MT", cursive;
+}
+
+.h-section {
+  font-size: clamp(1.5rem, 2.6vw, 2.25rem);
+  line-height: 1.2;
+}
