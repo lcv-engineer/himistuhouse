@@ -1,9 +1,8 @@
 "use client";
 import { useState } from "react";
-import { Lang, T, SITE } from "@/lib/content";
+import { Texts } from "@/lib/content";
 
-export default function ReservationForm({ lang }: { lang: Lang }) {
-  const r = T[lang].reservation;
+export default function ReservationForm({ r, zalo }: { r: Texts["reservation"]; zalo: string }) {
   const [state, setState] = useState<"idle" | "sending" | "ok" | "err">("idle");
   const [message, setMessage] = useState("");
   const [copied, setCopied] = useState(false);
@@ -20,7 +19,12 @@ export default function ReservationForm({ lang }: { lang: Lang }) {
         body: JSON.stringify(body),
       });
       if (!res.ok) throw new Error("failed");
-      setMessage(r.msg(body.name, body.phone, body.date, body.time, Number(body.guests) || 2, body.note || ""));
+      const note = body.note ? r.noteTpl.replace("{note}", body.note) : "";
+      setMessage(
+        r.msgTpl
+          .replace("{name}", body.name).replace("{phone}", body.phone).replace("{guests}", String(Number(body.guests) || 2))
+          .replace("{time}", body.time).replace("{date}", body.date).replace("{note}", note),
+      );
       setState("ok");
       form.reset();
     } catch {
@@ -62,7 +66,7 @@ export default function ReservationForm({ lang }: { lang: Lang }) {
           <p className="text-sm text-muted">{r.zaloHint}</p>
           <p className="text-sm whitespace-pre-wrap border border-white/10 p-3">{message}</p>
           <div className="flex flex-wrap gap-3">
-            <a href={SITE.zalo} target="_blank" rel="noopener noreferrer" className="px-5 py-2.5 text-white" style={{ background: "#0068FF" }}>
+            <a href={zalo} target="_blank" rel="noopener noreferrer" className="px-5 py-2.5 text-white" style={{ background: "#0068FF" }}>
               {r.zaloCta}
             </a>
             <button type="button" onClick={copy} className="border border-gold text-gold px-5 py-2.5">

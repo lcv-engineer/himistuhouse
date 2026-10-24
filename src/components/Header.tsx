@@ -3,17 +3,18 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Logo from "./Logo";
 import { FacebookIcon, InstagramIcon, MessengerIcon, ZaloIcon } from "./Icons";
-import { Lang, T, SITE } from "@/lib/content";
+import { Lang, Texts } from "@/lib/content";
 
 const KEYS = ["story", "menu", "events", "press", "gallery", "contact"] as const;
 
-export default function Header({ lang }: { lang: Lang }) {
+type Links = { instagram: string; facebook: string; messenger: string; zalo: string };
+
+export default function Header({ lang, nav, links: soc }: { lang: Lang; nav: Texts["nav"]; links: Links }) {
   const [open, setOpen] = useState(false);
-  const t = T[lang];
   const other = lang === "vi" ? "en" : "vi";
   const links = [
-    ...KEYS.map((k) => ({ href: `/${lang}/${k}`, label: t.nav[k] })),
-    { href: `/${lang}/reservation`, label: t.nav.reserve },
+    ...KEYS.map((k) => ({ href: `/${lang}/${k}`, label: nav[k] })),
+    { href: `/${lang}/reservation`, label: nav.reserve },
   ];
 
   useEffect(() => {
@@ -31,20 +32,20 @@ export default function Header({ lang }: { lang: Lang }) {
         <nav className="hidden md:flex items-center gap-6 text-sm font-sans" aria-label="Main">
           {KEYS.map((k) => (
             <Link key={k} href={`/${lang}/${k}`} className="nav-link">
-              {t.nav[k]}
+              {nav[k]}
             </Link>
           ))}
           <Link href={`/${other}`} className="text-muted hover:text-gold uppercase" aria-label={other === "en" ? "English" : "Tiếng Việt"}>
             {other}
           </Link>
-          <a href={SITE.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="icon-link">
+          <a href={soc.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="icon-link">
             <InstagramIcon />
           </a>
-          <a href={SITE.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="icon-link">
+          <a href={soc.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="icon-link">
             <FacebookIcon />
           </a>
           <Link href={`/${lang}/reservation`} className="border border-gold text-gold px-4 py-1.5 hover:bg-gold hover:text-bg transition-colors">
-            {t.nav.reserve}
+            {nav.reserve}
           </Link>
         </nav>
         <button
@@ -67,10 +68,10 @@ export default function Header({ lang }: { lang: Lang }) {
             </Link>
           ))}
           <div className="flex items-center gap-5 pt-2">
-            <a href={SITE.messenger} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+            <a href={soc.messenger} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
               <MessengerIcon /> Messenger
             </a>
-            <a href={SITE.zalo} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+            <a href={soc.zalo} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
               <ZaloIcon /> Zalo
             </a>
             <Link href={`/${other}`} onClick={() => setOpen(false)} className="text-muted uppercase ml-auto">

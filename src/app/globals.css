@@ -67,6 +67,6 @@ a, button, input, textarea, select { transition: color .2s, background-color .2s
   background:
     radial-gradient(ellipse at 50% 30%, rgb(201 161 91 / .16), transparent 60%),
     linear-gradient(180deg, rgb(13 10 8 / .55), var(--bg)),
-    url("/images/photos/hero.webp") center / cover no-repeat,
+    var(--hero, url("/images/photos/hero.webp")) center / cover no-repeat,
     linear-gradient(135deg, #2a1c12, #0d0a08);
 }

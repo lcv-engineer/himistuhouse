@@ -1,9 +1,10 @@
 import Logo from "./Logo";
 import { FacebookIcon, InstagramIcon, MessengerIcon, ZaloIcon } from "./Icons";
-import { Lang, T, SITE } from "@/lib/content";
+import { Lang, Content, zaloUrl } from "@/lib/content";
 
-export default function Footer({ lang }: { lang: Lang }) {
-  const t = T[lang];
+export default function Footer({ lang, c }: { lang: Lang; c: Content }) {
+  const t = c.t[lang];
+  const s = c.site;
   const ic = "inline-flex items-center gap-2 hover:text-gold transition-colors";
   return (
     <footer className="border-t border-white/10 mt-20 font-sans">
@@ -11,20 +12,20 @@ export default function Footer({ lang }: { lang: Lang }) {
         <Logo height={44} />
         <div>
           <p className="text-gold uppercase tracking-widest text-xs mb-2">{t.address}</p>
-          <p>{SITE.address}</p>
-          <p className="text-muted mt-1">{SITE.hours}</p>
+          <p>{s.address}</p>
+          <p className="text-muted mt-1">{s.hours}</p>
         </div>
         <div>
           <p className="text-gold uppercase tracking-widest text-xs mb-2">{t.follow}</p>
           <div className="flex flex-wrap gap-x-5 gap-y-2">
-            <a href={SITE.instagram} target="_blank" rel="noopener noreferrer" className={ic}><InstagramIcon /> Instagram</a>
-            <a href={SITE.facebook} target="_blank" rel="noopener noreferrer" className={ic}><FacebookIcon /> Facebook</a>
-            <a href={SITE.messenger} target="_blank" rel="noopener noreferrer" className={ic}><MessengerIcon /> Messenger</a>
-            <a href={SITE.zalo} target="_blank" rel="noopener noreferrer" className={ic}><ZaloIcon /> Zalo</a>
+            <a href={s.instagram} target="_blank" rel="noopener noreferrer" className={ic}><InstagramIcon /> Instagram</a>
+            <a href={s.facebook} target="_blank" rel="noopener noreferrer" className={ic}><FacebookIcon /> Facebook</a>
+            <a href={s.messenger} target="_blank" rel="noopener noreferrer" className={ic}><MessengerIcon /> Messenger</a>
+            <a href={zaloUrl(s)} target="_blank" rel="noopener noreferrer" className={ic}><ZaloIcon /> Zalo</a>
           </div>
         </div>
       </div>
-      <p className="text-center text-xs text-muted pb-6">© Himitsu. {t.rights}</p>
+      <p className="text-center text-xs text-muted pb-6">© {s.name}. {t.rights}</p>
     </footer>
   );
 }
