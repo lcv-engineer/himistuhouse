@@ -8,8 +8,8 @@ export const SITE = {
   hours: "17:00 – 02:00",
   zaloPhone: "0363561805", // TODO: điền số Zalo của quán (vd: 0901234567)
   instagram: "https://www.instagram.com/",
-  facebook: "https://www.facebook.com/",
-  messenger: "https://m.me/",
+  facebook: "https://www.facebook.com/himistuhouse",
+  messenger: "https://m.me/himistuhouse",
   get zalo() { return this.zaloPhone ? `https://zalo.me/${this.zaloPhone}` : "https://zalo.me/"; },
   mapEmbed:
     "https://www.google.com/maps?q=154+Bis+Tran+Quang+Khai,+Tan+Dinh,+Ho+Chi+Minh+City&output=embed",
