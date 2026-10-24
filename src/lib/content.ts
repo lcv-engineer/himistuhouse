@@ -6,7 +6,7 @@ export const SITE = {
   tagline: "house of cocktail",
   address: "154 Bis Tran Quang Khai, Tan Dinh Ward, Ho Chi Minh City",
   hours: "17:00 – 02:00",
-  zaloPhone: "", // TODO: điền số Zalo của quán (vd: 0901234567)
+  zaloPhone: "0363561805", // TODO: điền số Zalo của quán (vd: 0901234567)
   instagram: "https://www.instagram.com/",
   facebook: "https://www.facebook.com/",
   messenger: "https://m.me/",
