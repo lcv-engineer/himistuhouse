@@ -4,7 +4,7 @@ import path from "path";
 const FILE = path.join(process.cwd(), "data", "reservations.json");
 
 export type Reservation = {
-  id: string; createdAt: string; name: string; phone: string; email: string;
+  id: string; createdAt: string; name: string; phone: string;
   date: string; time: string; guests: number; note: string; status: "new" | "confirmed" | "cancelled";
 };
 

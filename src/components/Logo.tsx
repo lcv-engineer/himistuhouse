@@ -1,8 +1,14 @@
-export default function Logo({ size = "text-3xl" }: { size?: string }) {
+import Image from "next/image";
+
+export default function Logo({ height = 40 }: { height?: number }) {
   return (
-    <span className="inline-flex flex-col items-start leading-none">
-      <span className={`logo-script ${size} text-gold`}>Himitsu</span>
-      <span className="text-[0.6rem] tracking-[0.3em] uppercase text-muted mt-1">house of cocktail</span>
-    </span>
+    <Image
+      src="/images/logo.png"
+      alt="Himitsu – house of cocktail"
+      width={640}
+      height={197}
+      priority
+      style={{ height, width: "auto" }}
+    />
   );
 }

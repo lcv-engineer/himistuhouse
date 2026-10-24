@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 
-type Row = { id: string; createdAt: string; name: string; phone: string; email: string; date: string; time: string; guests: number; note: string; status: string };
+type Row = { id: string; createdAt: string; name: string; phone: string; date: string; time: string; guests: number; note: string; status: string };
 
 export default function Admin() {
   const [rows, setRows] = useState<Row[] | null>(null);
@@ -12,6 +12,7 @@ export default function Admin() {
     const r = await fetch("/api/admin");
     setRows(r.ok ? await r.json() : null);
   }
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { load(); }, []);
 
   async function login(e: React.FormEvent) {

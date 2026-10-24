@@ -9,7 +9,7 @@ export async function POST(req: Request) {
   const row: Reservation = {
     id: crypto.randomUUID(), createdAt: new Date().toISOString(),
     name: String(b.name).slice(0, 100), phone: String(b.phone).slice(0, 30),
-    email: String(b.email || "").slice(0, 100), date: String(b.date), time: String(b.time),
+    date: String(b.date), time: String(b.time),
     guests: Math.max(1, Math.min(100, Number(b.guests) || 2)), note: String(b.note || "").slice(0, 500), status: "new",
   };
   writeAll([row, ...readAll()]);

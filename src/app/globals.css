@@ -4,7 +4,7 @@
   --bg: #0d0a08;
   --fg: #efe6d8;
   --gold: #c9a15b;
-  --muted: #9b8f80;
+  --muted: #a89c8c;
   --card: #17120e;
 }
 
@@ -14,19 +14,59 @@
   --color-gold: var(--gold);
   --color-muted: var(--muted);
   --color-card: var(--card);
+  --font-sans: var(--font-sans), system-ui, sans-serif;
+  --font-display: var(--font-display), Georgia, serif;
 }
 
 body {
   background: var(--bg);
   color: var(--fg);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display), Georgia, "Times New Roman", serif;
+  font-size: 1.0625rem;
+  -webkit-font-smoothing: antialiased;
 }
 
-.logo-script {
-  font-family: "Snell Roundhand", "Segoe Script", "Brush Script MT", cursive;
+/* Nội dung dạng sans cho đoạn văn dài / mô tả */
+.body-sans {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.95rem;
 }
 
 .h-section {
-  font-size: clamp(1.5rem, 2.6vw, 2.25rem);
+  font-size: clamp(1.4rem, 2.6vw, 2.25rem);
   line-height: 1.2;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+@media (max-width: 767px) {
+  .h-section { white-space: normal; }
+}
+
+a, button, input, textarea, select { transition: color .2s, background-color .2s, border-color .2s, opacity .2s; }
+
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+.nav-link { position: relative; padding: 0.25rem 0; }
+.nav-link::after {
+  content: ""; position: absolute; left: 0; bottom: 0; height: 1px; width: 0;
+  background: var(--gold); transition: width .25s;
+}
+.nav-link:hover { color: var(--gold); }
+.nav-link:hover::after { width: 100%; }
+
+.icon-link { display: inline-flex; opacity: .85; }
+.icon-link:hover { opacity: 1; transform: translateY(-1px); }
+
+.card { background: var(--card); border: 1px solid rgb(255 255 255 / .1); transition: border-color .25s, transform .25s; }
+.card:hover { border-color: rgb(201 161 91 / .5); transform: translateY(-2px); }
+
+.hero {
+  background:
+    radial-gradient(ellipse at 50% 30%, rgb(201 161 91 / .16), transparent 60%),
+    linear-gradient(180deg, rgb(13 10 8 / .55), var(--bg)),
+    url("/images/photos/hero.webp") center / cover no-repeat,
+    linear-gradient(135deg, #2a1c12, #0d0a08);
 }

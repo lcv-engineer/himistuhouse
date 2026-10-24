@@ -6,11 +6,11 @@ export const SITE = {
   tagline: "house of cocktail",
   address: "154 Bis Tran Quang Khai, Tan Dinh Ward, Ho Chi Minh City",
   hours: "17:00 – 02:00",
-  email: "bar.himitsu@gmail.com",
+  zaloPhone: "", // TODO: điền số Zalo của quán (vd: 0901234567)
   instagram: "https://www.instagram.com/",
   facebook: "https://www.facebook.com/",
   messenger: "https://m.me/",
-  zalo: "https://zalo.me/",
+  get zalo() { return this.zaloPhone ? `https://zalo.me/${this.zaloPhone}` : "https://zalo.me/"; },
   mapEmbed:
     "https://www.google.com/maps?q=154+Bis+Tran+Quang+Khai,+Tan+Dinh,+Ho+Chi+Minh+City&output=embed",
 };
@@ -41,9 +41,9 @@ export const T = {
     hours: "Giờ mở cửa",
     reservation: {
       title: "Đặt bàn",
-      name: "Họ tên", phone: "Số điện thoại", email: "Email", date: "Ngày", time: "Giờ",
+      name: "Họ tên", phone: "Số điện thoại (Zalo)", date: "Ngày", time: "Giờ",
       guests: "Số khách", note: "Ghi chú", submit: "Gửi yêu cầu",
-      ok: "Cảm ơn bạn! Chúng tôi sẽ liên hệ xác nhận sớm.", err: "Có lỗi xảy ra, vui lòng thử lại.",
+      ok: "Cảm ơn bạn! Yêu cầu đã được ghi nhận.", zaloCta: "Nhắn xác nhận qua Zalo", copy: "Copy", copied: "Đã copy", zaloHint: "Gửi nội dung dưới đây cho quán qua Zalo để được xác nhận nhanh nhất:", msg: (n: string, p: string, d: string, tm: string, g: number, note: string) => `Chào Himitsu, mình là ${n} (SĐT/Zalo ${p}). Mình muốn đặt bàn ${g} khách vào ${tm} ngày ${d}.${note ? ` Ghi chú: ${note}` : ""}`, err: "Có lỗi xảy ra, vui lòng thử lại.",
     },
     follow: "Theo dõi",
     rights: "Bảo lưu mọi quyền.",
@@ -73,9 +73,9 @@ export const T = {
     hours: "Opening hours",
     reservation: {
       title: "Reserve a table",
-      name: "Full name", phone: "Phone", email: "Email", date: "Date", time: "Time",
+      name: "Full name", phone: "Phone (Zalo)", date: "Date", time: "Time",
       guests: "Guests", note: "Notes", submit: "Send request",
-      ok: "Thank you! We will confirm shortly.", err: "Something went wrong, please try again.",
+      ok: "Thank you! Your request is saved.", zaloCta: "Confirm via Zalo", copy: "Copy", copied: "Copied", zaloHint: "Send the message below to us on Zalo for the fastest confirmation:", msg: (n: string, p: string, d: string, tm: string, g: number, note: string) => `Hi Himitsu, this is ${n} (phone/Zalo ${p}). I would like to book a table for ${g} at ${tm} on ${d}.${note ? ` Notes: ${note}` : ""}`, err: "Something went wrong, please try again.",
     },
     follow: "Follow",
     rights: "All rights reserved.",
@@ -112,4 +112,38 @@ export const PRESS = [
   { s: "Foody", t: { vi: "Himitsu – bí mật giữa phố", en: "Himitsu – a secret in the city" } },
 ];
 
-export const GALLERY = ["#3b2a1e", "#5a3a2a", "#2a2f3b", "#4a2f3b", "#2f3b2a", "#3b3a2a", "#2a3b3b", "#3b2a3b", "#4a3a1e"];
+// Ảnh thật: thêm vào public/images/ rồi khai báo ở đây { src, alt: {vi,en}, w, h }. Rỗng => hiển thị ô giữ chỗ.
+export type GalleryImage = { src: string; w: number; h: number; alt: { vi: string; en: string } };
+const P = (n: string, w: number, h: number, vi: string, en: string): GalleryImage => ({ src: `/images/photos/${n}.webp`, w, h, alt: { vi, en } });
+export const GALLERY: GalleryImage[] = [
+  P("g253", 1400, 933, "Mặt tiền Himitsu về đêm", "Himitsu storefront at night"),
+  P("g53", 1202, 1800, "Cocktail whisky trên hộp gỗ", "Whisky cocktail on a wooden box"),
+  P("g58", 1202, 1800, "Cocktail matcha với xiên trái cây", "Matcha cocktail with a fruit skewer"),
+  P("g155", 1400, 933, "Không gian với tranh Nhật Bản", "Interior with Japanese posters"),
+  P("g83", 1202, 1800, "Highball hồng với anh đào", "Pink highball with cherry"),
+  P("g71", 1202, 1800, "Cocktail cam kèm bánh dorayaki", "Orange cocktail with dorayaki"),
+  P("g147", 1400, 1008, "Quầy rượu sau quầy bar", "The back bar"),
+  P("g99", 1202, 1800, "Cocktail khói trong hộp gỗ", "Smoked cocktail in a wooden box"),
+  P("g260", 1400, 933, "Khay martini rót tại quầy", "A tray of martinis"),
+  P("g115", 1202, 1800, "Cocktail yuzu với khối đá trang trí", "Yuzu cocktail with a decorated ice cube"),
+  P("g224", 1400, 933, "Góc phố với ánh đèn vàng", "The street corner with warm lights"),
+  P("g124", 1202, 1800, "Khay đồ uống: vang, martini, whisky", "A tray of wine, martini and whisky"),
+  P("g158", 1400, 933, "Bàn gỗ và đèn bàn", "Wooden table and lamp"),
+  P("g191", 1200, 1800, "Cocktail vàng trong ly coupe", "Golden cocktail in a coupe"),
+  P("g268", 1400, 933, "Quầy bar với nến vàng", "Bar counter with candlelight"),
+  P("g25", 1202, 1800, "Cocktail matcha bọt mịn", "Matcha cocktail with silky foam"),
+  P("g255", 1400, 863, "Cửa sổ phủ cây xanh", "Window framed by greenery"),
+  P("g41", 1202, 1800, "Cocktail hồng trong ly martini", "Pink cocktail in a martini glass"),
+  P("g142", 1200, 1800, "Biển hiệu himitsu", "The himitsu sign"),
+  P("g14", 1202, 1800, "Cocktail cam trong ly vang", "Orange cocktail in a wine glass"),
+  P("g263", 1400, 933, "Martini với ô-liu", "Martini with an olive"),
+  P("g106", 1202, 1800, "Cầu đá trong hộp gỗ", "Ice sphere in a wooden box"),
+];
+export const PHOTOS = {
+  hero: "/images/photos/hero.webp",
+  story1: { src: "/images/photos/story1.webp", w: 1400, h: 937 },
+  story2: { src: "/images/photos/story2.webp", w: 1400, h: 933 },
+  drinks: ["g53", "g83", "g58", "g99"].map((n) => `/images/photos/${n}.webp`),
+  events: ["g260", "g155", "g192"].map((n) => `/images/photos/${n}.webp`),
+};
+export const GALLERY_PLACEHOLDERS = ["#3b2a1e", "#5a3a2a", "#2a2f3b", "#4a2f3b", "#2f3b2a", "#3b3a2a", "#2a3b3b", "#3b2a3b", "#4a3a1e"];
