@@ -1,6 +1,7 @@
 import Image from "next/image";
 
-export default function Logo({ height = 40 }: { height?: number }) {
+// logo.png màu vàng; lọc thành trắng như bản cũ.
+export default function Logo({ height = 40, className = "" }: { height?: number; className?: string }) {
   return (
     <Image
       src="/images/logo.png"
@@ -8,7 +9,8 @@ export default function Logo({ height = 40 }: { height?: number }) {
       width={640}
       height={197}
       priority
-      style={{ height, width: "auto" }}
+      className={className}
+      style={{ height, width: "auto", filter: "brightness(0) invert(1)" }}
     />
   );
 }

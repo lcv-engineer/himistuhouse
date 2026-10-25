@@ -43,3 +43,6 @@ next-env.d.ts
 /data/reservations.json
 
 /data/
+
+# Tài liệu tham khảo (video bản cũ, file góp ý) – không đưa lên git, không để trong public/
+/reference/

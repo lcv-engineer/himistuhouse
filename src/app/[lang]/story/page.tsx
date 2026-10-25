@@ -1,40 +1,31 @@
-import Image from "next/image";
 import Logo from "@/components/Logo";
-import Reveal from "@/components/Reveal";
+import { FindUs, Prose, Wrap } from "@/components/ui";
+import { DICT } from "@/lib/i18n";
 import { getLang } from "@/lib/lang";
 import { getContent } from "@/lib/content-server";
+
+// Đọc nội dung mới ở mỗi lượt truy cập, xem [lang]/layout.tsx.
+export const instant = false;
 
 export default async function Story({ params }: { params: Promise<{ lang: string }> }) {
   const lang = await getLang(params);
   const c = await getContent();
-  const t = c.t[lang];
+  const t = DICT[lang];
+  const p = c.pages.story;
   return (
     <>
-      <section className="py-16 grid gap-10 md:grid-cols-2 items-start">
-        <div>
-          <h1 className="h-section mb-6">{t.storyTitle}</h1>
-          <div className="mb-8"><Logo height={56} /></div>
-          {t.storyBody.map((p, i) => <p key={i} className="mb-5 leading-relaxed">{p}</p>)}
+      <Wrap className="pt-16 md:pt-20">
+        <div className="fx-up"><Logo height={130} className="max-w-[80vw] h-auto" /></div>
+        <p className="eyebrow mt-10 fx-up" style={{ "--d": ".1s" } as React.CSSProperties}>{t.ourStory}</p>
+        <h1 className="serif text-6xl md:text-8xl mt-6 leading-[1.05] max-w-2xl fx-up" style={{ "--d": ".2s" } as React.CSSProperties}>{p.title[lang]}</h1>
+        <p className="kanji text-3xl text-muted mt-6">秘密</p>
+      </Wrap>
+      <Wrap className="pt-16">
+        <div className="max-w-3xl mx-auto">
+          <Prose text={p.body[lang]} />
         </div>
-        <div className="grid gap-4">
-          {[c.photos.story1, c.photos.story2].filter(Boolean).map((src) => (
-            <Image key={src} src={src} width={1400} height={933} sizes="(min-width:768px) 560px, 100vw" alt={c.site.name} className="w-full h-auto" />
-          ))}
-        </div>
-      </section>
-
-      <Reveal>
-        <section className="pb-16 grid gap-8 md:grid-cols-2 items-center">
-          {c.photos.door && (
-            <Image src={c.photos.door} width={800} height={1200} sizes="(min-width:768px) 380px, 70vw" alt={t.x.findDoorTitle} className="w-full max-w-sm h-auto" />
-          )}
-          <div>
-            <p className="font-sans text-xs uppercase tracking-[0.3em] text-gold mb-3">{t.x.findDoorTitle}</p>
-            <p className="text-xl leading-relaxed">{t.x.findDoorText}</p>
-            <p className="font-sans text-sm text-muted mt-4">{c.site.address}</p>
-          </div>
-        </section>
-      </Reveal>
+      </Wrap>
+      <FindUs lang={lang} c={c} />
     </>
   );
 }

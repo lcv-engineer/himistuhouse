@@ -1,0 +1,108 @@
+// Chữ cố định trên giao diện. Nội dung quán (menu, sự kiện, câu chuyện…) nằm trong content.ts và sửa được trong /admin.
+import type { Lang } from "./content";
+
+const en = {
+  nav: { story: "Our story", menu: "Menu", events: "Events", press: "Press", gallery: "Gallery", contact: "Contact", reserve: "Reserve" },
+  heroEyebrow: "Cocktail bar · Tan Dinh, Saigon",
+  seeMenu: "See the menu",
+  open: "Open", closed: "Closed", until: "until {t}", opensAt: "opens at {t}", opensTomorrow: "opens tomorrow {t}", opensOn: "opens {d} {t}",
+  marquee: ["Nightlife", "秘密の家", "Cocktail bar", "Tân Định · Sài Gòn"],
+  storyEyebrow: "01 — Our story",
+  storyTitle: "A door left ajar in the middle of Saigon",
+  storyP: [
+    "Hidden among the busy streets of Saigon, Himitsu House is a small cocktail bar made for slow evenings.",
+    "Low light, one bar counter, and cocktails cared for from the ice to the twist — inspired by Japanese minimalism.",
+    "No noise. Just slow conversation and a really good drink.",
+  ],
+  storyLines: ["A place to meet.", "A place to unwind.", "And sometimes, a place to escape the city outside."],
+  readStory: "Read our story",
+  sigEyebrow: "02 — Signature", sigTitle: "The drinks that make Himitsu", sigSub: "Mixed slowly, tasted twice. Every glass is a small story.", fullMenu: "Full menu", signature: "Signature",
+  offersEyebrow: "03 — Tonight at Himitsu", offersTitle: "Offers & events", offersSub: "Come early for Happy Hour, stay late for the special nights.",
+  happyHour: "Happy Hour", everyDay: "every day", allEvents: "All events", saveSeat: "Save a seat",
+  noEvent: "No special night announced yet.", followNext: "Follow @{h} for the next one",
+  weekEyebrow: "Every week", weekTitle: "A reason to come every night", weekSub: "Each menu section has its own 30%-off night, 8PM to 1AM.",
+  days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+  moments: "Moments", moreMoments: "See more moments",
+  // menu
+  drinksFood: "Drinks & food", menuTitle: "Menu", hhPill: "Happy Hour · {d} drinks {s}–{e}", menuNote: "Prices in thousand VND (k). Tax and service charge not included.", menuPdf: "Download menu (PDF)",
+  // reserve
+  reserveEyebrow: "Reserve", reserveTitle: "Save a seat for you", reserveSub: "Pick a date, party size and time. Your table is confirmed instantly when available.",
+  orCall: "or call", when: "When?", date: "Date", pickAnother: "Pick another date", guests: "Guests", guestsN: "{n} guests", guest1: "1 guest",
+  time: "Time", hhLegend: "HH = during Happy Hour", closedDay: "We are closed on this day.", noSlots: "No more times today — please pick another date.",
+  who: "Who’s coming?", edit: "Edit", name: "Name", phone: "Phone number", phoneHint: "We only call if needed. Vietnamese number, e.g. {p}", email: "Email (optional)",
+  bartender: "Anything the bartender should know?", occasion: "Occasion", seating: "Seating", taste: "Taste", note: "Note", notePh: "Allergies, a little surprise, a drink you still remember…",
+  occasions: ["Birthday", "Anniversary", "First date", "First visit"], seatings: ["At the bar (chat with the bartender)", "Table", "Either is fine"],
+  tastes: ["Sour", "Sweet", "Bitter", "Smoky", "Low ABV", "Bartender’s choice"],
+  agree: "I am 18 or older and accept the", policy: "reservation policy", confirm: "Confirm reservation", sending: "Sending…",
+  errFields: "Please fill in your name and phone number.", errAgree: "Please confirm you are 18 or older.", err: "Something went wrong, please try again or call us.",
+  seeYou: "See you {d} at {t}.", saved: "Your seats are saved.", code: "Booking code", codeHint: "Save this code (screenshot it or add it to your calendar) — you need it to view or cancel.",
+  guestsLabel: "Guests", nameLabel: "Name", whenLabel: "When", bartenderRead: "The bartender will read this before you arrive.",
+  addCal: "Add to calendar (.ics)", directions: "Directions", viewCancel: "View / cancel booking", another: "Make another booking",
+  // booking
+  reservation: "Reservation", received: "Received", confirmed: "Confirmed", cancelled: "Cancelled", arrived: "Arrived", noshow: "No-show",
+  cancelBtn: "Cancel reservation", cancelAsk: "Cancel this reservation?", notFound: "We could not find this reservation.", loading: "Loading…",
+  // events
+  eventsEyebrow: "Events", eventsTitle: "Small nights at Himitsu", comingUp: "Coming up", past: "Past", ended: "Ended",
+  hlEyebrow: "Highlights", hlTitle: "Nights we have shared at Himitsu", hlSub: "Dates to be added.",
+  noUpcoming: "No new nights yet. Follow @{h} so you don’t miss the next one.",
+  yourName: "Your name", phoneShort: "Vietnamese number, e.g. {p}", agreeShort: "I am 18 or older and accept the policy", saveMySeat: "Save my seat",
+  seatSaved: "Your seat is saved.", seeYouAt: "See you at {e}, {d}.",
+  // story / contact
+  ourStory: "Our story", doorOpen: "The door is open every night.", findUs: "Find us", openingHours: "Opening hours", everyDayHours: "Every day",
+  visit: "Visit", follow: "Follow", policies: "Policies", footerLine: "A place to escape the city outside.",
+  galleryEyebrow: "Gallery", pressEyebrow: "Press", pressTitle: "Words about Himitsu", pressEmpty: "Press coverage is coming soon. For press enquiries, write to",
+  contactEyebrow: "Contact", close: "Close",
+};
+
+export type Dict = typeof en;
+
+const vi: Dict = {
+  nav: { story: "Câu chuyện", menu: "Menu", events: "Sự kiện", press: "Báo chí", gallery: "Gallery", contact: "Liên hệ", reserve: "Đặt bàn" },
+  heroEyebrow: "Cocktail bar · Tân Định, Sài Gòn",
+  seeMenu: "Xem menu",
+  open: "Đang mở", closed: "Đã đóng", until: "tới {t}", opensAt: "mở lúc {t}", opensTomorrow: "mở {t} ngày mai", opensOn: "mở {t} {d}",
+  marquee: ["Nightlife", "秘密の家", "Cocktail bar", "Tân Định · Sài Gòn"],
+  storyEyebrow: "01 — Câu chuyện",
+  storyTitle: "Cánh cửa khép hờ giữa lòng Sài Gòn",
+  storyP: [
+    "Ẩn mình giữa những con phố nhộn nhịp của Sài Gòn, Himitsu House là một quầy bar cocktail nhỏ dành cho những buổi tối chậm rãi.",
+    "Ánh sáng thấp, một quầy bar, và những ly cocktail được chăm chút từ viên đá tới lát vỏ chanh — lấy cảm hứng từ sự tối giản Nhật Bản.",
+    "Không ồn ào. Chỉ có những cuộc trò chuyện chậm và một ly thật ngon.",
+  ],
+  storyLines: ["Một nơi để gặp gỡ.", "Một nơi để thư giãn.", "Và đôi khi, một nơi để trốn khỏi thành phố ngoài kia."],
+  readStory: "Đọc câu chuyện",
+  sigEyebrow: "02 — Signature", sigTitle: "Những ly làm nên Himitsu", sigSub: "Pha thật chậm, nếm hai lần. Mỗi ly là một câu chuyện nhỏ.", fullMenu: "Xem cả menu", signature: "Signature",
+  offersEyebrow: "03 — Tối nay ở Himitsu", offersTitle: "Ưu đãi & sự kiện", offersSub: "Đến sớm cho Happy Hour, ở lại muộn cho những đêm đặc biệt.",
+  happyHour: "Happy Hour", everyDay: "mỗi ngày", allEvents: "Tất cả sự kiện", saveSeat: "Giữ chỗ",
+  noEvent: "Chưa có đêm đặc biệt nào được công bố.", followNext: "Theo dõi @{h} để không lỡ đêm tiếp theo",
+  weekEyebrow: "Mỗi tuần", weekTitle: "Một lý do để đến mỗi tối", weekSub: "Mỗi nhóm menu có một tối giảm 30%, từ 8PM tới 1AM.",
+  days: ["Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy", "Chủ nhật"],
+  moments: "Khoảnh khắc", moreMoments: "Xem thêm khoảnh khắc",
+  drinksFood: "Đồ uống & đồ ăn", menuTitle: "Menu", hhPill: "Happy Hour · {d} đồ uống {s}–{e}", menuNote: "Giá tính theo nghìn đồng (k), chưa gồm thuế và phí dịch vụ.", menuPdf: "Tải menu (PDF)",
+  reserveEyebrow: "Đặt bàn", reserveTitle: "Giữ một chỗ cho bạn", reserveSub: "Chọn ngày, số khách và giờ. Bàn được xác nhận ngay khi còn chỗ.",
+  orCall: "hoặc gọi", when: "Khi nào?", date: "Ngày", pickAnother: "Chọn ngày khác", guests: "Số khách", guestsN: "{n} khách", guest1: "1 khách",
+  time: "Giờ", hhLegend: "HH = trong Happy Hour", closedDay: "Quán nghỉ ngày này.", noSlots: "Hôm nay đã hết giờ đặt — vui lòng chọn ngày khác.",
+  who: "Ai sẽ đến?", edit: "Sửa", name: "Tên", phone: "Số điện thoại", phoneHint: "Chúng tôi chỉ gọi khi cần. Số Việt Nam, vd {p}", email: "Email (không bắt buộc)",
+  bartender: "Bartender nên biết điều gì?", occasion: "Dịp", seating: "Chỗ ngồi", taste: "Khẩu vị", note: "Ghi chú", notePh: "Dị ứng, một bất ngờ nho nhỏ, một ly bạn vẫn còn nhớ…",
+  occasions: ["Sinh nhật", "Kỷ niệm", "Hẹn hò đầu", "Lần đầu đến"], seatings: ["Ngồi quầy (trò chuyện với bartender)", "Bàn", "Chỗ nào cũng được"],
+  tastes: ["Chua", "Ngọt", "Đắng", "Khói", "Ít cồn", "Bartender chọn"],
+  agree: "Tôi đủ 18 tuổi và đồng ý với", policy: "chính sách đặt bàn", confirm: "Xác nhận đặt bàn", sending: "Đang gửi…",
+  errFields: "Vui lòng nhập tên và số điện thoại.", errAgree: "Vui lòng xác nhận bạn đủ 18 tuổi.", err: "Có lỗi xảy ra, vui lòng thử lại hoặc gọi cho quán.",
+  seeYou: "Hẹn gặp bạn {d} lúc {t}.", saved: "Chỗ của bạn đã được giữ.", code: "Mã đặt bàn", codeHint: "Lưu mã này (chụp màn hình hoặc thêm vào lịch) — bạn cần nó để xem hoặc huỷ.",
+  guestsLabel: "Số khách", nameLabel: "Tên", whenLabel: "Thời gian", bartenderRead: "Bartender sẽ đọc phần này trước khi bạn đến.",
+  addCal: "Thêm vào lịch (.ics)", directions: "Chỉ đường", viewCancel: "Xem / huỷ đặt bàn", another: "Đặt bàn khác",
+  reservation: "Đặt bàn", received: "Đã nhận", confirmed: "Đã xác nhận", cancelled: "Đã huỷ", arrived: "Đã đến", noshow: "Không đến",
+  cancelBtn: "Huỷ đặt bàn", cancelAsk: "Huỷ đặt bàn này?", notFound: "Không tìm thấy đặt bàn này.", loading: "Đang tải…",
+  eventsEyebrow: "Sự kiện", eventsTitle: "Những đêm nhỏ ở Himitsu", comingUp: "Sắp diễn ra", past: "Đã qua", ended: "Đã kết thúc",
+  hlEyebrow: "Nổi bật", hlTitle: "Những đêm đã cùng nhau ở Himitsu", hlSub: "Ngày sẽ được cập nhật.",
+  noUpcoming: "Chưa có đêm mới. Theo dõi @{h} để không bỏ lỡ.",
+  yourName: "Tên của bạn", phoneShort: "Số Việt Nam, vd {p}", agreeShort: "Tôi đủ 18 tuổi và đồng ý với chính sách", saveMySeat: "Giữ chỗ cho tôi",
+  seatSaved: "Chỗ của bạn đã được giữ.", seeYouAt: "Hẹn gặp bạn ở {e}, {d}.",
+  ourStory: "Câu chuyện", doorOpen: "Cánh cửa mở mỗi đêm.", findUs: "Tìm đến", openingHours: "Giờ mở cửa", everyDayHours: "Mỗi ngày",
+  visit: "Ghé thăm", follow: "Theo dõi", policies: "Chính sách", footerLine: "Một nơi để trốn khỏi thành phố ngoài kia.",
+  galleryEyebrow: "Gallery", pressEyebrow: "Báo chí", pressTitle: "Người ta nói về Himitsu", pressEmpty: "Bài viết về quán sẽ sớm được cập nhật. Liên hệ báo chí:",
+  contactEyebrow: "Liên hệ", close: "Đóng",
+};
+
+export const DICT: Record<Lang, Dict> = { vi, en };
+export const fill = (s: string, v: Record<string, string | number>) => s.replace(/\{(\w+)\}/g, (_, k) => String(v[k] ?? ""));

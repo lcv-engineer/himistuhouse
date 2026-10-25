@@ -1,38 +1,44 @@
 import { NextResponse } from "next/server";
-import { readAll, writeAll } from "@/lib/store";
-import { adminPassword, adminToken, isAdmin } from "@/lib/auth";
+import { cookies } from "next/headers";
+import { readAll, writeAll, STATUSES, Status } from "@/lib/store";
+import { adminToken, checkLogin, isAdmin } from "@/lib/auth";
 import { notifyAll, telegramEnabled, whatsappEnabled } from "@/lib/telegram";
 
+// Đăng nhập (email + mật khẩu) hoặc đăng xuất ({ logout: true }).
 export async function POST(req: Request) {
   const b = await req.json().catch(() => ({}));
-  if (b.password !== adminPassword()) return NextResponse.json({ error: "bad password" }, { status: 401 });
+  if (b.logout) {
+    const res = NextResponse.json({ ok: true });
+    res.cookies.delete("admin");
+    res.cookies.delete("admin_email");
+    return res;
+  }
+  if (!checkLogin(String(b.email ?? ""), String(b.password ?? ""))) return NextResponse.json({ error: "bad login" }, { status: 401 });
   const res = NextResponse.json({ ok: true });
-  res.cookies.set("admin", adminToken(), { httpOnly: true, sameSite: "lax", path: "/", maxAge: 60 * 60 * 24 * 7 });
+  const opt = { httpOnly: true, sameSite: "lax" as const, path: "/", maxAge: 60 * 60 * 24 * 7 };
+  res.cookies.set("admin", adminToken(), opt);
+  res.cookies.set("admin_email", String(b.email ?? "").slice(0, 120), opt);
   return res;
 }
 
 export async function GET(req: Request) {
   if (!(await isAdmin())) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const q = new URL(req.url).searchParams;
+  if (q.get("me")) return NextResponse.json({ email: (await cookies()).get("admin_email")?.value ?? "" });
   // ?telegram=test gửi tin thử và trả kết quả
-  if (new URL(req.url).searchParams.get("telegram") === "test") {
+  if (q.get("telegram") === "test") {
     const r = await notifyAll("✅ Himitsu: kết nối thông báo hoạt động.");
     const parts = [r.telegram && `Telegram: ${r.telegram.ok ? "OK" : r.telegram.error}`, r.whatsapp && `WhatsApp: ${r.whatsapp.ok ? "OK" : r.whatsapp.error}`].filter(Boolean);
-    const ok = Boolean((r.telegram?.ok ?? true) && (r.whatsapp?.ok ?? true) && (r.telegram || r.whatsapp));
-    return NextResponse.json({ enabled: telegramEnabled() || whatsappEnabled(), ok, error: parts.length ? parts.join(" · ") : "chưa cấu hình kênh nào", detail: parts.join(" · ") });
+    return NextResponse.json({ enabled: telegramEnabled() || whatsappEnabled(), detail: parts.length ? parts.join(" · ") : "chưa cấu hình kênh nào" });
   }
   return NextResponse.json(readAll());
 }
 
 export async function PATCH(req: Request) {
   if (!(await isAdmin())) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { id, status, table } = await req.json();
-  writeAll(readAll().map((r) => {
-    if (r.id !== id) return r;
-    const next = { ...r };
-    if (status === "new" || status === "confirmed" || status === "cancelled") next.status = status;
-    if (typeof table === "string") next.table = table.slice(0, 60);
-    return next;
-  }));
+  const { id, status } = await req.json();
+  if (!STATUSES.includes(status)) return NextResponse.json({ error: "bad status" }, { status: 400 });
+  writeAll(readAll().map((r) => (r.id === id ? { ...r, status: status as Status } : r)));
   return NextResponse.json({ ok: true });
 }
 

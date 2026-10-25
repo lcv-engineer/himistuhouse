@@ -15,7 +15,7 @@ export async function GET() {
 export async function PUT(req: Request) {
   if (!(await isAdmin())) return deny();
   const body = await req.json().catch(() => null);
-  if (!body || typeof body !== "object" || !body.site || !body.t || !Array.isArray(body.menu)) {
+  if (!body || typeof body !== "object" || !body.site || !Array.isArray(body.menu) || !Array.isArray(body.events)) {
     return NextResponse.json({ error: "invalid content" }, { status: 400 });
   }
   fs.mkdirSync(path.dirname(CONTENT_FILE), { recursive: true });

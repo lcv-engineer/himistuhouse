@@ -56,13 +56,16 @@ export async function notifyAll(text: string) {
 
 export function reservationText(r: Reservation) {
   const zalo = `https://zalo.me/${r.phone.replace(/[^\d+]/g, "")}`;
+  const tags = [r.occasion, r.seating, ...(r.taste ?? [])].filter(Boolean).join(" · ");
   return [
-    "🍸 Đặt bàn mới – Himitsu",
+    r.event ? `🎟 Giữ chỗ sự kiện – ${r.eventTitle ?? ""}` : "🍸 Đặt bàn mới – Himitsu",
+    r.code ? `Mã: ${r.code}` : "",
     `Khách: ${r.name}`,
     `SĐT/Zalo: ${r.phone}`,
+    r.email ? `Email: ${r.email}` : "",
     `Ngày giờ: ${r.date} ${r.time}`,
     `Số khách: ${r.guests}`,
-    r.table ? `Khách chọn chỗ: ${r.table}` : "",
+    tags ? `Bartender cần biết: ${tags}` : "",
     r.note ? `Ghi chú: ${r.note}` : "",
     `Nhắn Zalo: ${zalo}`,
   ].filter(Boolean).join("\n");

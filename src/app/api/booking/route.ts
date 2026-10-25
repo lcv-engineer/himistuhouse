@@ -1,28 +1,27 @@
 import { NextResponse } from "next/server";
-import { readAll, writeAll } from "@/lib/store";
+import { findByCode, readAll, writeAll } from "@/lib/store";
 import { notifyAll } from "@/lib/telegram";
 
-const UUID = /^[0-9a-f-]{36}$/i;
-
-// Công khai theo mã đặt bàn (UUID khó đoán). Không trả về số điện thoại.
+// Công khai theo mã đặt bàn. Không trả về số điện thoại hay email.
 export async function GET(req: Request) {
-  const id = new URL(req.url).searchParams.get("id") ?? "";
-  if (!UUID.test(id)) return NextResponse.json({ error: "not found" }, { status: 404 });
-  const r = readAll().find((x) => x.id === id);
+  const code = new URL(req.url).searchParams.get("code") ?? "";
+  const r = code ? findByCode(readAll(), code) : undefined;
   if (!r) return NextResponse.json({ error: "not found" }, { status: 404 });
-  return NextResponse.json({ name: r.name, date: r.date, time: r.time, guests: r.guests, table: r.table ?? "", status: r.status, note: r.note });
+  return NextResponse.json({
+    code: r.code ?? "", name: r.name, date: r.date, time: r.time, guests: r.guests, status: r.status,
+    occasion: r.occasion ?? "", seating: r.seating ?? "", taste: r.taste ?? [], note: r.note, eventTitle: r.eventTitle ?? "",
+  });
 }
 
 export async function POST(req: Request) {
   const b = await req.json().catch(() => null);
-  const id = String(b?.id ?? "");
-  if (!UUID.test(id) || b?.action !== "cancel") return NextResponse.json({ error: "bad request" }, { status: 400 });
+  if (b?.action !== "cancel" || !b?.code) return NextResponse.json({ error: "bad request" }, { status: 400 });
   const rows = readAll();
-  const r = rows.find((x) => x.id === id);
+  const r = findByCode(rows, String(b.code));
   if (!r) return NextResponse.json({ error: "not found" }, { status: 404 });
   if (r.status !== "cancelled") {
-    writeAll(rows.map((x) => (x.id === id ? { ...x, status: "cancelled" as const } : x)));
-    await notifyAll(`❌ Khách huỷ đặt bàn\nKhách: ${r.name}\nSĐT/Zalo: ${r.phone}\nNgày giờ: ${r.date} ${r.time}\nSố khách: ${r.guests}${r.table ? `\nChỗ: ${r.table}` : ""}`);
+    writeAll(rows.map((x) => (x.id === r.id ? { ...x, status: "cancelled" as const } : x)));
+    await notifyAll(`❌ Khách huỷ đặt bàn${r.code ? ` ${r.code}` : ""}\nKhách: ${r.name}\nSĐT/Zalo: ${r.phone}\nNgày giờ: ${r.date} ${r.time}\nSố khách: ${r.guests}`);
   }
   return NextResponse.json({ ok: true });
 }
