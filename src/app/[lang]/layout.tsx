@@ -16,7 +16,7 @@ export default async function LangLayout({ children, params }: { children: React
   return (
     <>
       <Header lang={lang as Lang} nav={c.t[lang as Lang].nav} links={{ instagram: s.instagram, facebook: s.facebook, messenger: s.messenger, zalo: zaloUrl(s) }} />
-      <main className="mx-auto max-w-6xl px-4">{children}</main>
+      <main className="page-in mx-auto max-w-6xl px-4">{children}</main>
       <Footer lang={lang as Lang} c={c} />
     </>
   );

@@ -36,7 +36,7 @@ export async function sendWhatsapp(text: string): Promise<{ ok: boolean; error?:
   const apikey = process.env.CALLMEBOT_APIKEY;
   if (!phone || !apikey) return { ok: false, error: "chưa cấu hình WHATSAPP_PHONE / CALLMEBOT_APIKEY" };
   try {
-    const url = `https://api.callmebot.com/whatsapp.php?phone=${phone}&text=${encodeURIComponent(text)}&apikey=${encodeURIComponent(apikey)}`;
+    const url = `https://api.callmebot.com/whatsapp.php?phone=%2B${phone}&text=${encodeURIComponent(text)}&apikey=${encodeURIComponent(apikey)}`;
     const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
     if (!res.ok) return { ok: false, error: `CallMeBot trả về ${res.status}` };
     return { ok: true };
@@ -62,6 +62,7 @@ export function reservationText(r: Reservation) {
     `SĐT/Zalo: ${r.phone}`,
     `Ngày giờ: ${r.date} ${r.time}`,
     `Số khách: ${r.guests}`,
+    r.table ? `Khách chọn chỗ: ${r.table}` : "",
     r.note ? `Ghi chú: ${r.note}` : "",
     `Nhắn Zalo: ${zalo}`,
   ].filter(Boolean).join("\n");

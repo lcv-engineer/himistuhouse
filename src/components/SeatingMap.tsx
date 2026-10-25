@@ -3,13 +3,13 @@ import { useMemo, useState } from "react";
 
 export type MapRes = { id: string; name: string; phone: string; date: string; time: string; guests: number; note: string; status: string; table?: string };
 
-type Seat = { id: string; kind: "circle" | "rect"; cx?: number; cy?: number; r?: number; x?: number; y?: number; w?: number; h?: number; cap: string; label?: string };
+export type Seat = { id: string; kind: "circle" | "rect"; cx?: number; cy?: number; r?: number; x?: number; y?: number; w?: number; h?: number; cap: string; label?: string };
 type Deco = { x: number; y: number; w: number; h: number; text?: string; style?: "wall" | "bar" | "zone" | "dash" | "green" | "window"; vertical?: boolean; gold?: boolean };
 
 const stool = (id: string, cx: number, cy: number): Seat => ({ id, kind: "circle", cx, cy, r: 40, cap: "1" });
 const box = (id: string, x: number, y: number, w: number, h: number, cap: string): Seat => ({ id, kind: "rect", x, y, w, h, cap });
 
-const FLOORS = {
+export const FLOORS = {
   f1: {
     title: "Tầng 1",
     seats: [

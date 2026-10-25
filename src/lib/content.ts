@@ -16,6 +16,7 @@ export type Texts = {
   reservation: {
     title: string; name: string; phone: string; date: string; time: string; guests: string; note: string; submit: string;
     ok: string; zaloCta: string; copy: string; copied: string; zaloHint: string; err: string; holdNote: string;
+    mapTitle: string; mapHint: string; floor1: string; floor2: string; mapSelected: string; mapNone: string; mapClear: string; mapTaken: string; mapTakenErr: string; mapLegendFree: string; mapLegendPick: string; mapLegendTaken: string;
     msgTpl: string; noteTpl: string;
   };
 };
@@ -86,6 +87,12 @@ export const DEFAULTS: Content = {
         noteTpl: " Ghi chú: {note}",
         err: "Có lỗi xảy ra, vui lòng thử lại.",
         holdNote: "Chúng tôi sẽ giữ bàn trong vòng 30 phút sau thời gian đặt. Nếu có thay đổi, vui lòng gọi hotline {hotline}.",
+        mapTitle: "Chọn vị trí ngồi (không bắt buộc)",
+        mapHint: "Bấm vào chỗ ngồi trên sơ đồ để chọn. Chọn ngày và giờ trước để xem chỗ nào đã có khách.",
+        floor1: "Tầng 1", floor2: "Tầng 2",
+        mapSelected: "Đã chọn", mapNone: "Chưa chọn vị trí (quán sẽ xếp giúp bạn)", mapClear: "Bỏ chọn",
+        mapTaken: "đã có khách", mapTakenErr: "Một số chỗ bạn chọn vừa có người đặt, vui lòng chọn lại.",
+        mapLegendFree: "Còn trống", mapLegendPick: "Bạn chọn", mapLegendTaken: "Đã có khách",
       },
     },
     en: {
@@ -125,6 +132,12 @@ export const DEFAULTS: Content = {
         noteTpl: " Notes: {note}",
         err: "Something went wrong, please try again.",
         holdNote: "We will hold your table for 30 minutes after your booking time. If anything changes, please call our hotline {hotline}.",
+        mapTitle: "Choose your seat (optional)",
+        mapHint: "Tap a seat on the map to select it. Pick a date and time first to see which seats are already taken.",
+        floor1: "Ground floor", floor2: "Upper floor",
+        mapSelected: "Selected", mapNone: "No seat chosen (we will seat you)", mapClear: "Clear",
+        mapTaken: "taken", mapTakenErr: "Some seats you picked were just taken, please choose again.",
+        mapLegendFree: "Available", mapLegendPick: "Your pick", mapLegendTaken: "Taken",
       },
     },
   },

@@ -9,7 +9,7 @@ export default async function Reservation({ params }: { params: Promise<{ lang: 
   return (
     <section className="py-16">
       <h1 className="h-section mb-10">{r.title}</h1>
-      <ReservationForm r={r} zalo={zaloUrl(c.site)} hotline={c.site.hotline} tel={telHref(c.site)} />
+      <ReservationForm lang={lang} r={r} zalo={zaloUrl(c.site)} hotline={c.site.hotline} tel={telHref(c.site)} />
     </section>
   );
 }

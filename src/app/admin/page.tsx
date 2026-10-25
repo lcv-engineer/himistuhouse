@@ -30,7 +30,10 @@ const LABELS: Record<string, Record<string, string>> = {
   },
   t: {
     nav: "Tên các mục trên thanh menu", story: "Câu chuyện", menu: "Menu", events: "Sự kiện", gallery: "Gallery", contact: "Liên hệ", reserve: "Đặt bàn",
-    open: "Dòng “mở cửa” ở đầu trang", orCall: "Chữ “hoặc gọi”", hotline: "Nhãn “Hotline”", menuNote: "Ghi chú giá dưới Menu", holdNote: "Ghi chú giữ bàn (dùng {hotline})", heroTitle: "Tiêu đề lớn trang chủ", heroSub: "Dòng mô tả trang chủ", cta: "Nút đặt bàn",
+    open: "Dòng “mở cửa” ở đầu trang", orCall: "Chữ “hoặc gọi”", hotline: "Nhãn “Hotline”", menuNote: "Ghi chú giá dưới Menu", holdNote: "Ghi chú giữ bàn (dùng {hotline})",
+    mapTitle: "Tiêu đề chọn chỗ trên sơ đồ", mapHint: "Hướng dẫn chọn chỗ", floor1: "Tên tầng 1", floor2: "Tên tầng 2", mapSelected: "Chữ “Đã chọn”",
+    mapNone: "Chữ khi chưa chọn chỗ", mapClear: "Nút bỏ chọn", mapTaken: "Chữ “đã có khách”", mapTakenErr: "Lỗi chỗ vừa bị đặt",
+    mapLegendFree: "Chú thích: còn trống", mapLegendPick: "Chú thích: bạn chọn", mapLegendTaken: "Chú thích: đã có khách", heroTitle: "Tiêu đề lớn trang chủ", heroSub: "Dòng mô tả trang chủ", cta: "Nút đặt bàn",
     drinksTitle: "Tiêu đề mục đồ uống", eventsTitle: "Tiêu đề mục ưu đãi & sự kiện", nightsTitle: "Tiêu đề mục cuối trang chủ",
     storyTitle: "Tiêu đề trang Câu chuyện", storyBody: "Các đoạn nội dung Câu chuyện", menuTitle: "Tiêu đề trang Menu", eventsPage: "Tiêu đề trang Sự kiện",
     galleryTitle: "Tiêu đề trang Gallery", contactTitle: "Tiêu đề trang Liên hệ", showMap: "Chữ “xem bản đồ”",
