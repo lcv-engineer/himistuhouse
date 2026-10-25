@@ -15,7 +15,9 @@ const TABS = [
   { id: "t.vi", label: "Chữ trên web (Tiếng Việt)" },
   { id: "menu", label: "Menu" },
   { id: "events", label: "Sự kiện" },
-  { id: "gallery", label: "Gallery" },
+  { id: "moments", label: "Moment (ảnh)" },
+  { id: "holidays", label: "Ngày lễ" },
+  { id: "private", label: "Thuê riêng" },
   { id: "photos", label: "Ảnh trang chủ" },
 ] as const;
 
@@ -24,12 +26,12 @@ const COMMON: Record<string, string> = {
 };
 const LABELS: Record<string, Record<string, string>> = {
   site: {
-    name: "Tên quán", tagline: "Dòng phụ dưới tên quán", address: "Địa chỉ", hours: "Giờ mở cửa", hotline: "Hotline (hiện cạnh nút đặt bàn)", zaloPhone: "Số Zalo (dùng cho nút đặt bàn)",
+    name: "Tên quán", tagline: "Dòng phụ dưới tên quán", address: "Địa chỉ", hours: "Giờ mở cửa", hotline: "Hotline (hiện cạnh nút đặt bàn)", lastOrder: "Giờ last order (HH:MM, vd 00:30) – hiện nhãn L.O ở khung giờ đặt bàn", handle: "Tên Instagram (hiện ở trang Sự kiện)", zaloPhone: "Số Zalo (dùng cho nút đặt bàn)",
     instagram: "Link Instagram", facebook: "Link Facebook", messenger: "Link Messenger",
     mapEmbed: "Link nhúng Google Maps (để trống = tự tạo từ địa chỉ)",
   },
   t: {
-    nav: "Tên các mục trên thanh menu", story: "Câu chuyện", menu: "Menu", events: "Sự kiện", gallery: "Gallery", contact: "Liên hệ", reserve: "Đặt bàn",
+    x: "Các dòng chữ còn lại (trang chủ, sự kiện, liên hệ, thuê riêng, đặt bàn, xác nhận)", nav: "Tên các mục trên thanh menu", story: "Câu chuyện", menu: "Menu", events: "Sự kiện", gallery: "Gallery", contact: "Liên hệ", reserve: "Đặt bàn",
     open: "Dòng “mở cửa” ở đầu trang", orCall: "Chữ “hoặc gọi”", hotline: "Nhãn “Hotline”", menuNote: "Ghi chú giá dưới Menu", holdNote: "Ghi chú giữ bàn (dùng {hotline})",
     mapTitle: "Tiêu đề chọn chỗ trên sơ đồ", mapHint: "Hướng dẫn chọn chỗ", floor1: "Tên tầng 1", floor2: "Tên tầng 2", mapSelected: "Chữ “Đã chọn”",
     mapNone: "Chữ khi chưa chọn chỗ", mapClear: "Nút bỏ chọn", mapTaken: "Chữ “đã có khách”", mapTakenErr: "Lỗi chỗ vừa bị đặt",
@@ -44,10 +46,11 @@ const LABELS: Record<string, Record<string, string>> = {
   },
   menu: { cat: "Tên nhóm", items: "Các món", n: "Tên món", d: "Mô tả", p: "Giá (nghìn đồng, vd 180)" },
   events: { t: "Tên sự kiện", w: "Thời gian", d: "Mô tả" },
-  gallery: { src: "Ảnh", w: "Rộng (px)", h: "Cao (px)", alt: "Mô tả ảnh (cho người khiếm thị / SEO)" },
+  moments: { title: "Tên phần (Guest bartender / Event / Entertainment…)", images: "Ảnh trong phần (khoảng 6 ảnh)", src: "Ảnh", w: "Rộng (px)", h: "Cao (px)", alt: "Mô tả ảnh (cho người khiếm thị / SEO)" },
+  holidays: { date: "Ngày (YYYY-MM-DD, vd 2026-12-25)", vi: "Tên ngày lễ (Tiếng Việt)", en: "Tên ngày lễ (English)" },
   photos: {
-    hero: "Ảnh nền đầu trang chủ", story1: "Ảnh Câu chuyện 1", story2: "Ảnh Câu chuyện 2",
-    drinks: "Ảnh các thẻ đồ uống (theo thứ tự món đầu tiên trong Menu)", events: "Ảnh các thẻ sự kiện (theo thứ tự sự kiện)",
+    hero: "Ảnh nền đầu trang chủ", door: "Ảnh “Tìm cánh cửa” (trang Câu chuyện)", story1: "Ảnh Câu chuyện 1", story2: "Ảnh Câu chuyện 2",
+    drinks: "Ảnh các thẻ Signature (theo thứ tự món trong nhóm đầu tiên của Menu)", events: "Ảnh các thẻ sự kiện (theo thứ tự sự kiện)",
   },
 };
 
@@ -143,6 +146,7 @@ export default function Admin() {
   const [err, setErr] = useState("");
   const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("res");
   const [rows, setRows] = useState<Row[]>([]);
+  const [priv, setPriv] = useState<{ id: string; createdAt: string; name: string; phone: string; date: string; guests: number; type: string; note: string; status: string }[]>([]);
   const [content, setContent] = useState<Content | null>(null);
   const [dirty, setDirty] = useState(false);
   const [msg, setMsg] = useState("");
@@ -169,6 +173,19 @@ export default function Admin() {
   async function setStatus(id: string, status: string) {
     await fetch("/api/admin", { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ id, status }) });
     loadRows();
+  }
+  async function loadPriv() {
+    const r = await fetch("/api/admin/private");
+    if (r.ok) setPriv(await r.json());
+  }
+  async function privStatus(id: string, status: string) {
+    await fetch("/api/admin/private", { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ id, status }) });
+    loadPriv();
+  }
+  async function privDel(id: string) {
+    if (!confirm("Xoá yêu cầu này?")) return;
+    await fetch("/api/admin/private", { method: "DELETE", headers: { "content-type": "application/json" }, body: JSON.stringify({ id }) });
+    loadPriv();
   }
   async function setTable(id: string, table: string) {
     setRows((rs) => rs.map((r) => (r.id === id ? { ...r, table } : r)));
@@ -235,11 +252,28 @@ export default function Admin() {
       </div>
       <nav className="flex flex-wrap gap-2 mb-6">
         {TABS.map((t) => (
-          <button key={t.id} onClick={() => { setTab(t.id); setMsg(""); if (t.id === "res" || t.id === "map") loadRows(); }} className={`btn ${tab === t.id ? "bg-gold text-bg" : ""}`} style={tab === t.id ? { background: "#c9a15b", color: "#0d0a08" } : undefined}>{t.label}</button>
+          <button key={t.id} onClick={() => { setTab(t.id); setMsg(""); if (t.id === "res" || t.id === "map") loadRows(); if (t.id === "private") loadPriv(); }} className={`btn ${tab === t.id ? "bg-gold text-bg" : ""}`} style={tab === t.id ? { background: "#c9a15b", color: "#0d0a08" } : undefined}>{t.label}</button>
         ))}
       </nav>
 
-      {tab === "map" ? (
+      {tab === "private" ? (
+        <div className="overflow-x-auto">
+          <p className="mb-3 text-muted">Tổng: {priv.length} yêu cầu thuê riêng</p>
+          <table className="w-full text-sm text-left">
+            <thead className="text-muted"><tr><th className="p-2">Tên</th><th>SĐT / Zalo</th><th>Ngày dự kiến</th><th>Khách</th><th>Loại</th><th>Ghi chú</th><th>Trạng thái</th><th /></tr></thead>
+            <tbody>
+              {priv.map((r) => (
+                <tr key={r.id} className="border-t border-white/10">
+                  <td className="p-2">{r.name}</td><td><a className="underline" href={`https://zalo.me/${r.phone.replace(/\s+/g, "")}`} target="_blank">{r.phone}</a></td>
+                  <td>{r.date}</td><td>{r.guests}</td><td>{r.type}</td><td>{r.note}</td>
+                  <td><select value={r.status} onChange={(e) => privStatus(r.id, e.target.value)} className="inp w-auto"><option value="new">Mới</option><option value="done">Đã xử lý</option></select></td>
+                  <td><button className="btn text-red-400" onClick={() => privDel(r.id)}>Xoá</button></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : tab === "map" ? (
         <SeatingMap rows={rows} onTable={setTable} />
       ) : tab === "res" ? (
         <div className="overflow-x-auto">

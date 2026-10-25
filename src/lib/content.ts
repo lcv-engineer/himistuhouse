@@ -19,22 +19,26 @@ export type Texts = {
     mapTitle: string; mapHint: string; floor1: string; floor2: string; mapSelected: string; mapNone: string; mapClear: string; mapTaken: string; mapTakenErr: string; mapLegendFree: string; mapLegendPick: string; mapLegendTaken: string;
     msgTpl: string; noteTpl: string;
   };
+  /** Các dòng chữ còn lại (trang chủ, sự kiện, liên hệ, private hire, đặt bàn, trang xác nhận). */
+  x: Record<string, string>;
 };
 
 export type Content = {
   site: {
-    name: string; tagline: string; address: string; hours: string; hotline: string; zaloPhone: string;
+    name: string; tagline: string; address: string; hours: string; lastOrder: string; hotline: string; zaloPhone: string; handle: string;
     instagram: string; facebook: string; messenger: string; mapEmbed: string;
   };
   t: Record<Lang, Texts>;
   menu: { cat: Bi; items: { n: string; d: Bi; p: string }[] }[];
   events: { t: Bi; w: Bi; d: Bi }[];
-  gallery: GalleryImage[];
-  photos: { hero: string; story1: string; story2: string; drinks: string[]; events: string[] };
+  moments: { title: Bi; images: GalleryImage[] }[];
+  holidays: { date: string; vi: string; en: string }[];
+  photos: { hero: string; story1: string; story2: string; door: string; drinks: string[]; events: string[] };
 };
 
 const P = (n: string, w: number, h: number, vi: string, en: string): GalleryImage => ({ src: `/images/photos/${n}.webp`, w, h, alt: { vi, en } });
 const ph = (n: string) => `/images/photos/${n}.webp`;
+const same = (s: string): Bi => ({ vi: s, en: s });
 
 export const DEFAULTS: Content = {
   site: {
@@ -42,24 +46,26 @@ export const DEFAULTS: Content = {
     tagline: "house of cocktail",
     address: "154 Bis Tran Quang Khai, Tan Dinh Ward, Ho Chi Minh City",
     hours: "5PM – 1AM",
+    lastOrder: "00:30",
     hotline: "096 318 14 79",
     zaloPhone: "0363561805",
-    instagram: "https://www.instagram.com/",
+    handle: "@himitsu__house",
+    instagram: "https://www.instagram.com/himitsu__house/",
     facebook: "https://www.facebook.com/himistuhouse",
     messenger: "https://m.me/himistuhouse",
     mapEmbed: "",
   },
   t: {
     vi: {
-      nav: { story: "Câu chuyện", menu: "Menu", events: "Sự kiện", gallery: "Gallery", contact: "Liên hệ", reserve: "Đặt bàn" },
+      nav: { story: "Câu chuyện", menu: "Menu", events: "Sự kiện", gallery: "Khoảnh khắc", contact: "Liên hệ", reserve: "Đặt bàn" },
       open: "Mỗi ngày, Himitsu mở cửa lúc 5PM",
       orCall: "hoặc gọi",
       hotline: "Hotline",
       menuNote: "Giá menu tính theo ’000 VND – Chưa bao gồm thuế và phí dịch vụ",
       heroTitle: "Bí mật nằm sau cánh cửa",
       heroSub: "Quầy bar cocktail kín đáo giữa lòng Sài Gòn.",
-      cta: "Đặt bàn ngay",
-      drinksTitle: "Những ly cocktail làm nên Himitsu",
+      cta: "Đặt bàn",
+      drinksTitle: "Signature",
       eventsTitle: "Ưu đãi & sự kiện",
       nightsTitle: "Một lý do để đến mỗi tối",
       storyTitle: "Câu chuyện của Himitsu",
@@ -70,7 +76,7 @@ export const DEFAULTS: Content = {
       ],
       menuTitle: "Menu",
       eventsPage: "Sự kiện",
-      galleryTitle: "Gallery",
+      galleryTitle: "Khoảnh khắc",
       contactTitle: "Liên hệ",
       showMap: "Xem bản đồ",
       address: "Địa chỉ",
@@ -87,24 +93,48 @@ export const DEFAULTS: Content = {
         noteTpl: " Ghi chú: {note}",
         err: "Có lỗi xảy ra, vui lòng thử lại.",
         holdNote: "Chúng tôi sẽ giữ bàn trong vòng 30 phút sau thời gian đặt. Nếu có thay đổi, vui lòng gọi hotline {hotline}.",
-        mapTitle: "Chọn vị trí ngồi (không bắt buộc)",
+        mapTitle: "Khu vực quán – chọn vị trí ngồi (không bắt buộc)",
         mapHint: "Bấm vào chỗ ngồi trên sơ đồ để chọn. Chọn ngày và giờ trước để xem chỗ nào đã có khách.",
         floor1: "Tầng 1", floor2: "Tầng 2",
         mapSelected: "Đã chọn", mapNone: "Chưa chọn vị trí (quán sẽ xếp giúp bạn)", mapClear: "Bỏ chọn",
         mapTaken: "đã có khách", mapTakenErr: "Một số chỗ bạn chọn vừa có người đặt, vui lòng chọn lại.",
         mapLegendFree: "Còn trống", mapLegendPick: "Bạn chọn", mapLegendTaken: "Đã có khách",
       },
+      x: {
+        seeMenu: "Xem menu",
+        signatureSub: "Những ly cocktail làm nên Himitsu.",
+        tonightTitle: "Hẹn gặp bạn tối nay.",
+        tonightSub: "Giữ một chỗ ở quầy bar hoặc một góc yên tĩnh.",
+        doorTitle: "Cánh cửa mở mỗi đêm.",
+        findDoorTitle: "Tìm cánh cửa",
+        findDoorText: "Hãy tìm biển “himitsu” thẳng đứng có đèn sáng ở mặt tiền.",
+        eventsHeading: "Những đêm nhỏ tại Himitsu",
+        eventsEmpty: "Chưa có sự kiện mới. Theo dõi {handle} để không bỏ lỡ sự kiện tiếp theo.",
+        everyWeek: "Mỗi tuần",
+        phTag: "Thuê riêng",
+        phTitle: "Cả quầy bar, chỉ dành cho bạn",
+        phBody: "Sinh nhật, họp mặt, ra mắt sản phẩm: chúng tôi dọn không gian, lên menu riêng và giữ chỗ cho nhóm của bạn.",
+        phCta: "Hỏi về thuê riêng",
+        phName: "Họ tên", phPhone: "Số điện thoại (Zalo)", phDate: "Ngày dự kiến", phGuests: "Số khách", phType: "Loại sự kiện (sinh nhật, họp mặt…)",
+        phNote: "Ghi chú", phSubmit: "Gửi yêu cầu", phOk: "Cảm ơn bạn! Chúng tôi sẽ liên hệ sớm.", phErr: "Có lỗi xảy ra, vui lòng thử lại.", phClose: "Đóng",
+        rvDateTitle: "Chọn ngày", rvPickAnother: "Chọn ngày khác", rvTimeTitle: "Chọn giờ", rvGuestsTitle: "Số khách",
+        rvLegendHH: "HH = trong Happy Hour", rvLegendLO: "L.O = last order (gọi món cuối)", rvHoliday: "Ngày lễ", rvPickTime: "Vui lòng chọn giờ.",
+        bkTitle: "Đặt bàn của bạn", bkReceived: "Đã nhận", bkConfirmed: "Đã xác nhận", bkCancelled: "Đã huỷ",
+        bkWhen: "Thời gian", bkGuests: "Số khách", bkName: "Tên", bkSeat: "Chỗ ngồi", bkSeatAny: "Quán sẽ xếp",
+        bkCancel: "Huỷ đặt bàn", bkCancelAsk: "Bạn chắc chắn muốn huỷ đặt bàn này?", bkNotFound: "Không tìm thấy đặt bàn.", bkLoading: "Đang tải…",
+        bkNewBooking: "Đặt bàn mới",
+      },
     },
     en: {
-      nav: { story: "Our Story", menu: "Menu", events: "Events", gallery: "Gallery", contact: "Contact", reserve: "Reserve" },
+      nav: { story: "Our Story", menu: "Menu", events: "Events", gallery: "Moments", contact: "Contact", reserve: "Reserve" },
       open: "Everyday, Himitsu open at 5PM",
       orCall: "or call",
       hotline: "Hotline",
       menuNote: "Menu price is in ’000 VND – Tax and service charges are not included",
       heroTitle: "A secret behind the door",
       heroSub: "A hidden cocktail bar in the heart of Saigon.",
-      cta: "Reserve a table",
-      drinksTitle: "The drinks that make Himitsu",
+      cta: "Reserve",
+      drinksTitle: "Signature",
       eventsTitle: "Offers & events",
       nightsTitle: "A reason to come every night",
       storyTitle: "Our story",
@@ -115,7 +145,7 @@ export const DEFAULTS: Content = {
       ],
       menuTitle: "Menu",
       eventsPage: "Events",
-      galleryTitle: "Gallery",
+      galleryTitle: "Moments",
       contactTitle: "Contact",
       showMap: "Show map",
       address: "Address",
@@ -132,74 +162,119 @@ export const DEFAULTS: Content = {
         noteTpl: " Notes: {note}",
         err: "Something went wrong, please try again.",
         holdNote: "We will hold your table for 30 minutes after your booking time. If anything changes, please call our hotline {hotline}.",
-        mapTitle: "Choose your seat (optional)",
+        mapTitle: "Venue area – choose your seat (optional)",
         mapHint: "Tap a seat on the map to select it. Pick a date and time first to see which seats are already taken.",
         floor1: "Ground floor", floor2: "Upper floor",
         mapSelected: "Selected", mapNone: "No seat chosen (we will seat you)", mapClear: "Clear",
         mapTaken: "taken", mapTakenErr: "Some seats you picked were just taken, please choose again.",
         mapLegendFree: "Available", mapLegendPick: "Your pick", mapLegendTaken: "Taken",
       },
+      x: {
+        seeMenu: "See the menu",
+        signatureSub: "The drinks that make Himitsu.",
+        tonightTitle: "See you tonight.",
+        tonightSub: "Save a seat at the bar or a quiet corner.",
+        doorTitle: "The door is open every night.",
+        findDoorTitle: "Finding the door",
+        findDoorText: "Look for the lit vertical “himitsu” sign at the front.",
+        eventsHeading: "Small nights at Himitsu",
+        eventsEmpty: "No new events yet. Follow {handle} so you don’t miss the next one.",
+        everyWeek: "Every week",
+        phTag: "Private hire",
+        phTitle: "The whole bar, just for you",
+        phBody: "Birthdays, get-togethers, launches: we set the room, make a menu for you and keep the space for your group.",
+        phCta: "Ask about private hire",
+        phName: "Full name", phPhone: "Phone (Zalo)", phDate: "Preferred date", phGuests: "Guests", phType: "Type of event (birthday, get-together…)",
+        phNote: "Notes", phSubmit: "Send request", phOk: "Thank you! We will get back to you shortly.", phErr: "Something went wrong, please try again.", phClose: "Close",
+        rvDateTitle: "Pick a date", rvPickAnother: "Pick another date", rvTimeTitle: "Time", rvGuestsTitle: "Guests",
+        rvLegendHH: "HH = during Happy Hour", rvLegendLO: "L.O = last order", rvHoliday: "Holiday", rvPickTime: "Please choose a time.",
+        bkTitle: "Your reservation", bkReceived: "Received", bkConfirmed: "Confirmed", bkCancelled: "Cancelled",
+        bkWhen: "When", bkGuests: "Guests", bkName: "Name", bkSeat: "Seat", bkSeatAny: "We will seat you",
+        bkCancel: "Cancel reservation", bkCancelAsk: "Are you sure you want to cancel this reservation?", bkNotFound: "Reservation not found.", bkLoading: "Loading…",
+        bkNewBooking: "New reservation",
+      },
     },
   },
+  // Menu lấy từ ảnh chụp bản cũ (file CHỈNH SỬA WEBSITE 23.10). Mô tả một số món bị cắt trong ảnh nên cần xác nhận lại.
   menu: [
-    { cat: { vi: "Signature", en: "Signature" }, items: [
-      { n: "Himitsu Old Fashioned", d: { vi: "Bourbon, mật ong rang, bitters cam", en: "Bourbon, roasted honey, orange bitters" }, p: "180" },
-      { n: "Saigon Garden", d: { vi: "Gin, lá húng, chanh dây, soda", en: "Gin, basil, passion fruit, soda" }, p: "170" },
-      { n: "Midnight Matcha", d: { vi: "Rum, matcha, sữa dừa, vani", en: "Rum, matcha, coconut milk, vanilla" }, p: "180" },
-      { n: "Smoked Pho", d: { vi: "Whisky khói, hồi, quế, gừng", en: "Smoky whisky, star anise, cinnamon, ginger" }, p: "200" },
+    { cat: same("Signature"), items: [
+      { n: "Zen Leaf Sour", d: same("Pandan-infused Japanese whisky · Matcha · Agave · Coconut"), p: "290" },
+      { n: "Koyo Boulevard", d: same("Whisky · Umeshu amaro · House rosso vermouth · Rhubarb bitters"), p: "290" },
     ]},
-    { cat: { vi: "Classics", en: "Classics" }, items: [
-      { n: "Negroni", d: { vi: "Gin, Campari, vermouth", en: "Gin, Campari, vermouth" }, p: "160" },
-      { n: "Espresso Martini", d: { vi: "Vodka, cà phê, kahlúa", en: "Vodka, coffee, kahlúa" }, p: "160" },
-      { n: "Margarita", d: { vi: "Tequila, triple sec, chanh", en: "Tequila, triple sec, lime" }, p: "150" },
+    { cat: same("Aperitif"), items: [
+      { n: "Kyoho Zen Fizz", d: same("Gin · Kyoho · Tantakatan shiso · Greek yogurt"), p: "290" },
+      { n: "Shibuya Heat", d: same("Genmaicha tea-infused whisky · Red bean · Rosso vermouth"), p: "290" },
+      { n: "Gin Tonic", d: same("Gin · Lime wedge · Tonic"), p: "250" },
+      { n: "Chu-High", d: same(""), p: "250" },
     ]},
-    { cat: { vi: "Không cồn", en: "Zero proof" }, items: [
-      { n: "Yuzu Fizz", d: { vi: "Yuzu, mật ong, soda", en: "Yuzu, honey, soda" }, p: "100" },
-      { n: "Jasmine Tonic", d: { vi: "Trà lài, tonic, chanh", en: "Jasmine tea, tonic, lime" }, p: "100" },
+    { cat: same("Vodka"), items: [
+      { n: "Absolut", d: same(""), p: "250" },
+      { n: "Tito’s", d: same(""), p: "300" },
     ]},
-    { cat: { vi: "Bar Bites", en: "Bar Bites" }, items: [
-      { n: "Charcuterie platter", d: { vi: "Ham, mortadella, salami, ô-liu, brie, elemental, mơ khô", en: "Ham, mortadella, salami, olives, brie, elemental, apricots" }, p: "300" },
-      { n: "Tipsy Bites", d: { vi: "Ô-liu, cà chua, ớt bột hun khói", en: "Mixed olives, sunrise tomato, smoked paprika" }, p: "120" },
-      { n: "Salt & Smoke", d: { vi: "Thịt muối, ô-liu, cà chua, ớt bột hun khói", en: "Cured meat, mixed olives, sunrise tomato, smoked paprika" }, p: "160" },
-      { n: "Sweet & Salt", d: { vi: "Prosciutto, xoài, húng quế, balsamic", en: "Prosciutto, mango, basil, balsamic" }, p: "160" },
-      { n: "Housemade raisin butter", d: { vi: "Nho khô, mận, óc chó, nam việt quất, phô mai kem, bơ", en: "Raisin, plum, walnut, dried cranberry, cream cheese, butter" }, p: "180" },
+    { cat: { vi: "Không cồn", en: "Zero-alc" }, items: [
+      { n: "Hugo Spritz (Cantine Sgarzi Luigi)", d: same("Elderflower · Citrus · Mint"), p: "200" },
+      { n: "Coco · Cha", d: same("Coconut · Yuzu · Matcha creamy"), p: "200" },
+      { n: "Midori Fizz", d: same("Grape · Miso · Melon CO2"), p: "200" },
+      { n: "San Pellegrino (sparkling)", d: same("Italy"), p: "90" },
+      { n: "Acqua Panna (still)", d: same("Italy"), p: "90" },
+    ]},
+    { cat: same("Bar Bites"), items: [
+      { n: "Charcuterie platter", d: same("Ham · Mortadella · Salami · Olives · Brie · Elemental · Apricots"), p: "300" },
+      { n: "Tipsy Bites", d: same("Mixed olives · Sunrise tomato · Smoked paprika"), p: "120" },
+      { n: "Salt & Smoke", d: same("Cured meat · Mixed olives · Sunrise tomato · Smoked paprika"), p: "160" },
+      { n: "Sweet & Salt", d: same("Prosciutto · Mango · Basil · Balsamic"), p: "160" },
+      { n: "Housemade raisin butter", d: same("Raisin · Plum · Walnut · Dried cranberry · Cream cheese · Butter"), p: "180" },
     ]},
   ],
+  // Ưu đãi lấy từ ảnh bản cũ: Happy Hour −50% 5–8PM mỗi ngày, thứ Hai −30% Aperitif, thứ Năm −30% rượu ly.
   events: [
-    { t: { vi: "Jazz Night", en: "Jazz Night" }, w: { vi: "Thứ Sáu hàng tuần · 20:00", en: "Every Friday · 20:00" }, d: { vi: "Nhạc jazz sống cùng cocktail theo mùa.", en: "Live jazz with seasonal cocktails." } },
-    { t: { vi: "Masterclass cocktail", en: "Cocktail masterclass" }, w: { vi: "Chủ Nhật · 16:00", en: "Sundays · 16:00" }, d: { vi: "Học pha chế cùng bartender của Himitsu.", en: "Learn to mix with our bartenders." } },
-    { t: { vi: "Sự kiện riêng", en: "Private events" }, w: { vi: "Theo yêu cầu", en: "On request" }, d: { vi: "Sinh nhật, tiệc công ty, ra mắt sản phẩm.", en: "Birthdays, corporate parties, launches." } },
+    { t: { vi: "Happy Hour −50%", en: "Happy Hour −50%" }, w: { vi: "5PM–8PM mỗi ngày", en: "5PM–8PM every day" }, d: { vi: "Giảm 50% tất cả đồ uống.", en: "50% off all drinks." } },
+    { t: { vi: "Thứ Hai −30% Aperitif", en: "Monday −30% Aperitif" }, w: { vi: "Mỗi tuần", en: "Every week" }, d: { vi: "Giảm 30% các món Aperitif.", en: "30% off Aperitif." } },
+    { t: { vi: "Thứ Năm −30% rượu ly", en: "Thursday −30% By Glass" }, w: { vi: "Mỗi tuần", en: "Every week" }, d: { vi: "Giảm 30% rượu vang và sake bán theo ly.", en: "30% off wine and sake by the glass." } },
   ],
-  gallery: [
-    P("g253", 1400, 933, "Mặt tiền Himitsu về đêm", "Himitsu storefront at night"),
-    P("g53", 1202, 1800, "Cocktail whisky trên hộp gỗ", "Whisky cocktail on a wooden box"),
-    P("g58", 1202, 1800, "Cocktail matcha với xiên trái cây", "Matcha cocktail with a fruit skewer"),
-    P("g155", 1400, 933, "Không gian với tranh Nhật Bản", "Interior with Japanese posters"),
-    P("g83", 1202, 1800, "Highball hồng với anh đào", "Pink highball with cherry"),
-    P("g71", 1202, 1800, "Cocktail cam kèm bánh dorayaki", "Orange cocktail with dorayaki"),
-    P("g147", 1400, 1008, "Quầy rượu sau quầy bar", "The back bar"),
-    P("g99", 1202, 1800, "Cocktail khói trong hộp gỗ", "Smoked cocktail in a wooden box"),
-    P("g260", 1400, 933, "Khay martini rót tại quầy", "A tray of martinis"),
-    P("g115", 1202, 1800, "Cocktail yuzu với khối đá trang trí", "Yuzu cocktail with a decorated ice cube"),
-    P("g224", 1400, 933, "Góc phố với ánh đèn vàng", "The street corner with warm lights"),
-    P("g124", 1202, 1800, "Khay đồ uống: vang, martini, whisky", "A tray of wine, martini and whisky"),
-    P("g158", 1400, 933, "Bàn gỗ và đèn bàn", "Wooden table and lamp"),
-    P("g191", 1200, 1800, "Cocktail vàng trong ly coupe", "Golden cocktail in a coupe"),
-    P("g268", 1400, 933, "Quầy bar với nến vàng", "Bar counter with candlelight"),
-    P("g25", 1202, 1800, "Cocktail matcha bọt mịn", "Matcha cocktail with silky foam"),
-    P("g255", 1400, 863, "Cửa sổ phủ cây xanh", "Window framed by greenery"),
-    P("g41", 1202, 1800, "Cocktail hồng trong ly martini", "Pink cocktail in a martini glass"),
-    P("g142", 1200, 1800, "Biển hiệu himitsu", "The himitsu sign"),
-    P("g14", 1202, 1800, "Cocktail cam trong ly vang", "Orange cocktail in a wine glass"),
-    P("g263", 1400, 933, "Martini với ô-liu", "Martini with an olive"),
-    P("g106", 1202, 1800, "Cầu đá trong hộp gỗ", "Ice sphere in a wooden box"),
+  moments: [
+    { title: { vi: "Bartender khách mời", en: "Guest bartender" }, images: [
+      P("m171", 1400, 933, "Bartender lắc cocktail", "Bartender shaking a cocktail"),
+      P("m174", 1400, 933, "Bartender rót cocktail", "Bartender straining a cocktail"),
+      P("m233", 1400, 933, "Bartender tại quầy", "Bartender at the bar"),
+      P("m246", 1400, 933, "Bartender làm việc", "Bartender at work"),
+      P("m247", 1200, 1800, "Bartender lắc shaker", "Bartender with a shaker"),
+      P("m249", 1259, 1800, "Bartender sau quầy", "Behind the bar"),
+    ]},
+    { title: { vi: "Sự kiện", en: "Event" }, images: [
+      P("m134", 1400, 933, "Khách tại quầy bar", "Guests at the bar"),
+      P("m145", 1400, 933, "Quầy bar đông khách", "A busy bar"),
+      P("m183", 1400, 933, "Không gian quán có khách", "The bar with guests"),
+      P("m219", 1400, 933, "Một đêm tại Himitsu", "A night at Himitsu"),
+      P("m275", 1400, 933, "Khách nhìn từ tầng 2", "Guests seen from above"),
+      P("m276", 1400, 964, "Quầy bar nhìn từ tầng 2", "The bar from upstairs"),
+    ]},
+    { title: { vi: "Giải trí", en: "Entertainment" }, images: [
+      P("m135", 1400, 965, "Khay martini", "A tray of martinis"),
+      P("m259", 1400, 977, "Rót martini", "Pouring martinis"),
+      P("m262", 1200, 1800, "Martini ô-liu", "Olive martinis"),
+      P("m264", 1200, 1800, "Ly martini", "A martini glass"),
+      P("m168", 1400, 933, "Không gian quầy bar", "Bar atmosphere"),
+      P("m150", 1196, 1800, "Khách bên cửa sổ", "A guest by the window"),
+    ]},
+  ],
+  // Ngày lễ được làm nổi bật trong lịch đặt bàn. Chỉnh trong admin (tab Ngày lễ).
+  holidays: [
+    { date: "2026-12-24", vi: "Đêm Giáng sinh", en: "Christmas Eve" },
+    { date: "2026-12-25", vi: "Giáng sinh", en: "Christmas Day" },
+    { date: "2026-12-31", vi: "Đêm giao thừa Dương lịch", en: "New Year’s Eve" },
+    { date: "2027-01-01", vi: "Tết Dương lịch", en: "New Year’s Day" },
+    { date: "2027-02-06", vi: "Mùng 1 Tết Nguyên đán", en: "Lunar New Year’s Day" },
+    { date: "2027-02-14", vi: "Valentine", en: "Valentine’s Day" },
+    { date: "2027-03-08", vi: "Quốc tế Phụ nữ", en: "International Women’s Day" },
   ],
   photos: {
     hero: ph("hero"),
     story1: ph("story1"),
     story2: ph("story2"),
-    drinks: ["g53", "g83", "g58", "g99"].map(ph),
-    events: ["g260", "g155", "g192"].map(ph),
+    door: ph("g142"),
+    drinks: ["g58", "g53"].map(ph),
+    events: ["g192", "g14", "g263"].map(ph),
   },
 };
 

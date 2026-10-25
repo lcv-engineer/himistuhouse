@@ -111,6 +111,12 @@ a, button, input, textarea, select { transition: color .2s, background-color .2s
 @keyframes line-grow { to { width: min(220px, 50%); } }
 @keyframes cue { 0% { opacity: 0; transform: translateY(0); } 40% { opacity: 1; } 100% { opacity: 0; transform: translateY(12px); } }
 
+/* Hàng thẻ lướt ngang trên điện thoại, lưới từ màn hình vừa trở lên */
+.snap-row { display: flex; gap: 1rem; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: .5rem; margin-inline: -1rem; padding-inline: 1rem; scrollbar-width: none; }
+.snap-row::-webkit-scrollbar { display: none; }
+.snap-item { flex: 0 0 78%; scroll-snap-align: start; }
+@media (min-width: 768px) { .snap-row { display: grid; overflow: visible; margin-inline: 0; padding-inline: 0; } .snap-item { flex: none; } }
+
 /* ---------- Hiện dần khi cuộn tới ---------- */
 .rv { transition: opacity .9s cubic-bezier(.2,.7,.2,1) var(--rv-delay, 0s), transform .9s cubic-bezier(.2,.7,.2,1) var(--rv-delay, 0s); }
 @media (scripting: enabled) { .rv:not(.in) { opacity: 0; transform: translate3d(0, 34px, 0); } }

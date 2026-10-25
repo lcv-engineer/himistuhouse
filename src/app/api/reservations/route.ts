@@ -32,5 +32,5 @@ export async function POST(req: Request) {
   writeAll([row, ...existing]);
   // Báo về Telegram / WhatsApp; lỗi thông báo không làm hỏng việc đặt bàn.
   await notifyAll(reservationText(row));
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, id: row.id });
 }

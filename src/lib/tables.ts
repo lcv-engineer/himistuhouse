@@ -11,7 +11,9 @@ export const validTables = (list: string[]) => list.filter((t) => TABLE_IDS.incl
 
 // Một bàn coi là đang bận nếu có đặt bàn khác cùng ngày, lệch giờ dưới 3 tiếng.
 export const SLOT_MINUTES = 180;
+// Giờ sau nửa đêm (00:00–04:59) thuộc cùng "đêm" của ngày đã chọn nên cộng thêm 24 giờ để so sánh đúng.
 export const toMinutes = (t: string) => {
   const [h, m] = t.split(":").map(Number);
-  return (h || 0) * 60 + (m || 0);
+  const mins = (h || 0) * 60 + (m || 0);
+  return (h || 0) < 5 ? mins + 1440 : mins;
 };

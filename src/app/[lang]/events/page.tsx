@@ -5,9 +5,11 @@ import { getContent } from "@/lib/content-server";
 export default async function Events({ params }: { params: Promise<{ lang: string }> }) {
   const lang = (await params).lang as Lang;
   const c = await getContent();
+  const x = c.t[lang].x;
   return (
     <section className="py-16">
-      <h1 className="h-section mb-10">{c.t[lang].eventsPage}</h1>
+      <h1 className="h-section mb-3">{x.eventsHeading}</h1>
+      <p className="text-muted font-sans text-sm mb-10">{x.everyWeek}</p>
       <div className="grid gap-4 md:grid-cols-3">
         {c.events.map((e, i) => (
           <div key={i} className="card overflow-hidden">
@@ -21,6 +23,10 @@ export default async function Events({ params }: { params: Promise<{ lang: strin
             </div>
           </div>
         ))}
+      </div>
+      <div className="card mt-6 p-6 max-w-md">
+        <p className="font-sans text-sm text-muted">{x.eventsEmpty.replace("{handle}", c.site.handle)}</p>
+        <a href={c.site.instagram} target="_blank" rel="noopener noreferrer" className="inline-block mt-3 font-sans text-sm underline">{c.site.handle} →</a>
       </div>
     </section>
   );

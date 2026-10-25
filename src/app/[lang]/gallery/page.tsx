@@ -8,7 +8,7 @@ export default async function Gallery({ params }: { params: Promise<{ lang: stri
   return (
     <section className="py-16">
       <h1 className="h-section mb-10">{c.t[lang].galleryTitle}</h1>
-      <GalleryGrid lang={lang} gallery={c.gallery} />
+      <GalleryGrid lang={lang} sections={c.moments} />
     </section>
   );
 }

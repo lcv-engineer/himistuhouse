@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { FacebookIcon, InstagramIcon, MessengerIcon, ZaloIcon } from "@/components/Icons";
+import PrivateHire from "@/components/PrivateHire";
 import { Lang, zaloUrl, mapSrc, telHref } from "@/lib/content";
 import { getContent } from "@/lib/content-server";
 
@@ -11,13 +13,16 @@ export default async function Contact({ params }: { params: Promise<{ lang: stri
   const white = "[&_svg]:bg-white [&_svg]:rounded-sm [&_svg]:p-0.5";
   return (
     <section className="py-16">
-      <h1 className="h-section mb-10">{t.contactTitle}</h1>
+      <h1 className="h-section mb-10">{t.x.doorTitle}</h1>
       <div className="grid gap-10 md:grid-cols-2">
         <div className="space-y-6">
           <div><p className="text-gold uppercase tracking-widest text-xs mb-1 font-sans">{t.address}</p><p>{s.address}</p></div>
           <div><p className="text-gold uppercase tracking-widest text-xs mb-1 font-sans">{t.hours}</p><p>{s.hours}</p></div>
           <div><p className="text-gold uppercase tracking-widest text-xs mb-1 font-sans">{t.hotline}</p><p><a href={telHref(s)} className="underline">{s.hotline}</a></p></div>
-          {s.zaloPhone &&<div><p className="text-gold uppercase tracking-widest text-xs mb-1 font-sans">Zalo</p><p>{s.zaloPhone}</p></div>}
+          <div className="flex flex-wrap items-center gap-4">
+            <Link href={`/${lang}/reservation`} className="inline-block bg-gold text-bg px-8 py-3 uppercase tracking-widest text-sm font-sans hover:brightness-110 transition">{t.nav.reserve}</Link>
+            <span className="font-sans text-sm text-muted">{t.orCall} <a href={telHref(s)} className="text-fg underline">{s.hotline}</a></span>
+          </div>
           <div className="flex flex-wrap gap-3">
             <a href={s.instagram} target="_blank" rel="noopener noreferrer" className={`${btn} ${white}`} style={{ background: "linear-gradient(45deg,#f58529,#dd2a7b,#8134af)" }}><InstagramIcon /> Instagram</a>
             <a href={s.facebook} target="_blank" rel="noopener noreferrer" className={`${btn} ${white}`} style={{ background: "#1877F2" }}><FacebookIcon /> Facebook</a>
@@ -27,6 +32,7 @@ export default async function Contact({ params }: { params: Promise<{ lang: stri
         </div>
         <iframe title={t.address} src={mapSrc(s)} className="w-full h-80 border-0" loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
       </div>
+      <div className="mt-14"><PrivateHire x={t.x} /></div>
     </section>
   );
 }

@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 
 const FILE = path.join(process.cwd(), "data", "reservations.json");
+const PRIVATE_FILE = path.join(process.cwd(), "data", "private-hire.json");
 
 export type Reservation = {
   id: string; createdAt: string; name: string; phone: string;
@@ -9,10 +10,19 @@ export type Reservation = {
   table?: string; // mã bàn, nhiều bàn cách nhau bằng dấu phẩy (vd "B1, B2")
 };
 
-export function readAll(): Reservation[] {
-  try { return JSON.parse(fs.readFileSync(FILE, "utf8")); } catch { return []; }
+export type PrivateHire = {
+  id: string; createdAt: string; name: string; phone: string; date: string; guests: number; type: string; note: string; status: "new" | "done";
+};
+
+function read<T>(file: string): T[] {
+  try { return JSON.parse(fs.readFileSync(file, "utf8")); } catch { return []; }
 }
-export function writeAll(rows: Reservation[]) {
-  fs.mkdirSync(path.dirname(FILE), { recursive: true });
-  fs.writeFileSync(FILE, JSON.stringify(rows, null, 2));
+function write<T>(file: string, rows: T[]) {
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, JSON.stringify(rows, null, 2));
 }
+
+export const readAll = () => read<Reservation>(FILE);
+export const writeAll = (rows: Reservation[]) => write(FILE, rows);
+export const readPrivate = () => read<PrivateHire>(PRIVATE_FILE);
+export const writePrivate = (rows: PrivateHire[]) => write(PRIVATE_FILE, rows);
