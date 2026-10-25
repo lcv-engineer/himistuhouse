@@ -1,5 +1,5 @@
 import { FacebookIcon, InstagramIcon, MessengerIcon, ZaloIcon } from "@/components/Icons";
-import { Lang, zaloUrl, mapSrc } from "@/lib/content";
+import { Lang, zaloUrl, mapSrc, telHref } from "@/lib/content";
 import { getContent } from "@/lib/content-server";
 
 export default async function Contact({ params }: { params: Promise<{ lang: string }> }) {
@@ -16,7 +16,8 @@ export default async function Contact({ params }: { params: Promise<{ lang: stri
         <div className="space-y-6">
           <div><p className="text-gold uppercase tracking-widest text-xs mb-1 font-sans">{t.address}</p><p>{s.address}</p></div>
           <div><p className="text-gold uppercase tracking-widest text-xs mb-1 font-sans">{t.hours}</p><p>{s.hours}</p></div>
-          {s.zaloPhone && <div><p className="text-gold uppercase tracking-widest text-xs mb-1 font-sans">Zalo</p><p>{s.zaloPhone}</p></div>}
+          <div><p className="text-gold uppercase tracking-widest text-xs mb-1 font-sans">{t.hotline}</p><p><a href={telHref(s)} className="underline">{s.hotline}</a></p></div>
+          {s.zaloPhone &&<div><p className="text-gold uppercase tracking-widest text-xs mb-1 font-sans">Zalo</p><p>{s.zaloPhone}</p></div>}
           <div className="flex flex-wrap gap-3">
             <a href={s.instagram} target="_blank" rel="noopener noreferrer" className={`${btn} ${white}`} style={{ background: "linear-gradient(45deg,#f58529,#dd2a7b,#8134af)" }}><InstagramIcon /> Instagram</a>
             <a href={s.facebook} target="_blank" rel="noopener noreferrer" className={`${btn} ${white}`} style={{ background: "#1877F2" }}><FacebookIcon /> Facebook</a>

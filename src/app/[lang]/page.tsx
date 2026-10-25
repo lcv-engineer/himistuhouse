@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Lang } from "@/lib/content";
+import { Lang, telHref } from "@/lib/content";
 import { getContent } from "@/lib/content-server";
 
 export default async function Home({ params }: { params: Promise<{ lang: string }> }) {
@@ -12,12 +12,16 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
   return (
     <>
       <section className="hero -mx-4 px-4 py-24 md:py-40 text-center flex flex-col items-center" style={heroStyle}>
-        <p className="font-sans text-xs uppercase tracking-[0.4em] text-muted mb-8">{t.open} · {c.site.hours}</p>
+        <p className="font-sans text-xs uppercase tracking-[0.3em] text-muted">{t.open}</p>
+        <p className="font-sans text-xs text-muted/80 mt-2 mb-8">{c.site.address}</p>
         <h1 className="text-5xl md:text-7xl text-gold font-medium">{c.site.name}</h1>
         <p className="font-sans text-[0.7rem] tracking-[0.5em] uppercase text-muted mt-2">{c.site.tagline}</p>
         <p className="mt-10 text-2xl md:text-4xl">{t.heroTitle}</p>
         <p className="mt-3 text-muted font-sans text-base">{t.heroSub}</p>
-        <Link href={`/${lang}/reservation`} className="inline-block mt-10 bg-gold text-bg px-8 py-3 uppercase tracking-widest text-sm font-sans hover:brightness-110">{t.cta}</Link>
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-x-5 gap-y-3">
+          <Link href={`/${lang}/reservation`} className="inline-block bg-gold text-bg px-8 py-3 uppercase tracking-widest text-sm font-sans hover:brightness-110">{t.cta}</Link>
+          <span className="font-sans text-sm text-muted">{t.orCall} <a href={telHref(c.site)} className="text-fg underline">{c.site.hotline}</a></span>
+        </div>
       </section>
 
       <section className="py-14">

@@ -14,21 +14,21 @@
   --color-gold: var(--gold);
   --color-muted: var(--muted);
   --color-card: var(--card);
-  --font-sans: var(--font-sans), system-ui, sans-serif;
-  --font-display: var(--font-display), Georgia, serif;
+  --font-sans: Arial, Helvetica, sans-serif;
+  --font-display: Arial, Helvetica, sans-serif;
 }
 
 body {
   background: var(--bg);
   color: var(--fg);
-  font-family: var(--font-display), Georgia, "Times New Roman", serif;
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 1.0625rem;
   -webkit-font-smoothing: antialiased;
 }
 
 /* Nội dung dạng sans cho đoạn văn dài / mô tả */
 .body-sans {
-  font-family: var(--font-sans), system-ui, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 0.95rem;
 }
 

@@ -15,7 +15,6 @@ const TABS = [
   { id: "t.vi", label: "Chữ trên web (Tiếng Việt)" },
   { id: "menu", label: "Menu" },
   { id: "events", label: "Sự kiện" },
-  { id: "press", label: "Báo chí" },
   { id: "gallery", label: "Gallery" },
   { id: "photos", label: "Ảnh trang chủ" },
 ] as const;
@@ -25,16 +24,16 @@ const COMMON: Record<string, string> = {
 };
 const LABELS: Record<string, Record<string, string>> = {
   site: {
-    name: "Tên quán", tagline: "Dòng phụ dưới tên quán", address: "Địa chỉ", hours: "Giờ mở cửa", zaloPhone: "Số Zalo (dùng cho nút đặt bàn)",
+    name: "Tên quán", tagline: "Dòng phụ dưới tên quán", address: "Địa chỉ", hours: "Giờ mở cửa", hotline: "Hotline (hiện cạnh nút đặt bàn)", zaloPhone: "Số Zalo (dùng cho nút đặt bàn)",
     instagram: "Link Instagram", facebook: "Link Facebook", messenger: "Link Messenger",
     mapEmbed: "Link nhúng Google Maps (để trống = tự tạo từ địa chỉ)",
   },
   t: {
-    nav: "Tên các mục trên thanh menu", story: "Câu chuyện", menu: "Menu", events: "Sự kiện", press: "Báo chí", gallery: "Gallery", contact: "Liên hệ", reserve: "Đặt bàn",
-    open: "Dòng “mở cửa” ở đầu trang", heroTitle: "Tiêu đề lớn trang chủ", heroSub: "Dòng mô tả trang chủ", cta: "Nút đặt bàn",
+    nav: "Tên các mục trên thanh menu", story: "Câu chuyện", menu: "Menu", events: "Sự kiện", gallery: "Gallery", contact: "Liên hệ", reserve: "Đặt bàn",
+    open: "Dòng “mở cửa” ở đầu trang", orCall: "Chữ “hoặc gọi”", hotline: "Nhãn “Hotline”", menuNote: "Ghi chú giá dưới Menu", holdNote: "Ghi chú giữ bàn (dùng {hotline})", heroTitle: "Tiêu đề lớn trang chủ", heroSub: "Dòng mô tả trang chủ", cta: "Nút đặt bàn",
     drinksTitle: "Tiêu đề mục đồ uống", eventsTitle: "Tiêu đề mục ưu đãi & sự kiện", nightsTitle: "Tiêu đề mục cuối trang chủ",
     storyTitle: "Tiêu đề trang Câu chuyện", storyBody: "Các đoạn nội dung Câu chuyện", menuTitle: "Tiêu đề trang Menu", eventsPage: "Tiêu đề trang Sự kiện",
-    pressTitle: "Tiêu đề trang Báo chí", galleryTitle: "Tiêu đề trang Gallery", contactTitle: "Tiêu đề trang Liên hệ", showMap: "Chữ “xem bản đồ”",
+    galleryTitle: "Tiêu đề trang Gallery", contactTitle: "Tiêu đề trang Liên hệ", showMap: "Chữ “xem bản đồ”",
     address: "Nhãn “Địa chỉ”", hours: "Nhãn “Giờ mở cửa”", follow: "Nhãn “Theo dõi”", rights: "Dòng bản quyền",
     reservation: "Trang đặt bàn", title: "Tiêu đề", name: "Nhãn họ tên", phone: "Nhãn số điện thoại", date: "Nhãn ngày", time: "Nhãn giờ", guests: "Nhãn số khách",
     note: "Nhãn ghi chú", submit: "Nút gửi", ok: "Thông báo thành công", zaloCta: "Nút Zalo", copy: "Nút copy", copied: "Chữ sau khi copy", zaloHint: "Hướng dẫn gửi Zalo",
@@ -42,7 +41,6 @@ const LABELS: Record<string, Record<string, string>> = {
   },
   menu: { cat: "Tên nhóm", items: "Các món", n: "Tên món", d: "Mô tả", p: "Giá (nghìn đồng, vd 180)" },
   events: { t: "Tên sự kiện", w: "Thời gian", d: "Mô tả" },
-  press: { s: "Tên báo", t: "Tiêu đề bài" },
   gallery: { src: "Ảnh", w: "Rộng (px)", h: "Cao (px)", alt: "Mô tả ảnh (cho người khiếm thị / SEO)" },
   photos: {
     hero: "Ảnh nền đầu trang chủ", story1: "Ảnh Câu chuyện 1", story2: "Ảnh Câu chuyện 2",
@@ -177,7 +175,7 @@ export default function Admin() {
     setMsg("Đang gửi tin thử…");
     const r = await fetch("/api/admin?telegram=test");
     const j = await r.json();
-    setMsg(j.ok ? "Đã gửi tin thử, kiểm tra Telegram." : `Telegram chưa hoạt động: ${j.error}`);
+    setMsg(j.ok ? `Đã gửi tin thử (${j.detail}). Kiểm tra điện thoại.` : `Chưa hoạt động: ${j.error}`);
   }
   async function del(id: string) {
     if (!confirm("Xoá đặt bàn này?")) return;
@@ -244,7 +242,7 @@ export default function Admin() {
         <div className="overflow-x-auto">
           <div className="mb-3 flex items-center gap-3 flex-wrap">
             <p className="text-muted">Tổng: {rows.length} yêu cầu đặt bàn</p>
-            <button className="btn" onClick={testTelegram}>Gửi tin thử Telegram</button>
+            <button className="btn" onClick={testTelegram}>Gửi tin thử thông báo</button>
             {msg && <span className="text-sm text-yellow-400">{msg}</span>}
           </div>
           <table className="w-full text-sm text-left">

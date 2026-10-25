@@ -14,12 +14,13 @@ export default async function Menu({ params }: { params: Promise<{ lang: string 
             {cat.items.map((i, ii) => (
               <li key={ii} className="py-4 flex justify-between gap-6">
                 <div><p>{i.n}</p><p className="text-sm text-muted font-sans">{i.d[lang]}</p></div>
-                <p className="text-gold whitespace-nowrap font-sans">{i.p}{/^\d+$/.test(i.p) ? "k" : ""}</p>
+                <p className="text-gold whitespace-nowrap font-sans">{i.p}</p>
               </li>
             ))}
           </ul>
         </div>
       ))}
+      <p className="text-sm text-muted font-sans">{c.t[lang].menuNote}</p>
     </section>
   );
 }

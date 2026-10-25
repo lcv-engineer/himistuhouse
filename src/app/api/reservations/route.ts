@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { readAll, writeAll, Reservation } from "@/lib/store";
-import { reservationText, sendTelegram } from "@/lib/telegram";
+import { notifyAll, reservationText } from "@/lib/telegram";
 
 export async function POST(req: Request) {
   const b = await req.json().catch(() => null);
@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     guests: Math.max(1, Math.min(100, Number(b.guests) || 2)), note: String(b.note || "").slice(0, 500), status: "new",
   };
   writeAll([row, ...readAll()]);
-  // Báo về Telegram; lỗi Telegram không làm hỏng việc đặt bàn.
-  await sendTelegram(reservationText(row));
+  // Báo về Telegram / WhatsApp; lỗi thông báo không làm hỏng việc đặt bàn.
+  await notifyAll(reservationText(row));
   return NextResponse.json({ ok: true });
 }

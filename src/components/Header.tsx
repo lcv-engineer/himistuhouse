@@ -5,7 +5,7 @@ import Logo from "./Logo";
 import { FacebookIcon, InstagramIcon, MessengerIcon, ZaloIcon } from "./Icons";
 import { Lang, Texts } from "@/lib/content";
 
-const KEYS = ["story", "menu", "events", "press", "gallery", "contact"] as const;
+const KEYS = ["story", "menu", "events", "gallery", "contact"] as const;
 
 type Links = { instagram: string; facebook: string; messenger: string; zalo: string };
 

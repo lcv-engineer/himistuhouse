@@ -7,28 +7,27 @@ type Bi = { vi: string; en: string };
 export type GalleryImage = { src: string; w: number; h: number; alt: Bi };
 
 export type Texts = {
-  nav: { story: string; menu: string; events: string; press: string; gallery: string; contact: string; reserve: string };
-  open: string; heroTitle: string; heroSub: string; cta: string;
+  nav: { story: string; menu: string; events: string; gallery: string; contact: string; reserve: string };
+  open: string; heroTitle: string; heroSub: string; cta: string; orCall: string; menuNote: string; hotline: string;
   drinksTitle: string; eventsTitle: string; nightsTitle: string;
   storyTitle: string; storyBody: string[];
-  menuTitle: string; eventsPage: string; pressTitle: string; galleryTitle: string; contactTitle: string;
+  menuTitle: string; eventsPage: string; galleryTitle: string; contactTitle: string;
   showMap: string; address: string; hours: string; follow: string; rights: string;
   reservation: {
     title: string; name: string; phone: string; date: string; time: string; guests: string; note: string; submit: string;
-    ok: string; zaloCta: string; copy: string; copied: string; zaloHint: string; err: string;
+    ok: string; zaloCta: string; copy: string; copied: string; zaloHint: string; err: string; holdNote: string;
     msgTpl: string; noteTpl: string;
   };
 };
 
 export type Content = {
   site: {
-    name: string; tagline: string; address: string; hours: string; zaloPhone: string;
+    name: string; tagline: string; address: string; hours: string; hotline: string; zaloPhone: string;
     instagram: string; facebook: string; messenger: string; mapEmbed: string;
   };
   t: Record<Lang, Texts>;
   menu: { cat: Bi; items: { n: string; d: Bi; p: string }[] }[];
   events: { t: Bi; w: Bi; d: Bi }[];
-  press: { s: string; t: Bi }[];
   gallery: GalleryImage[];
   photos: { hero: string; story1: string; story2: string; drinks: string[]; events: string[] };
 };
@@ -41,7 +40,8 @@ export const DEFAULTS: Content = {
     name: "Himitsu",
     tagline: "house of cocktail",
     address: "154 Bis Tran Quang Khai, Tan Dinh Ward, Ho Chi Minh City",
-    hours: "17:00 – 02:00",
+    hours: "5PM – 1AM",
+    hotline: "096 318 14 79",
     zaloPhone: "0363561805",
     instagram: "https://www.instagram.com/",
     facebook: "https://www.facebook.com/himistuhouse",
@@ -50,8 +50,11 @@ export const DEFAULTS: Content = {
   },
   t: {
     vi: {
-      nav: { story: "Câu chuyện", menu: "Menu", events: "Sự kiện", press: "Báo chí", gallery: "Gallery", contact: "Liên hệ", reserve: "Đặt bàn" },
-      open: "Mở cửa mỗi ngày",
+      nav: { story: "Câu chuyện", menu: "Menu", events: "Sự kiện", gallery: "Gallery", contact: "Liên hệ", reserve: "Đặt bàn" },
+      open: "Mỗi ngày, Himitsu mở cửa lúc 5PM",
+      orCall: "hoặc gọi",
+      hotline: "Hotline",
+      menuNote: "Giá menu tính theo ’000 VND – Chưa bao gồm thuế và phí dịch vụ",
       heroTitle: "Bí mật nằm sau cánh cửa",
       heroSub: "Quầy bar cocktail kín đáo giữa lòng Sài Gòn.",
       cta: "Đặt bàn ngay",
@@ -66,7 +69,6 @@ export const DEFAULTS: Content = {
       ],
       menuTitle: "Menu",
       eventsPage: "Sự kiện",
-      pressTitle: "Báo chí nói về Himitsu",
       galleryTitle: "Gallery",
       contactTitle: "Liên hệ",
       showMap: "Xem bản đồ",
@@ -83,11 +85,15 @@ export const DEFAULTS: Content = {
         msgTpl: "Chào Himitsu, mình là {name} (SĐT/Zalo {phone}). Mình muốn đặt bàn {guests} khách vào {time} ngày {date}.{note}",
         noteTpl: " Ghi chú: {note}",
         err: "Có lỗi xảy ra, vui lòng thử lại.",
+        holdNote: "Chúng tôi sẽ giữ bàn trong vòng 30 phút sau thời gian đặt. Nếu có thay đổi, vui lòng gọi hotline {hotline}.",
       },
     },
     en: {
-      nav: { story: "Our Story", menu: "Menu", events: "Events", press: "Press", gallery: "Gallery", contact: "Contact", reserve: "Reserve" },
-      open: "Open every day",
+      nav: { story: "Our Story", menu: "Menu", events: "Events", gallery: "Gallery", contact: "Contact", reserve: "Reserve" },
+      open: "Everyday, Himitsu open at 5PM",
+      orCall: "or call",
+      hotline: "Hotline",
+      menuNote: "Menu price is in ’000 VND – Tax and service charges are not included",
       heroTitle: "A secret behind the door",
       heroSub: "A hidden cocktail bar in the heart of Saigon.",
       cta: "Reserve a table",
@@ -102,7 +108,6 @@ export const DEFAULTS: Content = {
       ],
       menuTitle: "Menu",
       eventsPage: "Events",
-      pressTitle: "Press about Himitsu",
       galleryTitle: "Gallery",
       contactTitle: "Contact",
       showMap: "Show map",
@@ -119,6 +124,7 @@ export const DEFAULTS: Content = {
         msgTpl: "Hi Himitsu, this is {name} (phone/Zalo {phone}). I would like to book a table for {guests} at {time} on {date}.{note}",
         noteTpl: " Notes: {note}",
         err: "Something went wrong, please try again.",
+        holdNote: "We will hold your table for 30 minutes after your booking time. If anything changes, please call our hotline {hotline}.",
       },
     },
   },
@@ -138,16 +144,18 @@ export const DEFAULTS: Content = {
       { n: "Yuzu Fizz", d: { vi: "Yuzu, mật ong, soda", en: "Yuzu, honey, soda" }, p: "100" },
       { n: "Jasmine Tonic", d: { vi: "Trà lài, tonic, chanh", en: "Jasmine tea, tonic, lime" }, p: "100" },
     ]},
+    { cat: { vi: "Bar Bites", en: "Bar Bites" }, items: [
+      { n: "Charcuterie platter", d: { vi: "Ham, mortadella, salami, ô-liu, brie, elemental, mơ khô", en: "Ham, mortadella, salami, olives, brie, elemental, apricots" }, p: "300" },
+      { n: "Tipsy Bites", d: { vi: "Ô-liu, cà chua, ớt bột hun khói", en: "Mixed olives, sunrise tomato, smoked paprika" }, p: "120" },
+      { n: "Salt & Smoke", d: { vi: "Thịt muối, ô-liu, cà chua, ớt bột hun khói", en: "Cured meat, mixed olives, sunrise tomato, smoked paprika" }, p: "160" },
+      { n: "Sweet & Salt", d: { vi: "Prosciutto, xoài, húng quế, balsamic", en: "Prosciutto, mango, basil, balsamic" }, p: "160" },
+      { n: "Housemade raisin butter", d: { vi: "Nho khô, mận, óc chó, nam việt quất, phô mai kem, bơ", en: "Raisin, plum, walnut, dried cranberry, cream cheese, butter" }, p: "180" },
+    ]},
   ],
   events: [
     { t: { vi: "Jazz Night", en: "Jazz Night" }, w: { vi: "Thứ Sáu hàng tuần · 20:00", en: "Every Friday · 20:00" }, d: { vi: "Nhạc jazz sống cùng cocktail theo mùa.", en: "Live jazz with seasonal cocktails." } },
     { t: { vi: "Masterclass cocktail", en: "Cocktail masterclass" }, w: { vi: "Chủ Nhật · 16:00", en: "Sundays · 16:00" }, d: { vi: "Học pha chế cùng bartender của Himitsu.", en: "Learn to mix with our bartenders." } },
     { t: { vi: "Sự kiện riêng", en: "Private events" }, w: { vi: "Theo yêu cầu", en: "On request" }, d: { vi: "Sinh nhật, tiệc công ty, ra mắt sản phẩm.", en: "Birthdays, corporate parties, launches." } },
-  ],
-  press: [
-    { s: "Saigoneer", t: { vi: "Những quầy bar ẩn mình đáng ghé ở Sài Gòn", en: "Hidden bars worth finding in Saigon" } },
-    { s: "Time Out Vietnam", t: { vi: "Cocktail bar nên thử năm nay", en: "Cocktail bars to try this year" } },
-    { s: "Foody", t: { vi: "Himitsu – bí mật giữa phố", en: "Himitsu – a secret in the city" } },
   ],
   gallery: [
     P("g253", 1400, 933, "Mặt tiền Himitsu về đêm", "Himitsu storefront at night"),
@@ -183,5 +191,6 @@ export const DEFAULTS: Content = {
 };
 
 export const zaloUrl = (site: Content["site"]) => (site.zaloPhone ? `https://zalo.me/${site.zaloPhone.replace(/\s+/g, "")}` : "https://zalo.me/");
+export const telHref = (site: Content["site"]) => `tel:${site.hotline.replace(/[^\d+]/g, "")}`;
 export const mapSrc = (site: Content["site"]) =>
   site.mapEmbed || `https://www.google.com/maps?q=${encodeURIComponent(site.address)}&output=embed`;

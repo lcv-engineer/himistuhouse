@@ -2,7 +2,13 @@
 import { useState } from "react";
 import { Texts } from "@/lib/content";
 
-export default function ReservationForm({ r, zalo }: { r: Texts["reservation"]; zalo: string }) {
+export default function ReservationForm({ r, zalo, hotline, tel }: { r: Texts["reservation"]; zalo: string; hotline: string; tel: string }) {
+  const [holdBefore, holdAfter = ""] = r.holdNote.split("{hotline}");
+  const hold = (
+    <p className="text-sm text-muted">
+      {holdBefore}<a href={tel} className="text-fg underline">{hotline}</a>{holdAfter}
+    </p>
+  );
   const [state, setState] = useState<"idle" | "sending" | "ok" | "err">("idle");
   const [message, setMessage] = useState("");
   const [copied, setCopied] = useState(false);
@@ -55,6 +61,7 @@ export default function ReservationForm({ r, zalo }: { r: Texts["reservation"]; 
           <label className={label}>{r.guests}<input name="guests" type="number" min={1} defaultValue={2} className={input} /></label>
         </div>
         <label className={label}>{r.note}<textarea name="note" rows={3} className={input} /></label>
+        {hold}
         <button disabled={state === "sending"} className="bg-gold text-bg py-3 uppercase tracking-widest text-sm hover:brightness-110 transition disabled:opacity-60">
           {r.submit}
         </button>
@@ -63,6 +70,7 @@ export default function ReservationForm({ r, zalo }: { r: Texts["reservation"]; 
       {state === "ok" && (
         <div role="status" className="mt-6 border border-gold/40 bg-card p-4 space-y-3">
           <p className="text-green-400">{r.ok}</p>
+          {hold}
           <p className="text-sm text-muted">{r.zaloHint}</p>
           <p className="text-sm whitespace-pre-wrap border border-white/10 p-3">{message}</p>
           <div className="flex flex-wrap gap-3">

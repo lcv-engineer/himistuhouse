@@ -27,6 +27,33 @@ export async function sendTelegram(text: string): Promise<{ ok: boolean; error?:
   }
 }
 
+// WhatsApp qua CallMeBot (dịch vụ bên thứ ba, không chính thức). Cấu hình trong .env.local:
+// WHATSAPP_PHONE (số của bạn, có mã nước, vd 84363561805) và CALLMEBOT_APIKEY. Thiếu => bỏ qua.
+export const whatsappEnabled = () => Boolean(process.env.WHATSAPP_PHONE && process.env.CALLMEBOT_APIKEY);
+
+export async function sendWhatsapp(text: string): Promise<{ ok: boolean; error?: string }> {
+  const phone = process.env.WHATSAPP_PHONE?.replace(/[^\d]/g, "");
+  const apikey = process.env.CALLMEBOT_APIKEY;
+  if (!phone || !apikey) return { ok: false, error: "chưa cấu hình WHATSAPP_PHONE / CALLMEBOT_APIKEY" };
+  try {
+    const url = `https://api.callmebot.com/whatsapp.php?phone=${phone}&text=${encodeURIComponent(text)}&apikey=${encodeURIComponent(apikey)}`;
+    const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
+    if (!res.ok) return { ok: false, error: `CallMeBot trả về ${res.status}` };
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
+  }
+}
+
+// Gửi thông báo qua mọi kênh đã cấu hình; lỗi một kênh không ảnh hưởng kênh khác.
+export async function notifyAll(text: string) {
+  const [tg, wa] = await Promise.all([
+    telegramEnabled() ? sendTelegram(text) : Promise.resolve(null),
+    whatsappEnabled() ? sendWhatsapp(text) : Promise.resolve(null),
+  ]);
+  return { telegram: tg, whatsapp: wa };
+}
+
 export function reservationText(r: Reservation) {
   const zalo = `https://zalo.me/${r.phone.replace(/[^\d+]/g, "")}`;
   return [
