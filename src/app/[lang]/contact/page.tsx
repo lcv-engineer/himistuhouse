@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { FacebookIcon, InstagramIcon, MessengerIcon, ZaloIcon } from "@/components/Icons";
 import PrivateHire from "@/components/PrivateHire";
-import { Lang, zaloUrl, mapSrc, telHref } from "@/lib/content";
+import { zaloUrl, mapSrc, telHref } from "@/lib/content";
+import { getLang } from "@/lib/lang";
 import { getContent } from "@/lib/content-server";
 
 export default async function Contact({ params }: { params: Promise<{ lang: string }> }) {
-  const lang = (await params).lang as Lang;
+  const lang = await getLang(params);
   const c = await getContent();
   const t = c.t[lang];
   const s = c.site;

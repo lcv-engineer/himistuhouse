@@ -1,9 +1,10 @@
 import ReservationForm from "@/components/ReservationForm";
-import { Lang, zaloUrl, telHref } from "@/lib/content";
+import { zaloUrl, telHref } from "@/lib/content";
+import { getLang } from "@/lib/lang";
 import { getContent } from "@/lib/content-server";
 
 export default async function Reservation({ params }: { params: Promise<{ lang: string }> }) {
-  const lang = (await params).lang as Lang;
+  const lang = await getLang(params);
   const c = await getContent();
   const r = c.t[lang].reservation;
   return (

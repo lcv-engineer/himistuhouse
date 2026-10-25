@@ -1,9 +1,9 @@
 import Image from "next/image";
-import { Lang } from "@/lib/content";
+import { getLang } from "@/lib/lang";
 import { getContent } from "@/lib/content-server";
 
 export default async function Events({ params }: { params: Promise<{ lang: string }> }) {
-  const lang = (await params).lang as Lang;
+  const lang = await getLang(params);
   const c = await getContent();
   const x = c.t[lang].x;
   return (

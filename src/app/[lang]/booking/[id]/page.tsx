@@ -1,10 +1,11 @@
 import BookingStatus from "@/components/BookingStatus";
-import { Lang, zaloUrl, telHref } from "@/lib/content";
+import { zaloUrl, telHref } from "@/lib/content";
+import { getLang } from "@/lib/lang";
 import { getContent } from "@/lib/content-server";
 
 export default async function Booking({ params }: { params: Promise<{ lang: string; id: string }> }) {
-  const { lang: l, id } = await params;
-  const lang = l as Lang;
+  const { id } = await params;
+  const lang = await getLang(params);
   const c = await getContent();
   const t = c.t[lang];
   return (

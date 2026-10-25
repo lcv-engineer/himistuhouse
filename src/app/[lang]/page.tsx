@@ -1,13 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import Reveal from "@/components/Reveal";
-import { Lang, telHref } from "@/lib/content";
+import { telHref } from "@/lib/content";
+import { getLang } from "@/lib/lang";
 import { getContent } from "@/lib/content-server";
 
 const d = (s: number) => ({ "--d": `${s}s` }) as React.CSSProperties;
 
 export default async function Home({ params }: { params: Promise<{ lang: string }> }) {
-  const lang = (await params).lang as Lang;
+  const lang = await getLang(params);
   const c = await getContent();
   const t = c.t[lang];
   const x = t.x;
