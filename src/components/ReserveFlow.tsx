@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { Stepper } from "./EventRsvp";
+import { Burst } from "./fx";
 import { CalendarIcon, PinIcon } from "./Icons";
 import type { Hours, Lang } from "@/lib/content";
 import { DICT, fill } from "@/lib/i18n";
@@ -103,6 +104,7 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, a
     const tags = [t.areas[f.area]].filter(Boolean);
     return (
       <div className="fx-up">
+        <Burst />
         <h2 className="serif text-4xl md:text-5xl leading-tight">
           {fill(t.seeYou, { d: fmtDate(date, lang, { weekday: "long" }), t: fmt12(time) })}<br />{t.saved}
         </h2>

@@ -134,6 +134,49 @@ input.field:-webkit-autofill { -webkit-box-shadow: 0 0 0 40px #2a3240 inset; -we
 .glare { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .5s; mix-blend-mode: soft-light;
   background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgb(255 255 255 / .55), transparent 55%); }
 .tilt:hover .glare { opacity: 1; }
+/* Ánh hologram cầu vồng chạy theo góc nghiêng thẻ */
+.holo { position: absolute; inset: 0; pointer-events: none; opacity: 0; mix-blend-mode: color-dodge; transition: opacity .5s;
+  background: repeating-linear-gradient(115deg, hsl(0 100% 70% / 0) 0%, hsl(35 100% 65% / .55) 7%, hsl(150 100% 65% / .45) 14%, hsl(210 100% 70% / .5) 21%, hsl(290 100% 70% / .45) 28%, hsl(0 100% 70% / 0) 36%);
+  background-size: 260% 260%; background-position: var(--gx, 50%) var(--gy, 50%); filter: saturate(1.4); }
+.tilt:hover .holo { opacity: .5; }
+
+/* Chữ bật sáng như biển đèn neon: chớp vài nhịp rồi sáng hẳn, thỉnh thoảng nháy nhẹ */
+.neon { --glow: 0 0 4px #fff4e4, 0 0 14px rgb(255 196 130 / .85), 0 0 34px rgb(255 120 80 / .55), 0 0 72px rgb(200 53 59 / .5); }
+.rv.in .neon { animation: neonOn 1.9s linear 1s both, neonHum 8s linear 3.2s infinite; }
+@keyframes neonOn {
+  0% { text-shadow: none; color: rgb(243 240 234 / .6); }
+  6%, 14%, 30% { text-shadow: var(--glow); color: #fff8ef; }
+  9%, 22%, 33% { text-shadow: none; color: rgb(243 240 234 / .6); }
+  45%, 100% { text-shadow: var(--glow); color: #fff8ef; }
+}
+@keyframes neonHum { 0%, 90%, 92%, 95%, 100% { text-shadow: var(--glow); } 91%, 94% { text-shadow: 0 0 3px #fff4e4, 0 0 8px rgb(255 196 130 / .5); } }
+
+/* Menu đọc dưới ánh nến: quầng sáng đi theo con trỏ, tên món ấm lên khi rê qua */
+.spot { position: relative; }
+.menu-light::before { content: ""; display: none; position: absolute; left: var(--mx, 50%); top: var(--my, 50%); z-index: 1; width: 36rem; height: 36rem; margin: -18rem 0 0 -18rem; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(closest-side, rgb(255 196 130 / .16), rgb(255 150 80 / .05) 55%, transparent); mix-blend-mode: screen; opacity: 0; transition: opacity .6s; }
+.menu-light[data-lit]::before { opacity: 1; }
+@media (pointer: fine) { .menu-light::before { display: block; } }
+/* Quầng sáng rộng hơn cột menu: cắt phần thừa theo chiều ngang để trang không bị tràn trên màn hẹp. */
+.menu-light { overflow-x: clip; }
+.menu-row { transition: transform .5s cubic-bezier(.2,.7,.2,1); }
+.menu-row .serif { transition: color .4s, text-shadow .4s; }
+@media (pointer: fine) {
+  .menu-row:hover { transform: translateX(10px); }
+  .menu-row:hover .serif { color: #ffe2bd; text-shadow: 0 0 18px rgb(255 180 110 / .45); }
+}
+.float-pic { position: absolute; left: 0; top: 0; z-index: 5; width: 13rem; aspect-ratio: 4 / 5; object-fit: cover; pointer-events: none; opacity: 0; scale: .6;
+  box-shadow: 0 30px 60px rgb(0 0 0 / .55), 0 0 0 1px rgb(255 255 255 / .08); transition: opacity .35s, scale .5s cubic-bezier(.2,.7,.2,1); }
+.float-pic[data-on="1"] { opacity: 1; scale: 1; }
+
+/* Logo lớn chân trang: bản vàng chỉ hiện trong quầng sáng quanh con trỏ; điện thoại thì quầng sáng tự quét qua lại */
+@property --sx { syntax: "<percentage>"; inherits: false; initial-value: -30%; }
+.foot-logo.foot-lit { opacity: 0; filter: drop-shadow(0 0 16px rgb(255 190 120 / .55)) saturate(1.2); transition: opacity .6s, transform 1.6s cubic-bezier(.2,.7,.2,1);
+  -webkit-mask-image: radial-gradient(circle 15rem at var(--mx, var(--sx)) var(--my, 50%), #000, rgb(0 0 0 / .45) 40%, transparent 72%);
+  mask-image: radial-gradient(circle 15rem at var(--mx, var(--sx)) var(--my, 50%), #000, rgb(0 0 0 / .45) 40%, transparent 72%); }
+.foot-spot[data-lit] .foot-lit { opacity: 1; }
+@media (pointer: coarse) { .foot-logo.foot-lit { opacity: .85; animation: sweep 7s ease-in-out infinite alternate; } }
+@keyframes sweep { to { --sx: 130%; } }
 
 .img-zoom { overflow: hidden; }
 .img-zoom img { transition: transform 1.2s cubic-bezier(.2,.7,.2,1); }
@@ -250,13 +293,20 @@ input.field:-webkit-autofill { -webkit-box-shadow: 0 0 0 40px #2a3240 inset; -we
 .cursor-ring[data-mode="label"] > span { width: 92px; height: 92px; background: var(--red); border-color: var(--red); font-size: .68rem; }
 .cursor-ring[data-mode="hide"] > span, .cursor-dot[data-mode="hide"] { opacity: 0; }
 .cursor-ring.press > span { scale: .82; }
+/* Vệt bụi sao theo con trỏ */
+.trail { position: fixed; inset: 0; z-index: 94; width: 100%; height: 100%; pointer-events: none; display: none; }
+.has-cursor .trail { display: block; }
+/* Bụi sao nổ khi đặt bàn thành công */
+.burst { position: fixed; inset: 0; z-index: 80; width: 100vw; height: 100vh; pointer-events: none; }
 
 
 /* Hàng ảnh lướt ngang (Khoảnh khắc) */
 .hscroll { display: flex; gap: .75rem; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
 .hscroll::-webkit-scrollbar { display: none; }
 .hscroll > * { flex: 0 0 auto; scroll-snap-align: start; }
-.hscroll .slide { transform: skewX(var(--skew, 0deg)); transition: transform .4s cubic-bezier(.2,.7,.2,1); user-select: none; }
+/* Màn cong: JS đặt --ry (xoay), --sc (thu nhỏ), --br (độ sáng) theo vị trí từng ảnh so với giữa khung */
+.hscroll .slide { transform: perspective(1400px) rotateY(var(--ry, 0deg)) scale(var(--sc, 1)) skewX(var(--skew, 0deg)); filter: brightness(var(--br, 1));
+  transition: transform .45s cubic-bezier(.2,.7,.2,1), filter .45s; user-select: none; }
 .hscroll.dragging { scroll-snap-type: none; }
 .hscroll.dragging .slide { transition: none; }
 
@@ -317,6 +367,7 @@ a:hover .roll > span, a:hover .roll::after { transform: translateY(-100%); }
   .rv, .rv:not(.in), .rv .mask-up > span, .split .w > span, .stagger > *, .wipe img, .foot-logo { opacity: 1 !important; transform: none !important; }
   .foot-logo { opacity: .07 !important; }
   .wipe, .rv:not(.in) .wipe, .logo-in { clip-path: none !important; filter: none !important; }
-  .curtain, .hero-light, .hero-motes { display: none; }
+  .curtain, .hero-light, .hero-motes, .trail, .burst, .foot-lit, .float-pic, .holo { display: none !important; }
+  .rv.in .neon { animation: none; text-shadow: var(--glow); }
   body::after { animation: none; }
 }

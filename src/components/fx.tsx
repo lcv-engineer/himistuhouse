@@ -1,6 +1,8 @@
 "use client";
-// Các hiệu ứng phía client: thẻ nghiêng, hero (đèn soi + đốm sáng), số chạy, ảnh trôi, hàng ảnh kéo ngang.
+// Các hiệu ứng phía client: thẻ nghiêng, hero (đèn soi + đốm sáng), số chạy, ảnh trôi, hàng ảnh kéo ngang (màn cong 3D),
+// quầng sáng theo con trỏ (kèm ảnh bay theo), bụi sao nổ chúc mừng.
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { ArrowIcon } from "./Icons";
 
 const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -204,6 +206,31 @@ export function Slider({ children, prev, next, drag }: { children: React.ReactNo
     if (el) el.scrollBy({ left: d * el.clientWidth * 0.8, behavior: "smooth" });
   };
 
+  // Màn cong: ảnh càng xa giữa khung càng xoay nghiêng vào trong, nhỏ và tối đi một chút.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || reduced()) return;
+    let raf = 0;
+    const bend = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const box = el.getBoundingClientRect();
+        const mid = box.left + box.width / 2;
+        for (const c of el.children as HTMLCollectionOf<HTMLElement>) {
+          const r = c.getBoundingClientRect();
+          const d = Math.max(-1.2, Math.min(1.2, (r.left + r.width / 2 - mid) / (box.width / 2)));
+          c.style.setProperty("--ry", `${(-d * 12).toFixed(2)}deg`);
+          c.style.setProperty("--sc", (1 - Math.abs(d) * 0.07).toFixed(3));
+          c.style.setProperty("--br", (1 - Math.min(1, Math.abs(d)) * 0.35).toFixed(3));
+        }
+      });
+    };
+    bend();
+    el.addEventListener("scroll", bend, { passive: true });
+    addEventListener("resize", bend);
+    return () => { el.removeEventListener("scroll", bend); removeEventListener("resize", bend); cancelAnimationFrame(raf); };
+  }, []);
+
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
@@ -255,5 +282,115 @@ export function Slider({ children, prev, next, drag }: { children: React.ReactNo
         <button type="button" aria-label={next} onClick={() => go(1)} className="btn btn-ghost !p-3"><ArrowIcon className="w-4 h-4" /></button>
       </div>
     </div>
+  );
+}
+
+/**
+ * Quầng sáng đi theo con trỏ trong một vùng (đặt --mx, --my và data-lit lên vùng đó).
+ * preview: phần tử con có data-img thì hiện ảnh đó bay theo con trỏ, nghiêng theo hướng chuột đi.
+ */
+export function Spot({ children, className = "", preview = false }: { children: React.ReactNode; className?: string; preview?: boolean }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const pic = useRef<HTMLImageElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !matchMedia("(pointer: fine)").matches || reduced()) return;
+    let x = 0, y = 0, px = 0, py = 0, vx = 0, raf = 0, src = "";
+    const loop = () => {
+      px += (x - px) * 0.14; py += (y - py) * 0.14;
+      vx = vx * 0.85 + (x - px) * 0.15;
+      if (pic.current) pic.current.style.transform = `translate3d(${px + 28}px, ${py - 90}px, 0) rotate(${Math.max(-14, Math.min(14, vx * 0.35)).toFixed(2)}deg)`;
+      raf = requestAnimationFrame(loop);
+    };
+    const move = (e: PointerEvent) => {
+      const b = el.getBoundingClientRect();
+      el.style.setProperty("--mx", `${e.clientX - b.left}px`);
+      el.style.setProperty("--my", `${e.clientY - b.top}px`);
+      el.dataset.lit = "1";
+      if (!preview || !pic.current) return;
+      // Ảnh định vị tuyệt đối trong vùng này: <main> có transform nên position: fixed sẽ bị lệch.
+      x = e.clientX - b.left; y = e.clientY - b.top;
+      const next = (e.target as Element).closest<HTMLElement>("[data-img]")?.dataset.img ?? "";
+      if (next !== src) {
+        src = next;
+        if (src) { pic.current.src = src; if (!raf) { px = x; py = y; raf = requestAnimationFrame(loop); } }
+        pic.current.dataset.on = src ? "1" : "";
+      }
+    };
+    const leave = () => {
+      delete el.dataset.lit;
+      src = "";
+      if (pic.current) pic.current.dataset.on = "";
+    };
+    el.addEventListener("pointermove", move);
+    el.addEventListener("pointerleave", leave);
+    return () => { el.removeEventListener("pointermove", move); el.removeEventListener("pointerleave", leave); cancelAnimationFrame(raf); };
+  }, [preview]);
+  return (
+    <div ref={ref} className={`spot ${className}`}>
+      {children}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      {preview && <img ref={pic} alt="" className="float-pic" aria-hidden="true" />}
+    </div>
+  );
+}
+
+type Spark = { x: number; y: number; vx: number; vy: number; life: number; max: number; size: number; hue: number };
+
+/** Bụi sao vàng nổ tung từ chỗ đặt component rồi rơi xuống – dùng khi đặt bàn thành công. */
+export function Burst() {
+  const ref = useRef<HTMLCanvasElement>(null);
+  const anchor = useRef<HTMLSpanElement>(null);
+  const [gone, setGone] = useState(false);
+  useEffect(() => {
+    const c = ref.current;
+    const host = anchor.current?.parentElement;
+    if (!c || !host || reduced()) return;
+    const ctx = c.getContext("2d")!;
+    const dpr = Math.min(devicePixelRatio || 1, 1.5);
+    const W = innerWidth, H = innerHeight;
+    c.width = W * dpr; c.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    // Chờ trang cuộn mượt lên đầu (ReserveFlow gọi scrollTo) rồi mới lấy vị trí điểm nổ.
+    let raf = 0, last = 0, ox = 0, oy = 0;
+    const n = W < 768 ? 140 : 260;
+    let sparks: Spark[] = [];
+    const make = () => Array.from({ length: n }, (): Spark => {
+      const a = Math.random() * Math.PI * 2, sp = 2 + Math.random() ** 0.6 * 11;
+      return { x: ox, y: oy, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 3, life: 0, max: 1300 + Math.random() * 1200, size: 1 + Math.random() * 2.2, hue: Math.random() < 0.15 ? 356 : 34 + Math.random() * 16 };
+    });
+    const tick = (now: number) => {
+      const dt = Math.min(40, now - last); last = now;
+      ctx.globalCompositeOperation = "destination-out";
+      ctx.fillStyle = "rgba(0,0,0,.3)"; ctx.fillRect(0, 0, W, H);
+      ctx.globalCompositeOperation = "lighter";
+      let alive = 0;
+      for (const p of sparks) {
+        p.life += dt;
+        if (p.life > p.max) continue;
+        alive++;
+        p.x += p.vx; p.y += p.vy; p.vx *= 0.97; p.vy = p.vy * 0.97 + 0.16;
+        const k = 1 - p.life / p.max;
+        // Lấp lánh: độ sáng dao động nhanh.
+        ctx.globalAlpha = k * (0.55 + 0.45 * Math.sin(p.life / 40 + p.size * 9));
+        ctx.fillStyle = `hsl(${p.hue} 95% 72%)`;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.size * (0.5 + k), 0, 6.283); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      if (alive) raf = requestAnimationFrame(tick); else setGone(true);
+    };
+    const t = window.setTimeout(() => {
+      const b = host.getBoundingClientRect();
+      ox = b.left + Math.min(b.width, 520) / 2; oy = Math.max(80, b.top + 60);
+      sparks = make(); last = performance.now();
+      raf = requestAnimationFrame(tick);
+    }, 550);
+    return () => { clearTimeout(t); cancelAnimationFrame(raf); };
+  }, []);
+  // Canvas gắn thẳng vào <body>: <main> có transform nên position: fixed bên trong sẽ bị lệch.
+  return (
+    <>
+      <span ref={anchor} hidden />
+      {!gone && createPortal(<canvas ref={ref} className="burst" aria-hidden="true" />, document.body)}
+    </>
   );
 }

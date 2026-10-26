@@ -92,6 +92,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
                 <Tilt className="group">
                   <div className="wipe relative aspect-[4/5] overflow-hidden bg-card img-zoom">
                     {it.image && <Image src={it.image} alt={it.name} fill sizes="(min-width:1024px) 300px, 50vw" className="object-cover" />}
+                    <span className="holo" />
                     <span className="glare" />
                   </div>
                   <h3 className="serif text-xl md:text-2xl mt-5 tracking-tight"><span className="card-name">{it.name}</span></h3>
@@ -104,6 +105,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
                 <Tilt>
                   <div className="wipe relative aspect-[4/5] overflow-hidden bg-card img-zoom">
                     <Image src={src} alt="" fill sizes="(min-width:1024px) 300px, 50vw" className="object-cover" />
+                    <span className="holo" />
                     <span className="glare" />
                   </div>
                 </Tilt>
@@ -207,7 +209,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
         <Wrap className="w-full py-24 md:py-40 text-center">
           <Reveal>
             <p className="eyebrow">{fill(t.openDaily, { t: fmt12(c.hours.find((h) => !h.closed)?.open ?? "17:00") })}</p>
-            <h2 className="split serif display text-[3.2rem] md:text-8xl lg:text-9xl mt-8" aria-label={t.closingTitle}><span aria-hidden="true"><Split text={t.closingTitle} /></span></h2>
+            <h2 className="split neon serif display text-[3.2rem] md:text-8xl lg:text-9xl mt-8" aria-label={t.closingTitle}><span aria-hidden="true"><Split text={t.closingTitle} /></span></h2>
             <p className="text-lg text-fg/85 mt-8 max-w-md mx-auto">{t.closingSub}</p>
             <div className="mt-12 flex flex-wrap justify-center gap-3">
               <Link href={`/${lang}/reservation`} className="btn btn-solid">{t.nav.reserve}</Link>
