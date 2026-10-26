@@ -39,11 +39,10 @@ export default async function Events({ params }: { params: Promise<{ lang: strin
   const past = pub.filter((e) => e.date < today).sort((a, b) => b.date.localeCompare(a.date));
   return (
     <>
-      <PageHead eyebrow={t.eventsEyebrow} title={t.eventsTitle} />
+      <PageHead title={t.eventsEyebrow} />
       <Wrap className="py-20">
-        <p className="eyebrow text-fg/80 mb-10">{t.comingUp}</p>
-        {upcoming.length ? (
-          <div className="space-y-16">
+        {upcoming.length > 0 && (
+          <div className="space-y-16 mb-16">
             {upcoming.map((e) => (
               <Reveal key={e.id} className="grid gap-8 md:grid-cols-[minmax(0,520px)_1fr] items-start">
                 {e.image && <div className="relative aspect-[3/2] overflow-hidden img-zoom"><Image src={e.image} alt={e.title[lang]} fill sizes="(min-width:768px) 520px, 100vw" className="object-cover" /></div>}
@@ -59,14 +58,17 @@ export default async function Events({ params }: { params: Promise<{ lang: strin
               </Reveal>
             ))}
           </div>
-        ) : (
-          <p className="text-lg text-fg/80">{fill(t.noUpcoming, { h: s.handle })} <a href={s.instagram} target="_blank" rel="noopener noreferrer" className="link">@{s.handle} →</a></p>
         )}
+
+        {/* Khung theo dõi Instagram luôn hiện, dù có hay chưa có sự kiện mới. */}
+        <div className="border border-line bg-card p-8 md:p-10 max-w-xl">
+          <p className="text-lg text-fg/85 leading-relaxed">{fill(upcoming.length ? t.followNext : t.noUpcoming, { h: s.handle })}</p>
+          <a href={s.instagram} target="_blank" rel="noopener noreferrer" className="link inline-block mt-6">@{s.handle} →</a>
+        </div>
 
         {past.length > 0 && (
           <>
-            <p className="eyebrow text-fg/80 mt-28 mb-10">{t.past}</p>
-            <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-24 grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
               {past.map((e) => (
                 <Reveal key={e.id}>
                   {e.image && <div className="relative aspect-[3/2] overflow-hidden"><Image src={e.image} alt={e.title[lang]} fill sizes="400px" className="object-cover opacity-80" /></div>}

@@ -18,12 +18,10 @@ export default function Footer({ lang, c }: { lang: Lang; c: Content }) {
   ].filter((x) => x.href);
   return (
     <footer className="border-t border-line bg-bg2 mt-24">
-      <div className="mx-auto max-w-[80rem] px-4 md:px-10 py-16 grid gap-12 md:grid-cols-3">
-        <div>
-          <Logo height={64} />
-          <p className="serif text-2xl mt-8">{t.footerLine}</p>
-        </div>
+      <div className="mx-auto max-w-[80rem] px-4 md:px-10 py-16 grid gap-12 md:grid-cols-[2fr_1fr]">
+        {/* Thông tin ghé thăm nằm thẳng hàng dưới logo */}
         <div className="space-y-8">
+          <Logo height={64} />
           <div>
             <p className="eyebrow text-muted mb-3">{t.visit}</p>
             <a href={s.mapsUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 font-medium hover:opacity-75">{s.address[lang]}</a>
@@ -52,7 +50,7 @@ export default function Footer({ lang, c }: { lang: Lang; c: Content }) {
               <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className="hover:opacity-70"><I className="w-6 h-6" /></a>
             ))}
           </div>
-          <Link href={`/${lang}/policies`} className="link inline-block mt-8">{t.policies}</Link>
+          <Link href={`/${lang}/reservation`} className="btn btn-solid mt-10">{t.nav.reserve}</Link>
         </div>
       </div>
     </footer>

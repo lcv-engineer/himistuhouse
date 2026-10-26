@@ -26,3 +26,4 @@ export const KeyIcon = (p: P) => <S {...p}><circle cx="8" cy="15.5" r="3.5" /><p
 export const PageIcon = (p: P) => <S {...p}><path d="M6 3.5h8l4 4v13H6v-17Z" /><path d="M14 3.5v4h4M9 12h6M9 15.5h6" /></S>;
 export const ImageIcon = (p: P) => <S {...p}><rect x="3.5" y="4.5" width="17" height="15" rx="1.5" /><circle cx="9" cy="10" r="1.6" /><path d="m4 18 5-5 4 4 2.5-2.5L20 18" /></S>;
 export const GearIcon = (p: P) => <S {...p}><circle cx="12" cy="12" r="3" /><path d="M12 2.8v2.4M12 18.8v2.4M4.2 7.5l2.1 1.2M17.7 15.3l2.1 1.2M4.2 16.5l2.1-1.2M17.7 8.7l2.1-1.2M7.5 4.2l1.2 2.1M15.3 17.7l1.2 2.1M16.5 4.2l-1.2 2.1M8.7 17.7l-1.2 2.1" /></S>;
+export const UsersIcon = (p: P) => <S {...p}><circle cx="9" cy="8.5" r="3" /><path d="M3.5 19.5c.6-3 2.8-5 5.5-5s4.9 2 5.5 5M15.5 5.8a3 3 0 0 1 0 5.4M17 14.6c2 .5 3.2 2.2 3.5 4.9" /></S>;

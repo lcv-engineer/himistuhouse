@@ -1,4 +1,5 @@
 import { FacebookIcon, InstagramIcon, MessengerIcon, ZaloIcon } from "@/components/Icons";
+import PrivateHire from "@/components/PrivateHire";
 import { FindUs, PageHead, Wrap } from "@/components/ui";
 import { telHref } from "@/lib/content";
 import { DICT } from "@/lib/i18n";
@@ -35,7 +36,7 @@ export default async function Contact({ params }: { params: Promise<{ lang: stri
         <div className="space-y-3 font-medium">
           <p className="eyebrow text-muted mb-4">{t.contactEyebrow}</p>
           <p><a href={telHref(s.phone)} className="hover:underline">{s.phone}</a></p>
-          {s.email && <p><a href={`mailto:${s.email}`} className="hover:underline">{s.email}</a></p>}
+          {s.email && <p><a href={`mailto:${s.email}`} className="hover:underline break-all">{s.email}</a></p>}
         </div>
         <div>
           <p className="eyebrow text-muted mb-4">{t.follow}</p>
@@ -47,6 +48,7 @@ export default async function Contact({ params }: { params: Promise<{ lang: stri
         </div>
       </Wrap>
       <FindUs lang={lang} c={c} />
+      <Wrap><PrivateHire lang={lang} image={c.photos.privateHire} /></Wrap>
     </>
   );
 }

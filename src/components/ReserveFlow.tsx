@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { Stepper } from "./EventRsvp";
@@ -18,7 +19,7 @@ const noop = () => () => {};
 // Nhãn lưu theo tiếng Việt để admin đọc thống nhất; hiển thị cho khách theo ngôn ngữ đang xem.
 const VI = DICT.vi;
 export const tagLabel = (v: string, lang: Lang) => {
-  for (const k of ["occasions", "seatings", "tastes"] as const) {
+  for (const k of ["areas", "occasions", "seatings", "tastes"] as const) {
     const i = VI[k].indexOf(v);
     if (i >= 0) return DICT[lang][k][i];
   }
@@ -44,7 +45,8 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, a
   const date = picked || firstOpen;
   const [guests, setGuests] = useState(2);
   const [chosen, setTime] = useState("");
-  const [f, setF] = useState({ name: "", phone: "", email: "", note: "", occasion: -1, seating: -1, taste: [] as number[], agree: false });
+  const [f, setF] = useState({ name: "", phone: "", email: "", note: "", area: -1, agree: false });
+  const [floor, setFloor] = useState(0);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [done, setDone] = useState<{ code: string } | null>(null);
@@ -63,6 +65,8 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, a
     return slots(hours[weekday(date)]).filter((x) => date !== today.date || toMin(x) > today.min + 15);
   }, [date, today, hours]);
   const dayClosed = date ? !!hours[weekday(date)]?.closed : false;
+  // Các khung trong 60 phút trước giờ đóng cửa gắn nhãn L.O (last order).
+  const lastOrder = (x: string) => !!date && toMin(x) >= toMin(hours[weekday(date)]?.close ?? "01:00") - 60;
   const holiday = holidays.find((h) => h.date === date);
 
   // Đổi ngày mà giờ đã chọn không còn thì coi như chưa chọn giờ.
@@ -72,7 +76,6 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, a
     setTime(x);
     setTimeout(() => step2.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
   };
-  const toggleTaste = (i: number) => setF((s) => ({ ...s, taste: s.taste.includes(i) ? s.taste.filter((x) => x !== i) : [...s.taste, i] }));
 
   const summary = date && time ? `${fmtDate(date, lang)} · ${guests === 1 ? t.guest1 : fill(t.guestsN, { n: guests })} · ${fmt12(time)}` : "";
 
@@ -86,7 +89,7 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, a
         method: "POST", headers: { "content-type": "application/json" },
         body: JSON.stringify({
           name: f.name, phone: f.phone, email: f.email, note: f.note, date, time, guests, lang,
-          occasion: VI.occasions[f.occasion] ?? "", seating: VI.seatings[f.seating] ?? "", taste: f.taste.map((i) => VI.tastes[i]),
+          seating: VI.areas[f.area] ?? "",
         }),
       });
       const j = await r.json();
@@ -97,18 +100,12 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, a
   }
 
   if (done) {
-    const tags = [t.occasions[f.occasion], t.seatings[f.seating], ...f.taste.map((i) => t.tastes[i])].filter(Boolean);
+    const tags = [t.areas[f.area]].filter(Boolean);
     return (
       <div className="fx-up">
-        <span className="seal-red kanji w-[72px] h-[72px] text-3xl">秘</span>
-        <h2 className="serif text-4xl md:text-5xl mt-8 leading-tight">
+        <h2 className="serif text-4xl md:text-5xl leading-tight">
           {fill(t.seeYou, { d: fmtDate(date, lang, { weekday: "long" }), t: fmt12(time) })}<br />{t.saved}
         </h2>
-        <div className="mt-10 bg-card border border-line p-6">
-          <p className="eyebrow text-fg/80">{t.code}</p>
-          <p className="serif text-5xl md:text-6xl mt-3 tracking-wide break-all">{done.code}</p>
-          <p className="text-sm text-fg/80 mt-3">{t.codeHint}</p>
-        </div>
         <dl className="mt-12 grid grid-cols-[6rem_1fr] gap-y-3 text-[.95rem]">
           <dt className="text-fg/70">{t.whenLabel}</dt><dd className="font-medium">{fmtDate(date, lang)} · {fmt12(time)}</dd>
           <dt className="text-fg/70">{t.guestsLabel}</dt><dd className="font-medium">{guests === 1 ? t.guest1 : fill(t.guestsN, { n: guests })}</dd>
@@ -121,8 +118,9 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, a
             {f.note && <p className="text-sm mt-3 text-fg/85">“{f.note}”</p>}
           </div>
         )}
-        <div className="mt-10 flex flex-wrap gap-3">
-          <button type="button" className="btn btn-solid" onClick={() => downloadIcs({ uid: done.code, title: "Himitsu – reservation", date, start: time, location: address, description: `${t.code}: ${done.code}` })}>{t.addCal}</button>
+        <p className="text-sm text-fg/80 mt-10 max-w-md">{fill(t.holdNote, { p: phone })}</p>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <button type="button" className="btn btn-solid" onClick={() => downloadIcs({ uid: done.code, title: "Himitsu – reservation", date, start: time, location: address, description: `${location.origin}/${lang}/booking/${done.code}` })}>{t.addCal}</button>
           <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="btn btn-ghost"><PinIcon className="w-4 h-4" />{t.directions}</a>
         </div>
         <Link href={`/${lang}/booking/${done.code}`} className="btn btn-ghost mt-3">{t.viewCancel}</Link>
@@ -132,7 +130,7 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, a
   }
 
   return (
-    <form onSubmit={submit} noValidate>
+    <form onSubmit={submit} noValidate className="min-w-0">
       {/* 01 – Khi nào */}
       <div ref={step1} className="scroll-mt-28">
         <h2 className="flex items-baseline gap-3"><span className="text-xs font-semibold tracking-[.2em]">01</span><span className="serif text-3xl">{t.when}</span></h2>
@@ -164,10 +162,7 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, a
         <p className="label mt-10">{t.guests}</p>
         <Stepper value={guests} onChange={setGuests} lang={lang} />
 
-        <div className="mt-10 flex items-baseline justify-between gap-4">
-          <p className="label">{t.time}</p>
-          {happyHour && <p className="text-xs text-fg/75">{t.hhLegend}</p>}
-        </div>
+        <p className="label mt-10">{t.time}</p>
         {dayClosed ? <p className="text-fg/80">{t.closedDay}</p> : !daySlots.length && today ? <p className="text-fg/80">{t.noSlots}</p> : (
           <div className="grid grid-cols-3 sm:grid-cols-6 gap-2" role="radiogroup" aria-label={t.time}>
             {daySlots.map((x) => {
@@ -177,9 +172,16 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, a
                   className={`relative py-3.5 border font-medium text-sm ${sel ? "bg-fg text-[#111] border-fg" : "border-line hover:border-fg/70"}`}>
                   {fmt12(x)}
                   {happyHour && inRange(x, happyHour.start, happyHour.end) && <span className="absolute right-1.5 top-1 text-[.55rem] font-bold text-red">HH</span>}
+                  {lastOrder(x) && <span className="absolute right-1.5 top-1 text-[.55rem] font-bold text-red">L.O</span>}
                 </button>
               );
             })}
+          </div>
+        )}
+        {daySlots.length > 0 && !dayClosed && (
+          <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-xs text-fg/75">
+            {happyHour && <span>{t.hhLegend}</span>}
+            <span>{t.loLegend}</span>
           </div>
         )}
       </div>
@@ -206,11 +208,24 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, a
           <label className="label mt-6" htmlFor="rv-email">{t.email}</label>
           <input id="rv-email" className="field" type="email" autoComplete="email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} />
 
-          <fieldset className="mt-10 border border-line px-5 pb-6 pt-2">
-            <legend className="px-2 font-semibold">{t.bartender}</legend>
-            <Pills label={t.occasion} items={t.occasions} isOn={(i) => f.occasion === i} onToggle={(i) => setF({ ...f, occasion: f.occasion === i ? -1 : i })} />
-            <Pills label={t.seating} items={t.seatings} isOn={(i) => f.seating === i} onToggle={(i) => setF({ ...f, seating: f.seating === i ? -1 : i })} />
-            <Pills label={t.taste} items={t.tastes} isOn={(i) => f.taste.includes(i)} onToggle={toggleTaste} />
+          <fieldset className="mt-10 border border-line px-5 pb-6 pt-2 min-w-0">
+            <legend className="px-2 font-semibold">{t.area}</legend>
+            <div className="flex flex-wrap gap-2 mt-4">
+              {t.areas.map((x, i) => (
+                <button key={x} type="button" className="pill" aria-pressed={f.area === i} onClick={() => setF({ ...f, area: f.area === i ? -1 : i })}>{x}</button>
+              ))}
+            </div>
+            {/* Sơ đồ quán (mẫu) để khách hình dung khu vực */}
+            <div className="mt-6 flex gap-2" role="tablist">
+              {t.floors.map((x, i) => (
+                <button key={x} type="button" role="tab" aria-selected={floor === i} onClick={() => setFloor(i)}
+                  className={`px-4 py-1.5 text-sm border ${floor === i ? "bg-fg text-[#111] border-fg" : "border-line hover:border-fg/70"}`}>{x}</button>
+              ))}
+            </div>
+            <div className="relative mt-3 border border-line aspect-[2000/1507]">
+              <Image src={`/images/maps/f${floor + 1}-${lang}.webp`} alt={t.floors[floor]} fill sizes="(min-width:1024px) 700px, 100vw" className="object-contain" />
+            </div>
+            <p className="text-xs text-fg/70 mt-2">{t.areaHint}</p>
             <div className="mt-6 flex justify-between">
               <label className="label" htmlFor="rv-note">{t.note}</label>
               <span className="text-xs text-fg/70">{f.note.length}/280</span>
@@ -227,16 +242,5 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, a
         </div>
       )}
     </form>
-  );
-}
-
-function Pills({ label, items, isOn, onToggle }: { label: string; items: string[]; isOn: (i: number) => boolean; onToggle: (i: number) => void }) {
-  return (
-    <div className="mt-5">
-      <p className="text-sm text-fg/75 mb-3">{label}</p>
-      <div className="flex flex-wrap gap-2">
-        {items.map((x, i) => <button key={x} type="button" className="pill" aria-pressed={isOn(i)} onClick={() => onToggle(i)}>{x}</button>)}
-      </div>
-    </div>
   );
 }

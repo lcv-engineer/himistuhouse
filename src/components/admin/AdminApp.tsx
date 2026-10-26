@@ -3,9 +3,9 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import Logo from "../Logo";
-import { ExternalIcon, GearIcon, GlassIcon, ImageIcon, KeyIcon, LogoutIcon, PageIcon, PercentIcon, SparkIcon, TonightIcon } from "../Icons";
+import { ExternalIcon, GearIcon, GlassIcon, ImageIcon, KeyIcon, LogoutIcon, PageIcon, PercentIcon, SparkIcon, TonightIcon, UsersIcon } from "../Icons";
 import type { Content } from "@/lib/content";
-import { EventsSection, GallerySection, MenuSection, PagesSection, PromosSection, SecretsSection, SettingsSection, TonightSection } from "./sections";
+import { EventsSection, GallerySection, MenuSection, PagesSection, PrivateSection, PromosSection, SecretsSection, SettingsSection, TonightSection } from "./sections";
 
 const NAV = [
   { id: "", label: "Tối nay", I: TonightIcon },
@@ -14,7 +14,8 @@ const NAV = [
   { id: "promotions", label: "Ưu đãi", I: PercentIcon },
   { id: "secrets", label: "Bí mật", I: KeyIcon },
   { id: "pages", label: "Trang", I: PageIcon },
-  { id: "gallery", label: "Gallery", I: ImageIcon },
+  { id: "private", label: "Thuê riêng", I: UsersIcon },
+  { id: "gallery", label: "Khoảnh khắc", I: ImageIcon },
   { id: "settings", label: "Cài đặt", I: GearIcon },
 ] as const;
 
@@ -74,6 +75,7 @@ export default function AdminApp() {
       case "promotions": return <PromosSection c={content} save={save} />;
       case "secrets": return <SecretsSection c={content} save={save} />;
       case "pages": return <PagesSection c={content} save={save} />;
+      case "private": return <PrivateSection flash={flash} />;
       case "gallery": return <GallerySection c={content} save={save} />;
       case "settings": return <SettingsSection c={content} save={save} />;
       default: return <TonightSection c={content} flash={flash} />;

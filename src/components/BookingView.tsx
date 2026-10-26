@@ -57,7 +57,10 @@ export default function BookingView({ code, lang, phone, tel }: { code: string; 
         </div>
       )}
       {!cancelled && b.status !== "arrived" && (
-        <button type="button" className="btn btn-danger mt-12" onClick={cancel} disabled={busy}>{t.cancelBtn}</button>
+        <>
+          <p className="text-sm text-fg/80 mt-12 max-w-md">{fill(t.holdNote, { p: phone })}</p>
+          <button type="button" className="btn btn-danger mt-5" onClick={cancel} disabled={busy}>{t.cancelBtn}</button>
+        </>
       )}
       <p className="text-sm text-fg/80 mt-6">{t.orCall} <a href={tel} className="hover:underline">{phone}</a></p>
     </>

@@ -1,5 +1,5 @@
 import Logo from "@/components/Logo";
-import { FindUs, Prose, Wrap } from "@/components/ui";
+import { Prose, Wrap } from "@/components/ui";
 import { DICT } from "@/lib/i18n";
 import { getLang } from "@/lib/lang";
 import { getContent } from "@/lib/content-server";
@@ -17,15 +17,13 @@ export default async function Story({ params }: { params: Promise<{ lang: string
       <Wrap className="pt-16 md:pt-20">
         <div className="fx-up"><Logo height={130} className="max-w-[80vw] h-auto" /></div>
         <p className="eyebrow mt-10 fx-up" style={{ "--d": ".1s" } as React.CSSProperties}>{t.ourStory}</p>
-        <h1 className="serif text-6xl md:text-8xl mt-6 leading-[1.05] max-w-2xl fx-up" style={{ "--d": ".2s" } as React.CSSProperties}>{p.title[lang]}</h1>
-        <p className="kanji text-3xl text-muted mt-6">秘密</p>
+        <h1 className="serif text-5xl md:text-8xl mt-6 leading-[1.05] max-w-2xl fx-up" style={{ "--d": ".2s" } as React.CSSProperties}>{p.title[lang]}</h1>
       </Wrap>
       <Wrap className="pt-16">
         <div className="max-w-3xl mx-auto">
           <Prose text={p.body[lang]} />
         </div>
       </Wrap>
-      <FindUs lang={lang} c={c} />
     </>
   );
 }

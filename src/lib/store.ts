@@ -40,3 +40,17 @@ export const findByCode = (rows: Reservation[], code: string) => {
   const c = code.trim().toUpperCase();
   return rows.find((r) => r.code === c || r.id === code.trim());
 };
+
+// Yêu cầu thuê riêng (popup ở trang Liên hệ).
+const PH_FILE = path.join(process.cwd(), "data", "private-hire.json");
+export type PrivateHire = {
+  id: string; createdAt: string; name: string; phone: string;
+  date: string; guests: number; type: string; note: string; status: "new" | "done";
+};
+export function readPrivate(): PrivateHire[] {
+  try { return JSON.parse(fs.readFileSync(PH_FILE, "utf8")); } catch { return []; }
+}
+export function writePrivate(rows: PrivateHire[]) {
+  fs.mkdirSync(path.dirname(PH_FILE), { recursive: true });
+  fs.writeFileSync(PH_FILE, JSON.stringify(rows, null, 2));
+}

@@ -7,7 +7,7 @@ import { FacebookIcon, InstagramIcon } from "./Icons";
 import type { Lang } from "@/lib/content";
 import type { Dict } from "@/lib/i18n";
 
-const KEYS = ["story", "menu", "events", "press", "gallery", "contact"] as const;
+const KEYS = ["story", "menu", "events", "gallery", "contact"] as const;
 
 export default function Header({ lang, nav, instagram, facebook }: { lang: Lang; nav: Dict["nav"]; instagram: string; facebook: string }) {
   const path = usePathname() || `/${lang}`;

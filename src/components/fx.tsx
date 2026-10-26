@@ -1,60 +1,7 @@
 "use client";
-// Các hiệu ứng nhỏ phía client: màn chào, trạng thái mở cửa, cửa shoji, thẻ nghiêng, hero mờ dần khi cuộn.
-import { useEffect, useRef, useState } from "react";
-import type { Hours, Lang } from "@/lib/content";
-import { DICT, fill } from "@/lib/i18n";
-import { fmt12, openState } from "@/lib/time";
-
-/** "○ Closed · opens at 5PM" / "● Open · until 1AM" theo giờ Việt Nam. */
-export function OpenStatus({ hours, lang, className = "" }: { hours: Hours[]; lang: Lang; className?: string }) {
-  const [s, setS] = useState<ReturnType<typeof openState> | null>(null);
-  useEffect(() => {
-    const tick = () => setS(openState(hours));
-    tick();
-    const id = setInterval(tick, 60_000);
-    return () => clearInterval(id);
-  }, [hours]);
-  const t = DICT[lang];
-  if (!s) return <p className={`text-sm h-5 ${className}`} />;
-  const sub = s.open
-    ? fill(t.until, { t: fmt12(s.until) })
-    : s.inDays === 0 ? fill(t.opensAt, { t: fmt12(s.at) })
-    : s.inDays === 1 ? fill(t.opensTomorrow, { t: fmt12(s.at) })
-    : s.at ? fill(t.opensAt, { t: fmt12(s.at) }) : "";
-  return (
-    <p className={`text-sm flex items-center gap-2 ${className}`}>
-      <span className={`inline-block w-2 h-2 rounded-full ${s.open ? "bg-emerald-400" : "border border-fg/70"}`} />
-      <span className="font-semibold">{s.open ? t.open : t.closed}</span>
-      {sub && <><span className="text-muted">·</span><span className="text-muted">{sub}</span></>}
-    </p>
-  );
-}
-
-function useInView<T extends HTMLElement>(threshold = 0.25) {
-  const ref = useRef<T>(null);
-  const [inView, set] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { set(true); io.disconnect(); } }, { threshold });
-    io.observe(el);
-    return () => io.disconnect();
-  }, [threshold]);
-  return [ref, inView] as const;
-}
-
-/** Ảnh nằm sau hai cánh cửa shoji, cửa trượt ra khi cuộn tới. */
-export function Shoji({ src, alt }: { src: string; alt: string }) {
-  const [ref, inView] = useInView<HTMLDivElement>(0.35);
-  return (
-    <div ref={ref} className={`shoji ${inView ? "in" : ""}`}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={src} alt={alt} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
-      <span className="panel l" aria-hidden="true" />
-      <span className="panel r" aria-hidden="true" />
-    </div>
-  );
-}
+// Các hiệu ứng nhỏ phía client: thẻ nghiêng, hero mờ dần khi cuộn, hàng ảnh lướt ngang.
+import { useEffect, useRef } from "react";
+import { ArrowIcon } from "./Icons";
 
 /** Thẻ nghiêng nhẹ theo vị trí chuột. */
 export function Tilt({ children, className = "" }: { children: React.ReactNode; className?: string }) {
@@ -88,4 +35,22 @@ export function HeroFade({ children, className = "" }: { children: React.ReactNo
     return () => window.removeEventListener("scroll", on);
   }, []);
   return <div ref={ref} className={className}>{children}</div>;
+}
+
+/** Hàng ảnh lướt ngang, có nút trước / tiếp trên màn hình lớn. Trên điện thoại vuốt bằng tay. */
+export function Slider({ children, prev, next }: { children: React.ReactNode; prev: string; next: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const go = (d: number) => {
+    const el = ref.current;
+    if (el) el.scrollBy({ left: d * el.clientWidth * 0.8, behavior: "smooth" });
+  };
+  return (
+    <div>
+      <div ref={ref} className="hscroll">{children}</div>
+      <div className="hidden md:flex justify-end gap-2 mt-5">
+        <button type="button" aria-label={prev} onClick={() => go(-1)} className="btn btn-ghost !p-3"><ArrowIcon className="w-4 h-4 rotate-180" /></button>
+        <button type="button" aria-label={next} onClick={() => go(1)} className="btn btn-ghost !p-3"><ArrowIcon className="w-4 h-4" /></button>
+      </div>
+    </div>
+  );
 }
