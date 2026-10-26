@@ -37,6 +37,30 @@ export function HeroFade({ children, className = "" }: { children: React.ReactNo
   return <div ref={ref} className={className}>{children}</div>;
 }
 
+/** Ảnh nền trôi chậm hơn trang khi cuộn (đặt --py cho phần tử con đầu tiên). */
+export function Parallax({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  const ref = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    const bg = el?.firstElementChild as HTMLElement | null;
+    if (!el || !bg || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let raf = 0;
+    const on = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const r = el.getBoundingClientRect();
+        // -1 khi khối vừa chạm đáy màn hình, 1 khi vừa rời đỉnh.
+        const p = Math.max(-1, Math.min(1, (r.top + r.height / 2 - innerHeight / 2) / (innerHeight / 2 + r.height / 2)));
+        bg.style.setProperty("--py", `${(-p * 8).toFixed(2)}%`);
+      });
+    };
+    on();
+    window.addEventListener("scroll", on, { passive: true });
+    return () => { window.removeEventListener("scroll", on); cancelAnimationFrame(raf); };
+  }, []);
+  return <section ref={ref} className={className}>{children}</section>;
+}
+
 /** Hàng ảnh lướt ngang, có nút trước / tiếp trên màn hình lớn. Trên điện thoại vuốt bằng tay. */
 export function Slider({ children, prev, next }: { children: React.ReactNode; prev: string; next: string }) {
   const ref = useRef<HTMLDivElement>(null);

@@ -337,6 +337,7 @@ const PHOTO_FIELDS = [
   ["door", "Ảnh không gian quán (mục Câu chuyện, trang chủ)"],
   ["offers", "Ảnh mục Ưu đãi & sự kiện (khi chưa có sự kiện sắp tới)"],
   ["privateHire", "Ảnh nền khối Thuê riêng (trang Liên hệ)"],
+  ["closing", "Ảnh nền khối \"Hẹn gặp bạn tối nay\" (cuối trang chủ)"],
 ] as const;
 
 export function GallerySection({ c, save }: P) {

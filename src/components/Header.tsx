@@ -18,6 +18,16 @@ export default function Header({ lang, nav, instagram, facebook }: { lang: Lang;
   // Đổi ngôn ngữ nhưng giữ nguyên trang đang xem.
   const swap = (l: Lang) => path.replace(/^\/(vi|en)(?=\/|$)/, `/${l}`);
 
+  // Trang chủ: đầu trang trong suốt khi còn nằm trên ảnh hero.
+  const home = path === `/${lang}`;
+  const [top, setTop] = useState(true);
+  useEffect(() => {
+    const on = () => setTop(window.scrollY < 24);
+    on();
+    window.addEventListener("scroll", on, { passive: true });
+    return () => window.removeEventListener("scroll", on);
+  }, []);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpenAt(null);
     window.addEventListener("keydown", onKey);
@@ -36,7 +46,7 @@ export default function Header({ lang, nav, instagram, facebook }: { lang: Lang;
   );
 
   return (
-    <header className="sticky top-0 z-40 bg-bg/85 backdrop-blur-md border-b border-line">
+    <header className="site-head sticky top-0 z-40 bg-bg/85 backdrop-blur-md border-b border-line" data-clear={home && top && !open}>
       <div className="mx-auto max-w-[80rem] px-4 md:px-10 h-20 flex items-center justify-between gap-6">
         <Link href={`/${lang}`} aria-label="Himitsu – home" className="shrink-0"><Logo height={42} /></Link>
         <nav className="hidden lg:flex items-center gap-8" aria-label="Main">

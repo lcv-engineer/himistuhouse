@@ -3,8 +3,8 @@ import Link from "next/link";
 import Logo from "@/components/Logo";
 import Reveal from "@/components/Reveal";
 import EventRsvp from "@/components/EventRsvp";
-import { HeroFade, Tilt } from "@/components/fx";
-import { More, OpenDaily, PhotoRow, Wrap } from "@/components/ui";
+import { HeroFade, Parallax, Tilt } from "@/components/fx";
+import { More, OpenDaily, PhotoRow, Title, Wrap } from "@/components/ui";
 import { DICT, fill } from "@/lib/i18n";
 import { getLang } from "@/lib/lang";
 import { getContent } from "@/lib/content-server";
@@ -34,20 +34,28 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
       {/* Hero */}
       <section className="hero">
         <div className="hero-bg" style={{ backgroundImage: `url("${c.photos.hero}")` }} aria-hidden="true" />
-        <Wrap className="w-full py-24">
+        <Wrap className="w-full flex-1 flex flex-col justify-center py-16">
           <HeroFade>
             <h1 className="fx-up" style={d(0.3)}>
               <span className="sr-only">Himitsu – house of cocktail</span>
-              <Logo height={180} className="max-w-[78vw] h-auto" />
+              <Logo height={200} className="max-w-[80vw] h-auto" />
             </h1>
             <div className="mt-12 flex flex-wrap gap-3 fx-up" style={d(0.55)}>
               <Link href={`/${lang}/reservation`} className="btn btn-solid">{t.nav.reserve}</Link>
               <Link href={`/${lang}/menu`} className="btn btn-ghost">{t.seeMenu}</Link>
             </div>
-            <OpenDaily hours={c.hours} lang={lang} address={s.address[lang]} className="mt-8 fx-up max-w-sm" />
           </HeroFade>
         </Wrap>
-        <span className="scroll-line" aria-hidden="true" />
+        {/* Dải dưới đáy: giờ mở cửa + địa chỉ, và vạch gợi ý cuộn xuống */}
+        <Wrap className="w-full">
+          <div className="hero-foot fx-up flex items-end justify-between gap-6 pt-6 pb-8" style={d(0.8)}>
+            <div className="flex gap-3">
+              <span className="dot-live mt-[.4rem] shrink-0" aria-hidden="true" />
+              <OpenDaily hours={c.hours} lang={lang} address={s.address[lang]} className="max-w-md" />
+            </div>
+            <span className="scroll-line hidden md:block shrink-0" aria-hidden="true" />
+          </div>
+        </Wrap>
       </section>
 
       {/* Câu chuyện */}
@@ -56,10 +64,10 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
           <Image src={c.photos.door} alt="" fill sizes="(min-width:768px) 600px, 100vw" className="object-cover" />
         </Reveal>
         <Reveal>
-          <p className="eyebrow">{t.storyEyebrow}</p>
-          <h2 className="serif text-4xl md:text-5xl mt-4 leading-tight">{t.storyTitle}</h2>
+          <p className="eyebrow rule">{t.storyEyebrow}</p>
+          <Title className="mt-6">{t.storyTitle}</Title>
           <div className="mt-10 space-y-5 text-fg/85 text-lg leading-relaxed">{t.storyP.map((p) => <p key={p}>{p}</p>)}</div>
-          <div className="serif text-2xl md:text-[1.7rem] mt-10 space-y-2">{t.storyLines.map((p) => <p key={p}>{p}</p>)}</div>
+          <div className="serif text-2xl md:text-[1.7rem] mt-10 space-y-2 border-l border-red pl-6 tracking-tight">{t.storyLines.map((p) => <p key={p}>{p}</p>)}</div>
           <div className="mt-10"><More href={`/${lang}/story`}>{t.readStory}</More></div>
         </Reveal>
       </Wrap>
@@ -68,8 +76,8 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
       {signature.length + drinks.length > 0 && (
         <Wrap className="py-20">
           <Reveal className="flex flex-wrap items-end justify-between gap-6">
-            <div className="max-w-lg">
-              <h2 className="serif text-4xl md:text-5xl leading-tight">{t.sigTitle}</h2>
+            <div className="max-w-4xl">
+              <Title>{t.sigTitle}</Title>
               <p className="text-lg text-fg/80 mt-6">{t.sigSub}</p>
             </div>
             <More href={`/${lang}/menu`}>{t.fullMenu}</More>
@@ -77,11 +85,11 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
           <div className="mt-14 grid gap-x-4 gap-y-10 md:gap-x-6 grid-cols-2 lg:grid-cols-4">
             {signature.map((it, i) => (
               <Reveal key={it.id} delay={i * 120} className="min-w-0">
-                <Tilt>
-                  <div className="relative aspect-[4/5] overflow-hidden bg-card">
+                <Tilt className="group">
+                  <div className="relative aspect-[4/5] overflow-hidden bg-card img-zoom">
                     {it.image && <Image src={it.image} alt={it.name} fill sizes="(min-width:1024px) 300px, 50vw" className="object-cover" />}
                   </div>
-                  <h3 className="serif text-xl md:text-2xl mt-4">{it.name}</h3>
+                  <h3 className="serif text-xl md:text-2xl mt-5 tracking-tight"><span className="card-name">{it.name}</span></h3>
                   <p className="text-xs md:text-sm text-fg/75 mt-2 leading-relaxed">{it.desc[lang]}</p>
                 </Tilt>
               </Reveal>
@@ -89,7 +97,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
             {drinks.map((src, i) => (
               <Reveal key={src + i} delay={(signature.length + i) * 120} className="min-w-0">
                 <Tilt>
-                  <div className="relative aspect-[4/5] overflow-hidden bg-card">
+                  <div className="relative aspect-[4/5] overflow-hidden bg-card img-zoom">
                     <Image src={src} alt="" fill sizes="(min-width:1024px) 300px, 50vw" className="object-cover" />
                   </div>
                 </Tilt>
@@ -101,19 +109,20 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
 
       {/* Ưu đãi & sự kiện */}
       <Wrap className="py-24">
-        <Reveal className="max-w-lg">
-          <p className="eyebrow">{t.offersEyebrow}</p>
-          <h2 className="serif text-4xl md:text-5xl mt-4">{t.offersTitle}</h2>
+        <Reveal className="max-w-2xl">
+          <p className="eyebrow rule">{t.offersEyebrow}</p>
+          <Title className="mt-6">{t.offersTitle}</Title>
           <p className="text-lg text-fg/80 mt-6">{t.offersSub}</p>
         </Reveal>
         <div className="mt-14 grid gap-10 md:grid-cols-[5fr_7fr] items-start">
           {happy && (
             <Reveal>
-              <div className="relative border border-line p-8 md:p-10 md:min-h-[32rem] overflow-hidden">
-                {happy.image && <Image src={happy.image} alt="" fill sizes="500px" className="object-cover opacity-[.12]" />}
-                <div className="relative">
-                  <p className="eyebrow flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-red" />{t.happyHour}</p>
-                  <p className="serif text-7xl md:text-8xl mt-10">{happy.discount}</p>
+              <div className="relative border border-line p-8 md:p-10 min-h-[26rem] md:min-h-[32rem] overflow-hidden flex flex-col img-zoom">
+                {happy.image && <Image src={happy.image} alt="" fill sizes="500px" className="object-cover opacity-50" />}
+                <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/75 to-bg/30" />
+                <div className="relative flex-1 flex flex-col">
+                  <p className="eyebrow flex items-center gap-3"><span className="dot-live" />{t.happyHour}</p>
+                  <p className="serif display text-[6.5rem] md:text-[9rem] mt-auto pt-10">{happy.discount}</p>
                   <p className="serif text-3xl mt-2">{fmt12(happy.start)}–{fmt12(happy.end)} {t.everyDay}</p>
                   {happy.desc[lang] && <p className="text-fg/80 mt-6">{happy.desc[lang]}</p>}
                 </div>
@@ -127,7 +136,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
             {next ? (
               <div className="mt-6 flex gap-6 md:gap-8">
                 <div className="text-center shrink-0">
-                  <p className="serif text-5xl leading-none">{next.date.slice(8)}</p>
+                  <p className="serif display text-6xl leading-none">{next.date.slice(8)}</p>
                   <p className="eyebrow mt-2">{fmtDate(next.date, "en", { month: "short" })}</p>
                 </div>
                 <div className="min-w-0">
@@ -148,8 +157,8 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
       {weekly.length > 0 && (
         <Wrap className="py-20">
           <Reveal className="flex flex-wrap items-end justify-between gap-6">
-            <div className="max-w-lg">
-              <h2 className="serif text-4xl md:text-5xl leading-tight">{t.weekTitle}</h2>
+            <div className="max-w-4xl">
+              <Title>{t.weekTitle}</Title>
               <p className="text-lg text-fg/80 mt-6">{t.weekSub}</p>
             </div>
             <More href={`/${lang}/menu`}>{t.seeMenu}</More>
@@ -162,7 +171,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                   <div className="absolute left-4 right-4 bottom-4 md:left-5 md:bottom-5">
                     <p className="eyebrow">{t.days[p.weekday]}</p>
-                    <p className="serif text-4xl md:text-5xl mt-2">{p.discount}</p>
+                    <p className="serif display text-5xl md:text-6xl mt-2">{p.discount}</p>
                     <p className="text-sm text-fg/85 mt-1">{p.label[lang]}</p>
                   </div>
                 </div>
@@ -176,7 +185,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
       {moments.length > 0 && (
         <Wrap className="py-20">
           <Reveal className="flex flex-wrap items-end justify-between gap-6 mb-12">
-            <h2 className="serif text-4xl md:text-5xl">{t.moments}</h2>
+            <Title>{t.moments}</Title>
             <div className="flex flex-wrap gap-8">
               <More href={`/${lang}/gallery`}>{t.moreMoments}</More>
               <More href={s.instagram} external>@{s.handle}</More>
@@ -185,6 +194,22 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
           <PhotoRow images={moments} lang={lang} />
         </Wrap>
       )}
+
+      {/* Hẹn gặp tối nay – khép lại trang chủ ngay trước chân trang */}
+      <Parallax className="closing -mb-24 mt-16 min-h-[85svh] flex items-center">
+        <div className="closing-bg" style={{ backgroundImage: `url("${c.photos.closing}")` }} aria-hidden="true" />
+        <Wrap className="w-full py-32 md:py-40 text-center">
+          <Reveal>
+            <p className="eyebrow">{fill(t.openDaily, { t: fmt12(c.hours.find((h) => !h.closed)?.open ?? "17:00") })}</p>
+            <h2 className="serif display text-[3.2rem] md:text-8xl lg:text-9xl mt-8"><span className="mask-up"><span>{t.closingTitle}</span></span></h2>
+            <p className="text-lg text-fg/85 mt-8 max-w-md mx-auto">{t.closingSub}</p>
+            <div className="mt-12 flex flex-wrap justify-center gap-3">
+              <Link href={`/${lang}/reservation`} className="btn btn-solid">{t.nav.reserve}</Link>
+              <a href={s.mapsUrl} target="_blank" rel="noopener noreferrer" className="btn btn-ghost">{t.findUs}</a>
+            </div>
+          </Reveal>
+        </Wrap>
+      </Parallax>
     </>
   );
 }

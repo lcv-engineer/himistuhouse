@@ -18,13 +18,18 @@ export function PageHead({ eyebrow, title, children }: { eyebrow?: string; title
     <section className="page-head">
       <span className="ghost-logo hidden md:block"><Logo height={44} /></span>
       <Wrap className="relative pt-20 pb-14 md:pt-24">
-        {eyebrow && <p className="eyebrow fx-up">{eyebrow}</p>}
-        <h1 className="serif text-5xl md:text-7xl mt-4 fx-up" style={{ "--d": ".1s" } as React.CSSProperties}>{title}</h1>
+        {eyebrow && <p className="eyebrow rule fx-up">{eyebrow}</p>}
+        <h1 className="serif display text-[3.4rem] md:text-8xl mt-5 fx-up" style={{ "--d": ".1s" } as React.CSSProperties}>{title}</h1>
         {children && <div className="mt-6 fx-up" style={{ "--d": ".2s" } as React.CSSProperties}>{children}</div>}
       </Wrap>
     </section>
   );
 }
+
+/** Tiêu đề mục lớn, trượt lên khi nằm trong <Reveal>. */
+export const Title = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
+  <h2 className={`serif display text-[2.6rem] md:text-6xl lg:text-7xl ${className}`}><span className="mask-up"><span>{children}</span></span></h2>
+);
 
 export const More = ({ href, children, external }: { href: string; children: React.ReactNode; external?: boolean }) =>
   external ? (

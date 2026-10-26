@@ -33,7 +33,7 @@ export type Content = {
   secrets: Secret[];
   pages: { story: { title: Bi; body: Bi }; policies: { title: Bi; body: Bi } };
   moments: Moment[];
-  photos: { hero: string; door: string; offers: string; drinks: string[]; privateHire: string };
+  photos: { hero: string; door: string; offers: string; drinks: string[]; privateHire: string; closing: string };
   holidays: { date: string; vi: string; en: string }[];
 };
 
@@ -182,7 +182,7 @@ export const DEFAULTS: Content = {
     ]},
   ],
   // door: ảnh không gian quán có khách ở mục Câu chuyện; drinks: ảnh cocktail thêm cho mục Signature; privateHire: nền khối Thuê riêng.
-  photos: { hero: ph("hero-garnish"), door: ph("bar-overhead"), offers: ph("front-lights"), drinks: [ph("cherry-martini"), ph("red-highball")], privateHire: ph("bar-green-chairs") },
+  photos: { hero: ph("hero-garnish"), door: ph("bar-overhead"), offers: ph("front-lights"), drinks: [ph("cherry-martini"), ph("red-highball")], privateHire: ph("bar-green-chairs"), closing: ph("hero2") },
   // Ngày lễ: chỉ hiện chú thích nhỏ khi khách chọn ngày đặt bàn.
   holidays: [
     { date: "2026-12-24", vi: "Đêm Giáng sinh", en: "Christmas Eve" },

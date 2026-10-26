@@ -4,6 +4,7 @@ import type { Lang } from "./content";
 const en = {
   nav: { story: "Our story", menu: "Menu", events: "Events", gallery: "Moments", contact: "Contact", reserve: "Reserve" },
   seeMenu: "See the menu",
+  closingTitle: "See you tonight", closingSub: "Pull up a seat at the bar. We will take it from there.",
   open: "Open", closed: "Closed", until: "until {t}", opensAt: "opens at {t}", opensTomorrow: "opens tomorrow {t}", opensOn: "opens {d} {t}",
   openDaily: "Everyday, Himitsu open at {t}",
   storyEyebrow: "Our story",
@@ -68,6 +69,7 @@ export type Dict = typeof en;
 const vi: Dict = {
   nav: { story: "Câu chuyện", menu: "Menu", events: "Sự kiện", gallery: "Khoảnh khắc", contact: "Liên hệ", reserve: "Đặt bàn" },
   seeMenu: "Xem menu",
+  closingTitle: "Hẹn gặp bạn tối nay", closingSub: "Kéo một chiếc ghế ở quầy bar. Phần còn lại cứ để chúng tôi.",
   open: "Đang mở", closed: "Đã đóng", until: "tới {t}", opensAt: "mở lúc {t}", opensTomorrow: "mở {t} ngày mai", opensOn: "mở {t} {d}",
   openDaily: "Mỗi ngày, Himitsu mở cửa lúc {t}",
   storyEyebrow: "Câu chuyện",
