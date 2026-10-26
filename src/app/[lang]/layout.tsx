@@ -21,7 +21,7 @@ export default async function LangLayout({ children, params }: { children: React
   const l = lang as Lang;
   return (
     <>
-      <Intro />
+      <Intro lang={l} />
       <Motion />
       <Header lang={l} nav={DICT[l].nav} instagram={c.site.instagram} facebook={c.site.facebook} />
       <main className="page-in">{children}</main>

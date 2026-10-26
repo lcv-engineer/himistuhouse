@@ -16,12 +16,6 @@ export default function Motion() {
   const [wipe, setWipe] = useState(0);
   if (seen !== path) { setSeen(path); setWipe(wipe + 1); }
 
-  // Sang trang khác thì các trang sau không chờ màn chào nữa (xem --intro trong globals.css).
-  // Không gỡ sớm hơn: đổi --intro giữa chừng làm hoạt ảnh đang chạy ở hero nhảy tới cuối.
-  useEffect(() => {
-    if (wipe > 0) document.documentElement.classList.add("intro-done");
-  }, [wipe]);
-
   // Thanh tiến độ cuộn ở mép trên.
   useEffect(() => {
     let raf = 0;
