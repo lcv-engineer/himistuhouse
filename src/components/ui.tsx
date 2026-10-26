@@ -19,16 +19,28 @@ export function PageHead({ eyebrow, title, children }: { eyebrow?: string; title
       <span className="ghost-logo hidden md:block"><Logo height={44} /></span>
       <Wrap className="relative pt-20 pb-14 md:pt-24">
         {eyebrow && <p className="eyebrow rule fx-up">{eyebrow}</p>}
-        <h1 className="serif display text-[3.4rem] md:text-8xl mt-5 fx-up" style={{ "--d": ".1s" } as React.CSSProperties}>{title}</h1>
+        <h1 className="split split-load serif display text-[3.4rem] md:text-8xl mt-5" aria-label={title}><span aria-hidden="true"><Split text={title} /></span></h1>
         {children && <div className="mt-6 fx-up" style={{ "--d": ".2s" } as React.CSSProperties}>{children}</div>}
       </Wrap>
     </section>
   );
 }
 
-/** Tiêu đề mục lớn, trượt lên khi nằm trong <Reveal>. */
-export const Title = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
-  <h2 className={`serif display text-[2.6rem] md:text-6xl lg:text-7xl ${className}`}><span className="mask-up"><span>{children}</span></span></h2>
+/** Tách câu thành từng chữ, mỗi chữ trượt lên lần lượt (khi nằm trong <Reveal>, hoặc ngay khi tải nếu có class "split-load"). */
+export const Split = ({ text, start = 0 }: { text: string; start?: number }) => (
+  <>
+    {text.split(/\s+/).map((w, i, a) => (
+      <span key={i}>
+        <span className="w"><span style={{ "--i": i + start } as React.CSSProperties}>{w}</span></span>
+        {i < a.length - 1 && " "}
+      </span>
+    ))}
+  </>
+);
+
+/** Tiêu đề mục lớn, từng chữ trượt lên khi nằm trong <Reveal>. */
+export const Title = ({ children, className = "" }: { children: string; className?: string }) => (
+  <h2 className={`split serif display text-[2.6rem] md:text-6xl lg:text-7xl ${className}`} aria-label={children}><span aria-hidden="true"><Split text={children} /></span></h2>
 );
 
 export const More = ({ href, children, external }: { href: string; children: React.ReactNode; external?: boolean }) =>
@@ -71,10 +83,10 @@ export function Prose({ text }: { text: string }) {
 export function PhotoRow({ images, lang }: { images: GalleryImage[]; lang: Lang }) {
   const t = DICT[lang];
   return (
-    <Slider prev={t.prev} next={t.next}>
+    <Slider prev={t.prev} next={t.next} drag={t.drag}>
       {images.map((g, i) => (
-        <div key={g.src + i} className="relative h-[22rem] md:h-[30rem] overflow-hidden img-zoom" style={{ aspectRatio: `${g.w} / ${g.h}` }}>
-          <Image src={g.src} alt={g.alt[lang]} fill sizes="(min-width:768px) 720px, 90vw" className="object-cover" />
+        <div key={g.src + i} className="slide relative h-[22rem] md:h-[30rem] overflow-hidden" style={{ aspectRatio: `${g.w} / ${g.h}` }}>
+          <Image src={g.src} alt={g.alt[lang]} fill sizes="(min-width:768px) 720px, 90vw" className="object-cover" draggable={false} />
         </div>
       ))}
     </Slider>

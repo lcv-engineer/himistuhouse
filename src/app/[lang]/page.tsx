@@ -3,8 +3,8 @@ import Link from "next/link";
 import Logo from "@/components/Logo";
 import Reveal from "@/components/Reveal";
 import EventRsvp from "@/components/EventRsvp";
-import { HeroFade, Parallax, Tilt } from "@/components/fx";
-import { More, OpenDaily, PhotoRow, Title, Wrap } from "@/components/ui";
+import { CountUp, HeroFade, HeroFx, Parallax, Tilt } from "@/components/fx";
+import { More, OpenDaily, PhotoRow, Split, Title, Wrap } from "@/components/ui";
 import { DICT, fill } from "@/lib/i18n";
 import { getLang } from "@/lib/lang";
 import { getContent } from "@/lib/content-server";
@@ -34,9 +34,10 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
       {/* Hero */}
       <section className="hero">
         <div className="hero-bg" style={{ backgroundImage: `url("${c.photos.hero}")` }} aria-hidden="true" />
+        <HeroFx />
         <Wrap className="w-full flex-1 flex flex-col justify-center py-16">
           <HeroFade>
-            <h1 className="fx-up" style={d(0.3)}>
+            <h1 className="logo-in" style={d(0.3)}>
               <span className="sr-only">Himitsu – house of cocktail</span>
               <Logo height={200} className="max-w-[80vw] h-auto" />
             </h1>
@@ -60,14 +61,17 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
 
       {/* Câu chuyện */}
       <Wrap className="py-16 md:py-32 grid gap-10 md:gap-12 md:grid-cols-2 items-center">
-        <Reveal className="relative aspect-[4/3] md:aspect-[4/5] overflow-hidden img-zoom">
-          <Image src={c.photos.door} alt="" fill sizes="(min-width:768px) 600px, 100vw" className="object-cover" />
+        <Reveal className="relative aspect-[4/3] md:aspect-[4/5]">
+          {/* Hiệu ứng mở rèm đặt ở thẻ con: clip-path trên chính <Reveal> làm IntersectionObserver coi như không thấy. */}
+          <div className="wipe absolute inset-0 overflow-hidden img-zoom">
+            <Image src={c.photos.door} alt="" fill sizes="(min-width:768px) 600px, 100vw" className="object-cover" />
+          </div>
         </Reveal>
         <Reveal>
           <p className="eyebrow rule">{t.storyEyebrow}</p>
           <Title className="mt-6">{t.storyTitle}</Title>
           <div className="mt-10 space-y-5 text-fg/85 text-lg leading-relaxed">{t.storyP.map((p) => <p key={p}>{p}</p>)}</div>
-          <div className="serif text-2xl md:text-[1.7rem] mt-10 space-y-2 border-l border-red pl-6 tracking-tight">{t.storyLines.map((p) => <p key={p}>{p}</p>)}</div>
+          <div className="stagger serif text-2xl md:text-[1.7rem] mt-10 space-y-2 border-l border-red pl-6 tracking-tight">{t.storyLines.map((p, i) => <p key={p} style={{ "--i": i } as React.CSSProperties}>{p}</p>)}</div>
           <div className="mt-10"><More href={`/${lang}/story`}>{t.readStory}</More></div>
         </Reveal>
       </Wrap>
@@ -86,8 +90,9 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
             {signature.map((it, i) => (
               <Reveal key={it.id} delay={i * 120} className="min-w-0">
                 <Tilt className="group">
-                  <div className="relative aspect-[4/5] overflow-hidden bg-card img-zoom">
+                  <div className="wipe relative aspect-[4/5] overflow-hidden bg-card img-zoom">
                     {it.image && <Image src={it.image} alt={it.name} fill sizes="(min-width:1024px) 300px, 50vw" className="object-cover" />}
+                    <span className="glare" />
                   </div>
                   <h3 className="serif text-xl md:text-2xl mt-5 tracking-tight"><span className="card-name">{it.name}</span></h3>
                   <p className="text-xs md:text-sm text-fg/75 mt-2 leading-relaxed">{it.desc[lang]}</p>
@@ -97,8 +102,9 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
             {drinks.map((src, i) => (
               <Reveal key={src + i} delay={(signature.length + i) * 120} className="min-w-0">
                 <Tilt>
-                  <div className="relative aspect-[4/5] overflow-hidden bg-card img-zoom">
+                  <div className="wipe relative aspect-[4/5] overflow-hidden bg-card img-zoom">
                     <Image src={src} alt="" fill sizes="(min-width:1024px) 300px, 50vw" className="object-cover" />
+                    <span className="glare" />
                   </div>
                 </Tilt>
               </Reveal>
@@ -122,7 +128,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
                 <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/75 to-bg/30" />
                 <div className="relative flex-1 flex flex-col">
                   <p className="eyebrow flex items-center gap-3"><span className="dot-live" />{t.happyHour}</p>
-                  <p className="serif display text-[6.5rem] md:text-[9rem] mt-auto pt-10">{happy.discount}</p>
+                  <p className="serif display text-[6.5rem] md:text-[9rem] mt-auto pt-10"><CountUp value={happy.discount} /></p>
                   <p className="serif text-3xl mt-2">{fmt12(happy.start)}–{fmt12(happy.end)} {t.everyDay}</p>
                   {happy.desc[lang] && <p className="text-fg/80 mt-6">{happy.desc[lang]}</p>}
                 </div>
@@ -130,7 +136,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
             </Reveal>
           )}
           <Reveal delay={120}>
-            <div className="relative aspect-[6/5] overflow-hidden img-zoom">
+            <div className="wipe relative aspect-[6/5] overflow-hidden img-zoom">
               <Image src={next?.image || c.photos.offers} alt={next?.title[lang] ?? ""} fill sizes="(min-width:768px) 720px, 100vw" className="object-cover" />
             </div>
             {next ? (
@@ -163,15 +169,15 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
             </div>
             <More href={`/${lang}/menu`}>{t.seeMenu}</More>
           </Reveal>
-          <div className="mt-10 md:mt-14 grid gap-4 md:gap-6 grid-cols-2 lg:grid-cols-4">
+          <div className="acc mt-10 md:mt-14 grid gap-4 md:gap-6 grid-cols-2">
             {weekly.map((p, i) => (
               <Reveal key={p.id} delay={i * 100}>
-                <div className="relative aspect-[3/4] overflow-hidden img-zoom">
+                <div className="wipe relative aspect-[3/4] lg:aspect-auto lg:h-[32rem] overflow-hidden img-zoom">
                   {p.image && <Image src={p.image} alt="" fill sizes="(min-width:1024px) 300px, 50vw" className="object-cover" />}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                   <div className="absolute left-4 right-4 bottom-4 md:left-5 md:bottom-5">
                     <p className="eyebrow">{t.days[p.weekday]}</p>
-                    <p className="serif display text-[2.4rem] sm:text-5xl md:text-6xl mt-2">{p.discount}</p>
+                    <p className="serif display text-[2.4rem] sm:text-5xl md:text-6xl mt-2"><CountUp value={p.discount} ms={1200} /></p>
                     <p className="text-sm text-fg/85 mt-1">{p.label[lang]}</p>
                   </div>
                 </div>
@@ -201,7 +207,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
         <Wrap className="w-full py-24 md:py-40 text-center">
           <Reveal>
             <p className="eyebrow">{fill(t.openDaily, { t: fmt12(c.hours.find((h) => !h.closed)?.open ?? "17:00") })}</p>
-            <h2 className="serif display text-[3.2rem] md:text-8xl lg:text-9xl mt-8"><span className="mask-up"><span>{t.closingTitle}</span></span></h2>
+            <h2 className="split serif display text-[3.2rem] md:text-8xl lg:text-9xl mt-8" aria-label={t.closingTitle}><span aria-hidden="true"><Split text={t.closingTitle} /></span></h2>
             <p className="text-lg text-fg/85 mt-8 max-w-md mx-auto">{t.closingSub}</p>
             <div className="mt-12 flex flex-wrap justify-center gap-3">
               <Link href={`/${lang}/reservation`} className="btn btn-solid">{t.nav.reserve}</Link>

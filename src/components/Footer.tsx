@@ -1,4 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
+import Reveal from "./Reveal";
 import Logo from "./Logo";
 import { FacebookIcon, InstagramIcon, MessengerIcon, ZaloIcon } from "./Icons";
 import { Content, Lang, telHref } from "@/lib/content";
@@ -53,6 +55,10 @@ export default function Footer({ lang, c }: { lang: Lang; c: Content }) {
           <Link href={`/${lang}/reservation`} className="btn btn-solid mt-10">{t.nav.reserve}</Link>
         </div>
       </div>
+      {/* Logo lớn tràn ngang ở đáy trang, trồi lên khi cuộn tới */}
+      <Reveal className="mx-auto max-w-[80rem] px-4 md:px-10 pb-8 overflow-hidden">
+        <Image src="/images/logo.png" alt="" width={640} height={197} className="foot-logo w-full h-auto" />
+      </Reveal>
     </footer>
   );
 }

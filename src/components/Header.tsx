@@ -51,7 +51,7 @@ export default function Header({ lang, nav, instagram, facebook }: { lang: Lang;
         <Link href={`/${lang}`} aria-label="Himitsu – home" className="shrink-0"><Logo height={42} /></Link>
         <nav className="hidden lg:flex items-center gap-8" aria-label="Main">
           {KEYS.map((k) => (
-            <Link key={k} href={`/${lang}/${k}`} className="nav-link" aria-current={path.startsWith(`/${lang}/${k}`) ? "page" : undefined}>{nav[k]}</Link>
+            <Link key={k} href={`/${lang}/${k}`} className="nav-link" aria-current={path.startsWith(`/${lang}/${k}`) ? "page" : undefined}><span className="roll" data-t={nav[k]}><span>{nav[k]}</span></span></Link>
           ))}
         </nav>
         <div className="hidden lg:flex items-center gap-6">
