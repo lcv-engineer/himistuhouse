@@ -59,7 +59,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
       </section>
 
       {/* Câu chuyện */}
-      <Wrap className="py-24 md:py-32 grid gap-12 md:grid-cols-2 items-center">
+      <Wrap className="py-16 md:py-32 grid gap-10 md:gap-12 md:grid-cols-2 items-center">
         <Reveal className="relative aspect-[4/3] md:aspect-[4/5] overflow-hidden img-zoom">
           <Image src={c.photos.door} alt="" fill sizes="(min-width:768px) 600px, 100vw" className="object-cover" />
         </Reveal>
@@ -74,7 +74,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
 
       {/* Signature */}
       {signature.length + drinks.length > 0 && (
-        <Wrap className="py-20">
+        <Wrap className="py-14 md:py-20">
           <Reveal className="flex flex-wrap items-end justify-between gap-6">
             <div className="max-w-4xl">
               <Title>{t.sigTitle}</Title>
@@ -82,7 +82,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
             </div>
             <More href={`/${lang}/menu`}>{t.fullMenu}</More>
           </Reveal>
-          <div className="mt-14 grid gap-x-4 gap-y-10 md:gap-x-6 grid-cols-2 lg:grid-cols-4">
+          <div className="mt-10 md:mt-14 grid gap-x-4 gap-y-10 md:gap-x-6 grid-cols-2 lg:grid-cols-4">
             {signature.map((it, i) => (
               <Reveal key={it.id} delay={i * 120} className="min-w-0">
                 <Tilt className="group">
@@ -108,13 +108,13 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
       )}
 
       {/* Ưu đãi & sự kiện */}
-      <Wrap className="py-24">
+      <Wrap className="py-14 md:py-24">
         <Reveal className="max-w-2xl">
           <p className="eyebrow rule">{t.offersEyebrow}</p>
           <Title className="mt-6">{t.offersTitle}</Title>
           <p className="text-lg text-fg/80 mt-6">{t.offersSub}</p>
         </Reveal>
-        <div className="mt-14 grid gap-10 md:grid-cols-[5fr_7fr] items-start">
+        <div className="mt-10 md:mt-14 grid gap-10 md:grid-cols-[5fr_7fr] items-start">
           {happy && (
             <Reveal>
               <div className="relative border border-line p-8 md:p-10 min-h-[26rem] md:min-h-[32rem] overflow-hidden flex flex-col img-zoom">
@@ -155,7 +155,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
 
       {/* Mỗi tuần */}
       {weekly.length > 0 && (
-        <Wrap className="py-20">
+        <Wrap className="py-14 md:py-20">
           <Reveal className="flex flex-wrap items-end justify-between gap-6">
             <div className="max-w-4xl">
               <Title>{t.weekTitle}</Title>
@@ -163,7 +163,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
             </div>
             <More href={`/${lang}/menu`}>{t.seeMenu}</More>
           </Reveal>
-          <div className="mt-14 grid gap-4 md:gap-6 grid-cols-2 lg:grid-cols-4">
+          <div className="mt-10 md:mt-14 grid gap-4 md:gap-6 grid-cols-2 lg:grid-cols-4">
             {weekly.map((p, i) => (
               <Reveal key={p.id} delay={i * 100}>
                 <div className="relative aspect-[3/4] overflow-hidden img-zoom">
@@ -171,7 +171,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                   <div className="absolute left-4 right-4 bottom-4 md:left-5 md:bottom-5">
                     <p className="eyebrow">{t.days[p.weekday]}</p>
-                    <p className="serif display text-5xl md:text-6xl mt-2">{p.discount}</p>
+                    <p className="serif display text-[2.4rem] sm:text-5xl md:text-6xl mt-2">{p.discount}</p>
                     <p className="text-sm text-fg/85 mt-1">{p.label[lang]}</p>
                   </div>
                 </div>
@@ -183,7 +183,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
 
       {/* Khoảnh khắc – lướt ngang */}
       {moments.length > 0 && (
-        <Wrap className="py-20">
+        <Wrap className="py-14 md:py-20">
           <Reveal className="flex flex-wrap items-end justify-between gap-6 mb-12">
             <Title>{t.moments}</Title>
             <div className="flex flex-wrap gap-8">
@@ -196,9 +196,9 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
       )}
 
       {/* Hẹn gặp tối nay – khép lại trang chủ ngay trước chân trang */}
-      <Parallax className="closing -mb-24 mt-16 min-h-[85svh] flex items-center">
+      <Parallax className="closing -mb-24 mt-10 md:mt-16 min-h-[75svh] md:min-h-[85svh] flex items-center">
         <div className="closing-bg" style={{ backgroundImage: `url("${c.photos.closing}")` }} aria-hidden="true" />
-        <Wrap className="w-full py-32 md:py-40 text-center">
+        <Wrap className="w-full py-24 md:py-40 text-center">
           <Reveal>
             <p className="eyebrow">{fill(t.openDaily, { t: fmt12(c.hours.find((h) => !h.closed)?.open ?? "17:00") })}</p>
             <h2 className="serif display text-[3.2rem] md:text-8xl lg:text-9xl mt-8"><span className="mask-up"><span>{t.closingTitle}</span></span></h2>
