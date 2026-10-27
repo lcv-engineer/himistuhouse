@@ -121,7 +121,8 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
             <div className="wipe relative aspect-[6/5] overflow-hidden img-zoom">
               <Image src={next?.image || c.photos.offers} alt={next?.title[lang] ?? ""} fill sizes="(min-width:768px) 720px, 100vw" className="object-cover" />
             </div>
-            {next ? (
+            {/* Chưa có sự kiện thì chỉ còn ảnh và link "Tất cả sự kiện", không in câu "chưa có đêm đặc biệt". */}
+            {next && (
               <div className="mt-6 flex gap-6 md:gap-8">
                 <div className="text-center shrink-0">
                   <p className="serif display text-6xl leading-none">{next.date.slice(8)}</p>
@@ -133,8 +134,6 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
                   {next.rsvp && <div className="mt-5"><EventRsvp lang={lang} phone={s.phone} handle={s.handle} instagram={s.instagram} address={s.address[lang]} ev={{ id: next.id, title: next.title[lang], date: next.date, start: next.start, end: next.end }} /></div>}
                 </div>
               </div>
-            ) : (
-              <p className="mt-6 text-fg/80">{t.noEvent} <a href={s.instagram} target="_blank" rel="noopener noreferrer" className="link">{fill(t.followNext, { h: s.handle })}</a></p>
             )}
             <div className="mt-10"><More href={`/${lang}/events`}>{t.allEvents}</More></div>
           </Reveal>
