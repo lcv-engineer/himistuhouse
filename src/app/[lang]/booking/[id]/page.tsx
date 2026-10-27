@@ -14,13 +14,12 @@ export default async function Booking({ params }: { params: Promise<{ lang: stri
   const c = await getContent();
   const t = DICT[lang];
   const code = decodeURIComponent(id);
-  // Mã mới là 10 ký tự; đặt bàn cũ dùng UUID dài nên không in ra tiêu đề.
-  const short = code.length <= 12 ? code.toUpperCase() : "";
   return (
     <Wrap className="py-16 md:py-24">
       <div className="max-w-2xl mx-auto">
         <p className="eyebrow">{t.reserveEyebrow}</p>
-        <h1 className="serif text-5xl md:text-6xl mt-6">{t.reservation} {short}</h1>
+        {/* Không in tiêu đề và mã đặt bàn ra trang (khách thấy thừa); tiêu đề chỉ còn cho trình đọc màn hình. */}
+        <h1 className="sr-only">{t.reservation}</h1>
         <BookingView code={code} lang={lang} phone={c.site.phone} tel={telHref(c.site.phone)} />
       </div>
     </Wrap>

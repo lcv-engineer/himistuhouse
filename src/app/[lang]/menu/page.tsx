@@ -1,4 +1,3 @@
-import { Spot } from "@/components/fx";
 import { PageHead, Wrap } from "@/components/ui";
 import { happyHourOf, MenuItem } from "@/lib/content";
 import { DICT, fill } from "@/lib/i18n";
@@ -40,8 +39,7 @@ export default async function Menu({ params }: { params: Promise<{ lang: string 
         )}
       </PageHead>
       <Wrap className="py-16">
-        {/* Quầng sáng như ánh nến đi theo con trỏ; món có ảnh thì ảnh bay theo khi rê lên */}
-        <Spot preview className="menu-light max-w-3xl">
+        <div className="max-w-3xl">
           {cats.map((cat) => (
             <section key={cat.id} id={cat.slug} className="pt-16 pb-12 scroll-mt-24">
               <h2 className="serif text-4xl md:text-5xl mb-10 md:mb-12">{cat.name[lang]}</h2>
@@ -50,7 +48,7 @@ export default async function Menu({ params }: { params: Promise<{ lang: string 
                   {group && <h3 className="eyebrow text-muted mb-6">{group}</h3>}
                   <ul className="space-y-8">
                     {items.map((i) => (
-                      <li key={i.id} className="menu-row" data-img={i.image || undefined}>
+                      <li key={i.id} className="menu-row">
                         <div className="flex items-baseline gap-3">
                           <span className="serif text-xl md:text-2xl min-w-0">{i.name}</span>
                           {i.tags.map((tag) => <span key={tag} className="chip shrink-0">{tag}</span>)}
@@ -66,7 +64,7 @@ export default async function Menu({ params }: { params: Promise<{ lang: string 
             </section>
           ))}
           <p className="text-sm text-muted mt-8">{t.menuNote}</p>
-        </Spot>
+        </div>
       </Wrap>
     </>
   );

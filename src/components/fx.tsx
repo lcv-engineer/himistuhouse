@@ -1,29 +1,11 @@
 "use client";
-// Các hiệu ứng phía client: thẻ nghiêng, hero (đèn soi + đốm sáng), số chạy, ảnh trôi, hàng ảnh kéo ngang (màn cong 3D),
-// quầng sáng theo con trỏ (kèm ảnh bay theo), bụi sao nổ chúc mừng.
+// Các hiệu ứng phía client: hero (đèn soi + đốm sáng), số chạy, ảnh trôi, hàng ảnh kéo ngang, bụi sao nổ chúc mừng.
+// Không còn hiệu ứng chạy theo con trỏ (khách thấy khựng, lag).
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ArrowIcon } from "./Icons";
 
 const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-/** Thẻ nghiêng nhẹ theo vị trí chuột, kèm vệt sáng lướt trên bề mặt. */
-export function Tilt({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const move = (e: React.PointerEvent) => {
-    const el = ref.current;
-    if (!el || e.pointerType !== "mouse") return;
-    const r = el.getBoundingClientRect();
-    const x = (e.clientX - r.left) / r.width - 0.5;
-    const y = (e.clientY - r.top) / r.height - 0.5;
-    el.style.setProperty("--ry", `${x * 10}deg`);
-    el.style.setProperty("--rx", `${-y * 10}deg`);
-    el.style.setProperty("--gx", `${(x + 0.5) * 100}%`);
-    el.style.setProperty("--gy", `${(y + 0.5) * 100}%`);
-  };
-  const leave = () => { ref.current?.style.setProperty("--rx", "0deg"); ref.current?.style.setProperty("--ry", "0deg"); };
-  return <div ref={ref} onPointerMove={move} onPointerLeave={leave} className={`tilt ${className}`}>{children}</div>;
-}
 
 /** Nội dung hero mờ dần khi cuộn xuống. */
 export function HeroFade({ children, className = "" }: { children: React.ReactNode; className?: string }) {
@@ -46,8 +28,8 @@ export function HeroFade({ children, className = "" }: { children: React.ReactNo
 type Mote = { x: number; y: number; r: number; vy: number; ph: number; sp: number; hue: number; a: number };
 
 /**
- * Hiệu ứng nền hero: một quầng đèn ấm đi theo chuột (như soi đèn trong quán tối)
- * và những đốm sáng bokeh trôi lên chậm. Trên điện thoại quầng đèn tự trôi.
+ * Hiệu ứng nền hero: một quầng đèn ấm tự trôi chậm (như soi đèn trong quán tối)
+ * và những đốm sáng bokeh trôi lên chậm.
  */
 export function HeroFx() {
   const light = useRef<HTMLDivElement>(null);
@@ -63,7 +45,7 @@ export function HeroFx() {
     const fine = matchMedia("(pointer: fine)").matches;
     const dpr = Math.min(devicePixelRatio || 1, 1.5);
     let w = 0, h = 0, raf = 0, visible = true, alive = true;
-    let mx = -9999, my = -9999, lx = 0, ly = 0, tx = 0, ty = 0;
+    let lx = 0, ly = 0, tx = 0, ty = 0;
 
     const size = () => {
       const b = hero.getBoundingClientRect();
@@ -81,13 +63,6 @@ export function HeroFx() {
       hue: Math.random() < 0.18 ? 356 : 28 + Math.random() * 16, a: 0.15 + Math.random() * 0.4,
     }));
 
-    const move = (e: PointerEvent) => {
-      const b = hero.getBoundingClientRect();
-      mx = e.clientX - b.left; my = e.clientY - b.top;
-      tx = mx; ty = my;
-    };
-    if (fine) hero.addEventListener("pointermove", move);
-
     const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) { cancelAnimationFrame(raf); raf = requestAnimationFrame(tick); } });
     io.observe(hero);
 
@@ -95,8 +70,7 @@ export function HeroFx() {
     function tick() {
       if (!alive || !visible || document.hidden) return;
       t += 1;
-      // Không có chuột thì quầng đèn tự đi một vòng chậm.
-      if (!fine || mx < -999) { tx = w * (0.62 + Math.sin(t / 260) * 0.2); ty = h * (0.45 + Math.cos(t / 330) * 0.16); }
+      tx = w * (0.62 + Math.sin(t / 260) * 0.2); ty = h * (0.45 + Math.cos(t / 330) * 0.16);
       lx += (tx - lx) * 0.07; ly += (ty - ly) * 0.07;
       lamp.style.transform = `translate3d(${lx}px, ${ly}px, 0)`;
 
@@ -105,9 +79,6 @@ export function HeroFx() {
       for (const m of motes) {
         m.y -= m.vy; m.ph += m.sp;
         m.x += Math.sin(m.ph) * 0.25;
-        // Đốm gần con trỏ dạt ra nhẹ.
-        const dx = m.x - mx, dy = m.y - my, dd = dx * dx + dy * dy;
-        if (dd < 22000) { const f = (1 - dd / 22000) * 1.4; m.x += (dx / Math.sqrt(dd + 1)) * f; m.y += (dy / Math.sqrt(dd + 1)) * f; }
         if (m.y < -30) { m.y = h + 30; m.x = Math.random() * w; }
         const tw = m.a * (0.6 + 0.4 * Math.sin(m.ph * 2));
         const g = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, m.r);
@@ -126,7 +97,6 @@ export function HeroFx() {
     return () => {
       alive = false;
       cancelAnimationFrame(raf); io.disconnect();
-      hero.removeEventListener("pointermove", move);
       document.removeEventListener("visibilitychange", vis);
       removeEventListener("resize", size);
     };
@@ -206,41 +176,11 @@ export function Slider({ children, prev, next, drag }: { children: React.ReactNo
     if (el) el.scrollBy({ left: d * el.clientWidth * 0.8, behavior: "smooth" });
   };
 
-  // Màn cong: ảnh càng xa giữa khung càng xoay nghiêng vào trong, nhỏ và tối đi một chút.
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || reduced()) return;
-    let raf = 0;
-    const bend = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const box = el.getBoundingClientRect();
-        const mid = box.left + box.width / 2;
-        for (const c of el.children as HTMLCollectionOf<HTMLElement>) {
-          const r = c.getBoundingClientRect();
-          const d = Math.max(-1.2, Math.min(1.2, (r.left + r.width / 2 - mid) / (box.width / 2)));
-          c.style.setProperty("--ry", `${(-d * 12).toFixed(2)}deg`);
-          c.style.setProperty("--sc", (1 - Math.abs(d) * 0.07).toFixed(3));
-          c.style.setProperty("--br", (1 - Math.min(1, Math.abs(d)) * 0.35).toFixed(3));
-        }
-      });
-    };
-    bend();
-    el.addEventListener("scroll", bend, { passive: true });
-    addEventListener("resize", bend);
-    return () => { el.removeEventListener("scroll", bend); removeEventListener("resize", bend); cancelAnimationFrame(raf); };
-  }, []);
-
+  // Kéo bằng chuột để lướt ngang, thả ra thì trượt tiếp theo đà.
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    let down = false, sx = 0, sl = 0, last = 0, v = 0, raf = 0;
-    const skew = () => {
-      v *= 0.9;
-      el.style.setProperty("--skew", `${Math.max(-6, Math.min(6, v * 0.25)).toFixed(2)}deg`);
-      if (Math.abs(v) > 0.05) raf = requestAnimationFrame(skew);
-      else el.style.setProperty("--skew", "0deg");
-    };
+    let down = false, sx = 0, sl = 0, last = 0, v = 0;
     const onDown = (e: PointerEvent) => {
       if (e.pointerType !== "mouse" || e.button !== 0) return;
       down = true; sx = e.clientX; sl = el.scrollLeft; last = e.clientX;
@@ -251,7 +191,6 @@ export function Slider({ children, prev, next, drag }: { children: React.ReactNo
       if (!down) return;
       el.scrollLeft = sl - (e.clientX - sx);
       v = last - e.clientX; last = e.clientX;
-      cancelAnimationFrame(raf); raf = requestAnimationFrame(skew);
     };
     const onUp = (e: PointerEvent) => {
       if (!down) return;
@@ -270,7 +209,6 @@ export function Slider({ children, prev, next, drag }: { children: React.ReactNo
       el.removeEventListener("pointermove", onMove);
       el.removeEventListener("pointerup", onUp);
       el.removeEventListener("pointercancel", onUp);
-      cancelAnimationFrame(raf);
     };
   }, []);
 
@@ -281,56 +219,6 @@ export function Slider({ children, prev, next, drag }: { children: React.ReactNo
         <button type="button" aria-label={prev} onClick={() => go(-1)} className="btn btn-ghost !p-3"><ArrowIcon className="w-4 h-4 rotate-180" /></button>
         <button type="button" aria-label={next} onClick={() => go(1)} className="btn btn-ghost !p-3"><ArrowIcon className="w-4 h-4" /></button>
       </div>
-    </div>
-  );
-}
-
-/**
- * Quầng sáng đi theo con trỏ trong một vùng (đặt --mx, --my và data-lit lên vùng đó).
- * preview: phần tử con có data-img thì hiện ảnh đó bay theo con trỏ, nghiêng theo hướng chuột đi.
- */
-export function Spot({ children, className = "", preview = false }: { children: React.ReactNode; className?: string; preview?: boolean }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const pic = useRef<HTMLImageElement>(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || !matchMedia("(pointer: fine)").matches || reduced()) return;
-    let x = 0, y = 0, px = 0, py = 0, vx = 0, raf = 0, src = "";
-    const loop = () => {
-      px += (x - px) * 0.14; py += (y - py) * 0.14;
-      vx = vx * 0.85 + (x - px) * 0.15;
-      if (pic.current) pic.current.style.transform = `translate3d(${px + 28}px, ${py - 90}px, 0) rotate(${Math.max(-14, Math.min(14, vx * 0.35)).toFixed(2)}deg)`;
-      raf = requestAnimationFrame(loop);
-    };
-    const move = (e: PointerEvent) => {
-      const b = el.getBoundingClientRect();
-      el.style.setProperty("--mx", `${e.clientX - b.left}px`);
-      el.style.setProperty("--my", `${e.clientY - b.top}px`);
-      el.dataset.lit = "1";
-      if (!preview || !pic.current) return;
-      // Ảnh định vị tuyệt đối trong vùng này: <main> có transform nên position: fixed sẽ bị lệch.
-      x = e.clientX - b.left; y = e.clientY - b.top;
-      const next = (e.target as Element).closest<HTMLElement>("[data-img]")?.dataset.img ?? "";
-      if (next !== src) {
-        src = next;
-        if (src) { pic.current.src = src; if (!raf) { px = x; py = y; raf = requestAnimationFrame(loop); } }
-        pic.current.dataset.on = src ? "1" : "";
-      }
-    };
-    const leave = () => {
-      delete el.dataset.lit;
-      src = "";
-      if (pic.current) pic.current.dataset.on = "";
-    };
-    el.addEventListener("pointermove", move);
-    el.addEventListener("pointerleave", leave);
-    return () => { el.removeEventListener("pointermove", move); el.removeEventListener("pointerleave", leave); cancelAnimationFrame(raf); };
-  }, [preview]);
-  return (
-    <div ref={ref} className={`spot ${className}`}>
-      {children}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      {preview && <img ref={pic} alt="" className="float-pic" aria-hidden="true" />}
     </div>
   );
 }

@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import Reveal from "./Reveal";
-import { Spot } from "./fx";
 import Logo from "./Logo";
 import { FacebookIcon, InstagramIcon, MessengerIcon, ZaloIcon } from "./Icons";
 import { Content, Lang, telHref } from "@/lib/content";
@@ -58,11 +57,11 @@ export default function Footer({ lang, c }: { lang: Lang; c: Content }) {
       </div>
       {/* Logo lớn tràn ngang ở đáy trang, trồi lên khi cuộn tới */}
       <Reveal className="mx-auto max-w-[80rem] px-4 md:px-10 pb-8 overflow-hidden">
-        {/* Bản logo vàng nằm chồng lên, chỉ lộ ra trong quầng sáng quanh con trỏ (điện thoại: tự quét ngang). */}
-        <Spot className="foot-spot relative">
+        {/* Bản logo vàng nằm chồng lên, lộ ra trong một quầng sáng tự quét ngang. */}
+        <div className="relative">
           <Image src="/images/logo.png" alt="" width={640} height={197} className="foot-logo w-full h-auto" />
           <Image src="/images/logo.png" alt="" width={640} height={197} className="foot-logo foot-lit absolute inset-0 w-full h-auto" aria-hidden="true" />
-        </Spot>
+        </div>
       </Reveal>
     </footer>
   );

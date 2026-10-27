@@ -53,8 +53,8 @@ export const DEFAULTS: Content = {
     name: "Himitsu",
     intro: { vi: "Chúng tôi pha cocktail thật ngon và trò chuyện cùng mọi người.", en: "We make really good cocktails & talk to people." },
     address: {
-      vi: "154 Bis Trần Quang Khải, Phường Tân Định (Quận 1 cũ), TP. Hồ Chí Minh",
-      en: "154 Bis Tran Quang Khai, Tan Dinh Ward (former District 1), Ho Chi Minh City",
+      vi: "154 Bis Trần Quang Khải, Phường Tân Định, TP. Hồ Chí Minh",
+      en: "154 Bis Tran Quang Khai, Tan Dinh Ward, Ho Chi Minh City",
     },
     directions: { vi: "", en: "" },
     phone: "096 318 14 79",

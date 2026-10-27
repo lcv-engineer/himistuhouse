@@ -1,7 +1,6 @@
 "use client";
 // Phòng trưng bày các ly signature: mỗi ly một thẻ lớn dính ở đầu màn hình, thẻ sau trượt đè lên thẻ trước (thẻ trước lùi sâu và tối dần).
 // Ảnh mở ra qua một cổng tròn theo nhịp cuộn, rồi tia quét hologram chạy dọc ảnh; ly lơ lửng nhẹ.
-// Máy tính có thêm "kính soi": vòng tròn theo con trỏ phóng to ảnh ngay tại chỗ đó.
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 
@@ -40,28 +39,14 @@ export default function Showcase({ items }: { items: Exhibit[] }) {
     return () => { removeEventListener("scroll", on); removeEventListener("resize", on); cancelAnimationFrame(raf); };
   }, []);
 
-  // Kính soi theo con trỏ (chỉ chuột).
-  const lens = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (e.pointerType !== "mouse") return;
-    const el = e.currentTarget, b = el.getBoundingClientRect();
-    el.style.setProperty("--lx", `${e.clientX - b.left}px`);
-    el.style.setProperty("--ly", `${e.clientY - b.top}px`);
-    el.dataset.lens = "1";
-  };
-  const unlens = (e: React.PointerEvent<HTMLDivElement>) => { delete e.currentTarget.dataset.lens; };
-
   return (
     <div ref={ref} className="sig-deck">
       {items.map((it, i) => (
         <article key={it.key} className={`sig-card${it.name ? "" : " sig-wide"}`} style={{ "--i": i } as React.CSSProperties}>
           <div className="sig-stage">
-            <div className="sig-pic" onPointerMove={lens} onPointerLeave={unlens}>
+            <div className="sig-pic">
               <div className="sig-float">
                 <Image src={it.image} alt={it.name ?? ""} fill sizes="(min-width:768px) 60vw, 100vw" className="object-cover" />
-              </div>
-              {/* Bản phóng to, chỉ lộ ra trong vòng kính soi */}
-              <div className="sig-zoom" aria-hidden="true">
-                <Image src={it.image} alt="" fill sizes="(min-width:768px) 60vw, 100vw" className="object-cover" />
               </div>
               <span className="sig-beam" aria-hidden="true" />
               <span className="sig-scan" aria-hidden="true" />

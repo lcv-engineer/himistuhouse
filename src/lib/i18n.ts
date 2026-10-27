@@ -30,7 +30,7 @@ const en = {
   orCall: "or call", when: "When?", date: "Date", pickAnother: "Pick another date", guests: "Guests", guestsN: "{n} guests", guest1: "1 guest",
   time: "Time", hhLegend: "HH = during Happy Hour", loLegend: "L.O = last order", closedDay: "We are closed on this day.", noSlots: "No more times today — please pick another date.",
   who: "Who’s coming?", edit: "Edit", name: "Name", phone: "Phone number", phoneHint: "We only call if needed. Vietnamese number, e.g. {p}", email: "Email (optional)",
-  area: "Seating area", areaHint: "The floor plan is a guide — we will seat you as close to your choice as we can.",
+  area: "Seating area", areaHint: "The floor plan is a guide — tell us where you would like to sit in the note below.",
   areas: ["At the bar", "Window table", "Outdoor", "Upstairs", "Either is fine"], floors: ["Ground floor", "Upstairs"],
   note: "Note", notePh: "Allergies, an occasion, a drink you still remember…",
   // Nhãn cũ (đặt bàn trước 23.10) – chỉ dùng để hiển thị lại.
@@ -93,7 +93,7 @@ const vi: Dict = {
   orCall: "hoặc gọi", when: "Khi nào?", date: "Ngày", pickAnother: "Chọn ngày khác", guests: "Số khách", guestsN: "{n} khách", guest1: "1 khách",
   time: "Giờ", hhLegend: "HH = trong Happy Hour", loLegend: "L.O = gọi món cuối (last order)", closedDay: "Quán nghỉ ngày này.", noSlots: "Hôm nay đã hết giờ đặt — vui lòng chọn ngày khác.",
   who: "Ai sẽ đến?", edit: "Sửa", name: "Tên", phone: "Số điện thoại", phoneHint: "Chúng tôi chỉ gọi khi cần. Số Việt Nam, vd {p}", email: "Email (không bắt buộc)",
-  area: "Khu vực quán", areaHint: "Sơ đồ để tham khảo — quán sẽ xếp chỗ gần nhất với lựa chọn của bạn.",
+  area: "Khu vực quán", areaHint: "Sơ đồ để tham khảo — muốn ngồi khu nào, bạn ghi vào ghi chú bên dưới nhé.",
   areas: ["Quầy bar", "Bàn cửa sổ", "Ngoài trời", "Tầng 2", "Chỗ nào cũng được"], floors: ["Tầng 1", "Tầng 2"],
   note: "Ghi chú", notePh: "Dị ứng, một dịp đặc biệt, một ly bạn vẫn còn nhớ…",
   occasions: ["Sinh nhật", "Kỷ niệm", "Hẹn hò đầu", "Lần đầu đến"], seatings: ["Ngồi quầy (trò chuyện với bartender)", "Bàn", "Chỗ nào cũng được"],

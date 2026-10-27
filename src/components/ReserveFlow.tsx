@@ -46,7 +46,7 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, a
   const date = picked || firstOpen;
   const [guests, setGuests] = useState(2);
   const [chosen, setTime] = useState("");
-  const [f, setF] = useState({ name: "", phone: "", email: "", note: "", area: -1, agree: false });
+  const [f, setF] = useState({ name: "", phone: "", email: "", note: "", agree: false });
   const [floor, setFloor] = useState(0);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
@@ -90,7 +90,6 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, a
         method: "POST", headers: { "content-type": "application/json" },
         body: JSON.stringify({
           name: f.name, phone: f.phone, email: f.email, note: f.note, date, time, guests, lang,
-          seating: VI.areas[f.area] ?? "",
         }),
       });
       const j = await r.json();
@@ -101,7 +100,6 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, a
   }
 
   if (done) {
-    const tags = [t.areas[f.area]].filter(Boolean);
     return (
       <div className="fx-up">
         <Burst />
@@ -113,11 +111,10 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, a
           <dt className="text-fg/70">{t.guestsLabel}</dt><dd className="font-medium">{guests === 1 ? t.guest1 : fill(t.guestsN, { n: guests })}</dd>
           <dt className="text-fg/70">{t.nameLabel}</dt><dd className="font-medium">{f.name}</dd>
         </dl>
-        {(tags.length > 0 || f.note) && (
+        {f.note && (
           <div className="mt-10 border-l border-fg/60 pl-5">
             <p className="text-sm text-fg/80">{t.bartenderRead}</p>
-            <div className="flex flex-wrap gap-2 mt-3">{tags.map((x) => <span key={x} className="chip font-medium">{x}</span>)}</div>
-            {f.note && <p className="text-sm mt-3 text-fg/85">“{f.note}”</p>}
+            <p className="text-sm mt-3 text-fg/85">“{f.note}”</p>
           </div>
         )}
         <p className="text-sm text-fg/80 mt-10 max-w-md">{fill(t.holdNote, { p: phone })}</p>
@@ -212,13 +209,8 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, a
 
           <fieldset className="mt-10 border border-line px-5 pb-6 pt-2 min-w-0">
             <legend className="px-2 font-semibold">{t.area}</legend>
-            <div className="flex flex-wrap gap-2 mt-4">
-              {t.areas.map((x, i) => (
-                <button key={x} type="button" className="pill" aria-pressed={f.area === i} onClick={() => setF({ ...f, area: f.area === i ? -1 : i })}>{x}</button>
-              ))}
-            </div>
-            {/* Sơ đồ quán (mẫu) để khách hình dung khu vực */}
-            <div className="mt-6 flex gap-2" role="tablist">
+            {/* Sơ đồ quán (mẫu) để khách hình dung khu vực; muốn ngồi đâu thì ghi vào ghi chú. */}
+            <div className="mt-4 flex gap-2" role="tablist">
               {t.floors.map((x, i) => (
                 <button key={x} type="button" role="tab" aria-selected={floor === i} onClick={() => setFloor(i)}
                   className={`px-4 py-1.5 text-sm border ${floor === i ? "bg-fg text-[#111] border-fg" : "border-line hover:border-fg/70"}`}>{x}</button>

@@ -85,8 +85,8 @@ export function PhotoRow({ images, lang }: { images: GalleryImage[]; lang: Lang 
   return (
     <Slider prev={t.prev} next={t.next} drag={t.drag}>
       {images.map((g, i) => (
-        <div key={g.src + i} className="slide relative h-[22rem] md:h-[30rem] overflow-hidden" style={{ aspectRatio: `${g.w} / ${g.h}` }}>
-          <Image src={g.src} alt={g.alt[lang]} fill sizes="(min-width:768px) 720px, 90vw" className="object-cover" draggable={false} />
+        <div key={g.src + i} className="slide relative overflow-hidden">
+          <Image src={g.src} alt={g.alt[lang]} fill sizes="(min-width:1024px) 460px, (min-width:640px) 50vw, 80vw" className="object-cover" draggable={false} />
         </div>
       ))}
     </Slider>
