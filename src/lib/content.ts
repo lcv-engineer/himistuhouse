@@ -8,7 +8,8 @@ export type GalleryImage = { src: string; w: number; h: number; alt: Bi };
 
 /** group: nhóm nhỏ trong danh mục (vd Vodka, Gin); bottle: giá chai, hiện thành "250/1380". */
 export type MenuItem = { id: string; name: string; desc: Bi; price: number; bottle?: number; group?: string; tags: string[]; signature: boolean; image: string; visible: boolean };
-export type MenuCat = { id: string; slug: string; name: Bi; visible: boolean; items: MenuItem[] };
+/** mood: dòng chữ đậm ngắn dưới tên danh mục (vd Light · Fresh · Opening); note: đoạn mô tả đi kèm. */
+export type MenuCat = { id: string; slug: string; name: Bi; mood?: Bi; note?: Bi; visible: boolean; items: MenuItem[] };
 /** weekday: -1 = mỗi ngày, 0 = Thứ Hai … 6 = Chủ nhật */
 export type Promo = { id: string; title: Bi; weekday: number; start: string; end: string; discount: string; label: Bi; desc: Bi; image: string; visible: boolean };
 export type EventItem = { id: string; slug: string; title: Bi; date: string; start: string; end: string; price: Bi; desc: Bi; image: string; published: boolean; rsvp: boolean };
@@ -45,7 +46,9 @@ let seq = 0;
 const item = (name: string, desc: string, price: number, extra: Partial<MenuItem> = {}): MenuItem => ({
   id: `i${++seq}`, name, desc: same(desc), price, tags: [], signature: false, image: "", visible: true, ...extra,
 });
-const light = { tags: ["Light"] };
+const sig = { signature: true };
+// Rượu mạnh theo nhóm (Vodka, Gin…), giá theo ly, không mô tả.
+const spirits = (group: string, list: [string, number][]) => list.map(([name, price]) => item(name, "", price, { group }));
 const H = (closed = false): Hours => ({ open: "17:00", close: "01:00", last: "00:30", closed });
 
 export const DEFAULTS: Content = {
@@ -69,47 +72,110 @@ export const DEFAULTS: Content = {
     menuPdf: "",
   },
   hours: [H(), H(), H(), H(), H(), H(), H()],
-  // Món đọc được từ video bản cũ (14/10). Vang, Sake chưa có món; Rượu mạnh, Không cồn, Bar Bites lấy từ file góp ý 23.10.
+  // Theo menu in MENU_HIMITSU_MAIN.pdf (27/10). Chấm đỏ trong menu in = signature.
   menu: [
-    { id: "c1", slug: "aperitif", name: same("Aperitif"), visible: true, items: [
-      item("Kyoho Zen Fizz", "Gin · Kyoho · Tantakatan shiso · Greek yogurt · Indian tonic", 290, light),
-      item("Shibuya Heat", "Genmaicha tea-infused whisky · Red bean · Rosso vermouth · Red miso · CO2", 290),
-      item("Gin Tonic", "Gin · Lime wedge · Tonic", 250, light),
-      item("Chu-High", "Shochu · Lime wedge · Soda", 250, light),
-      item("Umeshu Shiso Sonic", "Tantakatan shiso · Lime wedge · Sonic", 250, light),
-      item("Spumoni", "Campari · Grapefruit · Tonic water", 250, light),
-      item("Cuba Libre", "Rum · Lime wedge · Coke", 250, light),
-      item("Whisky Highball", "Whisky · Soda", 250, light),
+    { id: "c1", slug: "aperitif", name: same("Aperitif"), visible: true,
+      mood: { vi: "Nhẹ · Tươi · Mở vị", en: "Light · Fresh · Opening" },
+      note: {
+        vi: "Khởi đầu nhẹ nhàng: tươi mát, thanh và dễ uống. Những ly này mở vị giác trước khi bạn chuyển sang các hương vị đậm hơn.",
+        en: "A gentle beginning: refreshing, delicate and inviting. These cocktails are designed to open the palate before moving into richer flavors.",
+      },
+      items: [
+        item("Kyoho Zen Fizz", "Gin · Kyoho · Tantakatan shiso · Greek yogurt · Indian tonic", 290, sig),
+        item("Shibuya Heat", "Genmaicha tea-infused whisky · Red bean · Rosso vermouth · Red miso · CO2", 290, sig),
+        item("Gin Tonic", "Gin · Lime wedge · Tonic", 250),
+        item("Chu-High", "Shochu · Lime wedge · Soda", 250),
+        item("Umeshu Shiso Sonic", "Tantakatan shiso · Lime wedge · Sonic", 250),
+        item("Spumoni", "Campari · Grapefruit · Tonic water", 250),
+        item("Cuba Libre", "Rum · Lime wedge · Coke", 250),
+        item("Whisky Highball", "Whisky · Soda", 250),
+      ]},
+    { id: "c2", slug: "all-night", name: same("All Night"), visible: true,
+      mood: { vi: "Đậm · Umami · Nhiều tầng", en: "Bold · Umami · Complex" },
+      note: {
+        vi: "Trái tim của Himitsu: nhiều tầng, giàu cá tính và lấy cảm hứng sâu từ hương vị Nhật. Đây là phần mang dấu ấn rõ nhất của quán.",
+        en: "The core of the Himitsu experience: layered, expressive and deeply inspired by Japanese flavor. This section carries the strongest identity of the house.",
+      },
+      items: [
+        item("Zen Leaf Sour", "Pandan-infused rum · Imo shochu · Matcha · Agave · Coconut whey", 290, { ...sig, image: ph("g58") }),
+        item("Lychee Martini", "Gin · Vodka · House blanc vermouth · Lychee", 260),
+        item("Tropic Thunder", "Gin · Apricot · Pineapple · Lemon", 260),
+        item("Twentieth Century", "Gin · House blanc vermouth · Cacao white · Lemon · Orange bitter", 260),
+        item("Paradise", "Gin · Apricot · Orange · Lemon", 260),
+        item("Banana Calling", "Gin · Banana · Fino sherry · Lemon", 260),
+        item("Aviation", "Gin · Violet · Luxardo maraschino · Lemon", 260),
+        item("Hemingway Daiquiri", "Rum · Grapefruit · Lime · Luxardo maraschino", 260),
+        item("Tommy’s Margarita", "Tequila · Agave syrup · Lime", 260),
+        item("Port of Spain", "Mezcal · Orgeat · House aromatic bitter · Lime", 280),
+        item("Whisky Sour", "Whiskey · Lemon · Syrup · Egg white (optional)", 260),
+        item("Penicillin", "Whiskey · Honey · Ginger syrup · Lemon · Smoke scene", 260),
+        item("“Yamato” Penicillin", "Whisky · Osmanthus honey · Wasabi · Tamarind cordial", 290, sig),
+        item("Koyo Boulevard", "Whisky · Umeshu amaro · House rosso vermouth · Rhubarb bitter", 290, { ...sig, image: ph("g53") }),
+        item("Old Fashioned", "Whiskey · Demerara syrup · House aromatic bitter", 260),
+        item("Martini", "Gin · House blanc vermouth", 260),
+        item("Death & Taxes", "Gin · House whiskey · House rosso vermouth · D.O.M", 260),
+        item("Mezcal Negroni", "Mezcal · House rosso vermouth · Campari", 280),
+        item("Mezcal Dirty Martini", "Mezcal · House blanc vermouth · Olive brine", 280),
+      ]},
+    { id: "c3", slug: "after", name: same("After"), visible: true,
+      mood: { vi: "Kiểu tráng miệng · Mượt · Đọng vị", en: "Dessert-style · Smooth · Lingering" },
+      note: {
+        vi: "Kết cấu mềm mại, dễ chịu như một món tráng miệng. Dành cho một cái kết nhẹ nhàng, một cuộc trò chuyện chậm hơn, hay một dư vị ngọt ngào cuối buổi.",
+        en: "Soft textures and dessert-like comfort. These drinks are made for a gentle finish, a slower conversation, or a sweet last impression.",
+      },
+      items: [
+        item("Pink Squirrel", "Crème de noyaux liqueur · Cacao white · Fresh cream · Milk", 260),
+        item("Golden Cadillac", "Galliano liqueur · Cacao white · Fresh cream · Milk", 260),
+        item("Banshee", "Banana liqueur · Cacao white · Fresh cream · Milk", 260),
+        item("Grasshopper", "Cacao white · Green mint · Fresh cream · Milk", 260),
+        item("Velvet Hammer", "Vodka · Triple sec · Cacao white · Grenadine · Fresh cream · Milk", 260),
+        item("Bee’s Kiss", "Rum · Honey · Fresh cream · Milk", 260),
+        item("Dominicana", "Rum · Coffee liqueur · Fresh cream · Milk", 260),
+        item("Silk Stocking", "Tequila · Cacao white · Fresh cream · Milk", 260),
+        item("Hair of the Dog", "Whiskey · Honey · Fresh cream · Milk", 260),
+        item("Brandy Alexander", "Brandy · Cacao brown · Fresh cream · Milk", 260),
+      ]},
+    // Vang, Sake: giá ly / giá chai.
+    { id: "c4", slug: "wine", name: { vi: "Vang", en: "Wine" }, visible: true,
+      mood: { vi: "Cân bằng · Dễ uống · Thong thả", en: "Balanced · Sessionable · Effortless" },
+      note: {
+        vi: "Cho những cuộc trò chuyện chậm và những đêm dài. Dễ chịu, cân bằng và dễ quay lại, từ ngụm đầu tiên đến vòng cuối cùng.",
+        en: "Made for slow conversations and lingering nights. Comforting, balanced and easy to return to — drinks you can enjoy from the first sip to the very last round.",
+      },
+      items: [
+        item("White wine", "Octavo Arte, Verdejo, Spain - 2022", 250, { bottle: 1380 }),
+        item("Red wine", "Red Bridge, Shiraz, Australia - 2022", 250, { bottle: 1380 }),
+        item("Bubbles", "Brut Millesimato, blend white grapes, Italy - NV", 250, { bottle: 1380 }),
+      ]},
+    { id: "c5", slug: "sake", name: same("Sake"), visible: true, items: [
+      item("Sawanoi Tokubetsu Junmai", "Light body, fruity, savory", 200, { bottle: 1680 }),
+      item("Hamafukutsuru Junmaishu Lupin", "Light body, dry, fruity", 250, { bottle: 2180 }),
+      item("Amanoto Junmai Daiginjo 45", "Full body, fruity, floral", 250, { bottle: 2180 }),
+      item("Amabuki Junmai Daiginjo Bananakobo", "Light body, fruity, savory", 270, { bottle: 2280 }),
+      item("Afuri Ringosan 77 Junmai Ginjo", "Full body, fruity, refreshing", 290, { bottle: 2480 }),
+      item("Afuri Junmai Yamahaishikomi Omachi", "Full body, savory, rice", 290, { bottle: 2480 }),
     ]},
-    { id: "c2", slug: "all-night", name: same("All Night"), visible: true, items: [
-      item("Zen Leaf Sour", "Pandan-infused Japanese whisky · Matcha · Agave · Coconut whey", 290, { signature: true, image: ph("g58") }),
-      item("Koyo Boulevard", "Whisky · Umeshu amaro · House rosso vermouth · Rhubarb bitters", 290, { signature: true, image: ph("g53") }),
-      item("Lychee Martini", "Gin · House vodka · House blanc vermouth · Lychee", 260),
-      item("Tropic Thunder", "Gin · Apricot · Pineapple · Lemon", 260),
-      item("Twentieth Century", "Gin · House blanc vermouth · Cacao white · Lemon · Orange bitter", 260),
-      item("Paradise", "Gin · Apricot · Orange · Lemon", 260),
-      item("Banana Calling", "Gin · Banana · Fino sherry · Lemon", 260),
-      item("Aviation", "Gin · Violet · Luxardo maraschino · Lemon", 260),
-      item("Hemingway Daiquiri", "Rum · Grapefruit · Lime · Luxardo maraschino", 260),
-      item("Tommy’s Margarita", "Tequila · Agave syrup · Lime", 260),
-    ]},
-    { id: "c3", slug: "after", name: same("After"), visible: true, items: [
-      item("Pink Squirrel", "Crème de noyaux · Crème de cacao · Cream", 260),
-      item("Golden Cadillac", "Galliano · Crème de cacao · Cream", 260),
-    ]},
-    { id: "c4", slug: "wine", name: { vi: "Vang", en: "Wine" }, visible: true, items: [] },
-    { id: "c5", slug: "sake", name: same("Sake"), visible: true, items: [] },
     { id: "c6", slug: "spirits", name: { vi: "Rượu mạnh", en: "Spirits" }, visible: true, items: [
-      item("Absolut", "", 250, { group: "Vodka" }),
-      item("Tito’s", "", 300, { group: "Vodka" }),
+      ...spirits("Vodka", [["Absolut", 250], ["Tito’s", 300]]),
+      ...spirits("Gin", [["Roku", 250], ["The Botanist", 300], ["Monkey 47", 300], ["Hendrick’s", 300], ["Bombay Sapphire", 250]]),
+      ...spirits("Rum", [["Havana Club 7", 300], ["Diplomatico Exclusiva", 300], ["Kraken", 250]]),
+      ...spirits("Tequila", [["Reserva 1800 Reposado", 300], ["Jose Cuervo Reposado", 300], ["Altos", 250]]),
+      ...spirits("Brandy", [["Rémy Martin VSOP", 500], ["Hennessy VS", 400]]),
+      ...spirits("Japanese whisky", [["Kakubin Suntory Whisky", 250], ["Hibiki Harmony", 850], ["Kamiki - Original", 750], ["Yamazaki 12YO", 1400]]),
+      ...spirits("Scotch whisky", [["The Balvenie 12YO", 550], ["Glenfiddich 12YO", 350], ["Laphroaig 10YO", 400], ["Caol Ila 12YO", 550], ["Singleton 12YO", 300]]),
+      ...spirits("Irish & blended Scotch whisky", [["JW Black Label", 250], ["Jameson Irish Whiskey", 250], ["Monkey Shoulder", 300], ["Chivas Mizunara 12YO", 350], ["The Deacon", 400]]),
     ]},
     { id: "c7", slug: "zero-alc", name: { vi: "Không cồn", en: "Zero-alc" }, visible: true, items: [
       item("Hugo Spritz", "Cantine Sgarzi Luigi\nElderflower · Citrus · Mint", 200),
-      item("Coco · Cha", "Coconut · Yuzu · Matcha creamy", 200),
+      item("Coco – Cha", "Coconut · Yuzu · Matcha creamy", 200),
       item("Midori Fizz", "Grape · Miso · Melon CO2", 200),
     ]},
+    { id: "c9", slug: "mineral-water", name: { vi: "Nước khoáng", en: "Mineral water" }, visible: true, items: [
+      item("San Pellegrino, Italy", "", 90, { desc: { vi: "Có ga", en: "Sparkling" } }),
+      item("Acqua Panna, Italy", "", 90, { desc: { vi: "Không ga", en: "Still" } }),
+    ]},
     { id: "c8", slug: "bar-bites", name: same("Bar Bites"), visible: true, items: [
-      item("Charcuterie platter", "Ham · Mortadella · Salami · Olives · Brie · Apricots", 300),
+      item("Charcuterie platter", "Ham · Mortadella · Salami · Olives · Brie · Emmental · Apricots", 300),
       item("Tipsy Bites", "Mixed olives · Sunrise tomato · Smoked paprika", 120),
       item("Salt & Smoke", "Cured meat · Mixed olives · Sunrise tomato · Smoked paprika", 160),
       item("Sweet & Salt", "Prosciutto · Mango · Basil · Balsamic", 160),

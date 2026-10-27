@@ -164,6 +164,8 @@ export function MenuSection({ c, save }: P) {
     { k: "name", label: "Tên", type: "bi", required: true },
     { k: "slug", label: "Slug (đường dẫn)", type: "text", required: true, half: true },
     { k: "order", label: "Thứ tự", type: "number", half: true },
+    { k: "mood", label: "Dòng chữ đậm dưới tên (vd Light · Fresh · Opening)", type: "bi" },
+    { k: "note", label: "Mô tả danh mục", type: "bitext" },
     { k: "visible", label: "Hiển thị", type: "check" },
   ];
   const ITEM_FIELDS: Field[] = [
@@ -173,7 +175,7 @@ export function MenuSection({ c, save }: P) {
     { k: "bottle", label: "Giá chai (nếu có, vd 1380)", type: "number", half: true, hint: "Có giá chai thì menu hiện “250/1380”." },
     { k: "group", label: "Nhóm nhỏ (vd Vodka, Gin)", type: "text", half: true, hint: "Dùng cho Rượu mạnh: món cùng nhóm hiện dưới một tiêu đề." },
     { k: "desc", label: "Thành phần / mô tả", type: "bi" },
-    { k: "tags", label: "Nhãn (cách nhau bằng dấu phẩy, vd Light)", type: "tags" },
+    { k: "tags", label: "Nhãn (cách nhau bằng dấu phẩy)", type: "tags" },
     { k: "image", label: "Ảnh (dùng cho món Signature ở trang chủ)", type: "image" },
     { k: "signature", label: "Signature (hiện ở trang chủ)", type: "check" },
     { k: "visible", label: "Hiển thị", type: "check" },
@@ -181,7 +183,7 @@ export function MenuSection({ c, save }: P) {
 
   const saveCats = (rows: CatRow[]) => {
     const menu: MenuCat[] = [...rows].sort((a, b) => a.order - b.order)
-      .map((r) => ({ id: r.id, name: r.name, visible: r.visible, slug: r.slug || slugify(r.name.vi), items: r.items ?? [] }));
+      .map((r) => ({ id: r.id, name: r.name, mood: r.mood, note: r.note, visible: r.visible, slug: r.slug || slugify(r.name.vi), items: r.items ?? [] }));
     return save({ ...c, menu });
   };
   const saveItems = (rows: ItemRow[]) =>

@@ -42,7 +42,13 @@ export default async function Menu({ params }: { params: Promise<{ lang: string 
         <div className="max-w-3xl">
           {cats.map((cat) => (
             <section key={cat.id} id={cat.slug} className="pt-16 pb-12 scroll-mt-24">
-              <h2 className="serif text-4xl md:text-5xl mb-10 md:mb-12">{cat.name[lang]}</h2>
+              <header className="mb-10 md:mb-12">
+                <h2 className="serif text-4xl md:text-5xl">{cat.name[lang]}</h2>
+                {cat.mood?.[lang] && <p className="mt-4 text-sm font-semibold uppercase tracking-[.12em] text-red">{cat.mood[lang]}</p>}
+                {cat.note?.[lang] && <p className="mt-3 max-w-2xl text-fg/75 leading-relaxed">{cat.note[lang]}</p>}
+                {/* Danh mục có giá chai (Vang, Sake): ghi rõ cột giá là ly / chai. */}
+                {cat.items.some((i) => i.visible && i.bottle) && <p className="mt-6 text-right text-xs font-semibold uppercase tracking-[.12em] text-fg/60">{t.glassBottle}</p>}
+              </header>
               {byGroup(cat.items.filter((i) => i.visible)).map(({ group, items }) => (
                 <div key={group || "_"} className="mb-10 last:mb-0">
                   {group && <h3 className="eyebrow text-muted mb-6">{group}</h3>}

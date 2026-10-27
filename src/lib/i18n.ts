@@ -24,7 +24,7 @@ const en = {
   days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
   moments: "Moments", moreMoments: "See more moments", prev: "Previous", next: "Next",
   // menu
-  drinksFood: "Drinks & food", menuTitle: "Menu", hhPill: "Happy Hour · {d} drinks {s}–{e}", menuNote: "Menu price is in ’000 VND - Tax and service charges are not included",
+  drinksFood: "Drinks & food", menuTitle: "Menu", hhPill: "Happy Hour · {d} drinks {s}–{e}", menuNote: "Menu price is in ’000 VND - Tax and service charges are not included", glassBottle: "Glass / Bottle",
   // reserve
   reserveEyebrow: "Reserve", reserveTitle: "Save a seat for you", reserveSub: "Pick a date, party size and time. Your table is confirmed instantly when available.",
   orCall: "or call", when: "When?", date: "Date", pickAnother: "Pick another date", guests: "Guests", guestsN: "{n} guests", guest1: "1 guest",
@@ -88,7 +88,7 @@ const vi: Dict = {
   weekTitle: "Một lý do để đến mỗi tối", weekSub: "Mỗi nhóm menu có một tối giảm 30%, từ 8PM tới 1AM.",
   days: ["Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy", "Chủ nhật"],
   moments: "Khoảnh khắc", moreMoments: "Xem thêm khoảnh khắc", prev: "Trước", next: "Tiếp",
-  drinksFood: "Đồ uống & đồ ăn", menuTitle: "Menu", hhPill: "Happy Hour · {d} đồ uống {s}–{e}", menuNote: "Giá menu tính theo ’000 VND - Chưa bao gồm thuế và phí dịch vụ",
+  drinksFood: "Đồ uống & đồ ăn", menuTitle: "Menu", hhPill: "Happy Hour · {d} đồ uống {s}–{e}", menuNote: "Giá menu tính theo ’000 VND - Chưa bao gồm thuế và phí dịch vụ", glassBottle: "Ly / Chai",
   reserveEyebrow: "Đặt bàn", reserveTitle: "Giữ một chỗ cho bạn", reserveSub: "Chọn ngày, số khách và giờ. Bàn được xác nhận ngay khi còn chỗ.",
   orCall: "hoặc gọi", when: "Khi nào?", date: "Ngày", pickAnother: "Chọn ngày khác", guests: "Số khách", guestsN: "{n} khách", guest1: "1 khách",
   time: "Giờ", hhLegend: "HH = trong Happy Hour", loLegend: "L.O = gọi món cuối (last order)", closedDay: "Quán nghỉ ngày này.", noSlots: "Hôm nay đã hết giờ đặt — vui lòng chọn ngày khác.",
