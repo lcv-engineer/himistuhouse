@@ -1,6 +1,6 @@
 import ReserveFlow from "@/components/ReserveFlow";
 import { Wrap } from "@/components/ui";
-import { happyHourOf, telHref } from "@/lib/content";
+import { happyHourOf, telHref, waHref } from "@/lib/content";
 import { DICT } from "@/lib/i18n";
 import { getLang } from "@/lib/lang";
 import { getContent } from "@/lib/content-server";
@@ -19,10 +19,11 @@ export default async function Reservation({ params }: { params: Promise<{ lang: 
         <p className="eyebrow fx-up">{t.reserveEyebrow}</p>
         <h1 className="serif text-5xl md:text-6xl mt-6 leading-[1.1] fx-up" style={{ "--d": ".1s" } as React.CSSProperties}>{t.reserveTitle}</h1>
         <p className="text-lg text-fg/80 mt-6 max-w-sm leading-relaxed">{t.reserveSub}</p>
-        <p className="text-sm text-fg/80 mt-6">{t.orCall} <a href={telHref(s.phone)} className="hover:underline">{s.phone}</a></p>
+        <p className="text-sm text-fg/80 mt-6">{t.orCall} <a href={telHref(s.phone)} className="hover:underline">{s.phone}</a>
+          {s.whatsapp && <> · <a href={waHref(s.whatsapp, t.waHi)} target="_blank" rel="noopener noreferrer" className="link">WhatsApp</a></>}</p>
       </div>
       <ReserveFlow
-        lang={lang} hours={c.hours} happyHour={happyHourOf(c) ?? null} phone={s.phone} address={s.address[lang]} mapsUrl={s.mapsUrl}
+        lang={lang} hours={c.hours} happyHour={happyHourOf(c) ?? null} phone={s.phone} whatsapp={s.whatsapp} address={s.address[lang]} mapsUrl={s.mapsUrl}
         holidays={c.holidays.map((h) => ({ date: h.date, label: h[lang] }))}
       />
     </Wrap>

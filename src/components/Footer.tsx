@@ -2,8 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import Reveal from "./Reveal";
 import Logo from "./Logo";
-import { FacebookIcon, InstagramIcon, MessengerIcon, ZaloIcon } from "./Icons";
-import { Content, Lang, telHref } from "@/lib/content";
+import { FacebookIcon, InstagramIcon, MessengerIcon, WhatsAppIcon, ZaloIcon } from "./Icons";
+import { Content, Lang, telHref, waHref } from "@/lib/content";
 import { DICT } from "@/lib/i18n";
 import { fmt12 } from "@/lib/time";
 
@@ -17,6 +17,7 @@ export default function Footer({ lang, c }: { lang: Lang; c: Content }) {
     { href: s.facebook, label: "Facebook", I: FacebookIcon },
     { href: s.messenger, label: "Messenger", I: MessengerIcon },
     { href: s.zalo, label: "Zalo", I: ZaloIcon },
+    { href: waHref(s.whatsapp), label: "WhatsApp", I: WhatsAppIcon },
   ].filter((x) => x.href);
   return (
     <footer className="border-t border-line bg-bg2 mt-24">

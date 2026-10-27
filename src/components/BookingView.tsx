@@ -1,13 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
 import { tagLabel } from "./ReserveFlow";
-import type { Lang } from "@/lib/content";
+import { waHref, type Lang } from "@/lib/content";
 import { DICT, fill } from "@/lib/i18n";
 import { fmt12, fmtDate } from "@/lib/time";
 
 type B = { code: string; name: string; date: string; time: string; guests: number; status: string; occasion: string; seating: string; taste: string[]; note: string; eventTitle: string };
 
-export default function BookingView({ code, lang, phone, tel }: { code: string; lang: Lang; phone: string; tel: string }) {
+export default function BookingView({ code, lang, phone, tel, whatsapp }: { code: string; lang: Lang; phone: string; tel: string; whatsapp: string }) {
   const t = DICT[lang];
   const [b, setB] = useState<B | null | "missing">(null);
   const [busy, setBusy] = useState(false);
@@ -62,7 +62,8 @@ export default function BookingView({ code, lang, phone, tel }: { code: string; 
           <button type="button" className="btn btn-danger mt-5" onClick={cancel} disabled={busy}>{t.cancelBtn}</button>
         </>
       )}
-      <p className="text-sm text-fg/80 mt-6">{t.orCall} <a href={tel} className="hover:underline">{phone}</a></p>
+      <p className="text-sm text-fg/80 mt-6">{t.orCall} <a href={tel} className="hover:underline">{phone}</a>
+        {whatsapp && <> · <a href={waHref(whatsapp, fill(t.waMine, { c: b.code || code }))} target="_blank" rel="noopener noreferrer" className="link">WhatsApp</a></>}</p>
     </>
   );
 }
