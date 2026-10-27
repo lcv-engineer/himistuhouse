@@ -3,7 +3,8 @@ import Link from "next/link";
 import Logo from "@/components/Logo";
 import Reveal from "@/components/Reveal";
 import EventRsvp from "@/components/EventRsvp";
-import { CountUp, HeroFade, HeroFx, Parallax, Tilt } from "@/components/fx";
+import { CountUp, HeroFade, HeroFx, Parallax } from "@/components/fx";
+import Showcase from "@/components/Showcase";
 import { More, OpenDaily, PhotoRow, Split, Title, Wrap } from "@/components/ui";
 import { DICT, fill } from "@/lib/i18n";
 import { getLang } from "@/lib/lang";
@@ -86,32 +87,11 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
             </div>
             <More href={`/${lang}/menu`}>{t.fullMenu}</More>
           </Reveal>
-          <div className="mt-10 md:mt-14 grid gap-x-4 gap-y-10 md:gap-x-6 grid-cols-2 lg:grid-cols-4">
-            {signature.map((it, i) => (
-              <Reveal key={it.id} delay={i * 120} className="min-w-0">
-                <Tilt className="group">
-                  <div className="wipe relative aspect-[4/5] overflow-hidden bg-card img-zoom">
-                    {it.image && <Image src={it.image} alt={it.name} fill sizes="(min-width:1024px) 300px, 50vw" className="object-cover" />}
-                    <span className="holo" />
-                    <span className="glare" />
-                  </div>
-                  <h3 className="serif text-xl md:text-2xl mt-5 tracking-tight"><span className="card-name">{it.name}</span></h3>
-                  <p className="text-xs md:text-sm text-fg/75 mt-2 leading-relaxed">{it.desc[lang]}</p>
-                </Tilt>
-              </Reveal>
-            ))}
-            {drinks.map((src, i) => (
-              <Reveal key={src + i} delay={(signature.length + i) * 120} className="min-w-0">
-                <Tilt>
-                  <div className="wipe relative aspect-[4/5] overflow-hidden bg-card img-zoom">
-                    <Image src={src} alt="" fill sizes="(min-width:1024px) 300px, 50vw" className="object-cover" />
-                    <span className="holo" />
-                    <span className="glare" />
-                  </div>
-                </Tilt>
-              </Reveal>
-            ))}
-          </div>
+          {/* Mỗi ly một thẻ lớn xếp chồng khi cuộn; ảnh chưa có tên (chờ anh Đạt gửi) chỉ hiện ảnh. Không giá, không nhãn trên hình (góp ý 23.10). */}
+          <Showcase items={[
+            ...signature.filter((it) => it.image).map((it) => ({ key: it.id, image: it.image, name: it.name, notes: it.desc[lang].split("·").map((x) => x.trim()).filter(Boolean) })),
+            ...drinks.map((src, i) => ({ key: src + i, image: src })),
+          ]} />
         </Wrap>
       )}
 
