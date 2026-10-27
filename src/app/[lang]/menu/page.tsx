@@ -1,9 +1,8 @@
 import { PageHead, Wrap } from "@/components/ui";
-import { happyHourOf, MenuItem } from "@/lib/content";
-import { DICT, fill } from "@/lib/i18n";
+import type { MenuItem } from "@/lib/content";
+import { DICT } from "@/lib/i18n";
 import { getLang } from "@/lib/lang";
 import { getContent } from "@/lib/content-server";
-import { fmt12 } from "@/lib/time";
 
 // Đọc nội dung mới ở mỗi lượt truy cập, xem [lang]/layout.tsx.
 export const instant = false;
@@ -26,18 +25,10 @@ export default async function Menu({ params }: { params: Promise<{ lang: string 
   const lang = await getLang(params);
   const c = await getContent();
   const t = DICT[lang];
-  const hh = happyHourOf(c);
   const cats = c.menu.filter((m) => m.visible && m.items.some((i) => i.visible));
   return (
     <>
-      <PageHead eyebrow={t.drinksFood} title={t.menuTitle}>
-        {hh && (
-          <p className="inline-flex items-center gap-2 border border-red/80 rounded-full px-4 py-2 text-sm font-semibold">
-            <span className="w-1.5 h-1.5 rounded-full bg-red" />
-            {fill(t.hhPill, { d: hh.discount, s: fmt12(hh.start), e: fmt12(hh.end) })}
-          </p>
-        )}
-      </PageHead>
+      <PageHead eyebrow={t.drinksFood} title={t.menuTitle} />
       <Wrap className="py-16">
         <div className="max-w-3xl">
           {cats.map((cat) => (
