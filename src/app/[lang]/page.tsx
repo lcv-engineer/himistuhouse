@@ -65,7 +65,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
         <Reveal className="relative aspect-[4/3] md:aspect-[4/5]">
           {/* Hiệu ứng mở rèm đặt ở thẻ con: clip-path trên chính <Reveal> làm IntersectionObserver coi như không thấy. */}
           <div className="wipe absolute inset-0 overflow-hidden img-zoom">
-            <Image src={c.photos.door} alt="" fill sizes="(min-width:768px) 600px, 100vw" className="object-cover" />
+            <Image src={c.photos.door} alt="" fill sizes="(min-width:768px) 600px, 100vw" className="object-cover object-[50%_62%]" />
           </div>
         </Reveal>
         <Reveal>
