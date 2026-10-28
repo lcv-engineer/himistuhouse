@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { readAll, writeAll, STATUSES, Status } from "@/lib/store";
 import { adminToken, checkLogin, isAdmin } from "@/lib/auth";
-import { notifyAll, telegramEnabled, whatsappEnabled } from "@/lib/telegram";
+import { notifyAll, telegramEnabled } from "@/lib/telegram";
 
 // Đăng nhập (email + mật khẩu) hoặc đăng xuất ({ logout: true }).
 export async function POST(req: Request) {
@@ -28,8 +28,8 @@ export async function GET(req: Request) {
   // ?telegram=test gửi tin thử và trả kết quả
   if (q.get("telegram") === "test") {
     const r = await notifyAll("✅ Himitsu: kết nối thông báo hoạt động.");
-    const parts = [r.telegram && `Telegram: ${r.telegram.ok ? "OK" : r.telegram.error}`, r.whatsapp && `WhatsApp: ${r.whatsapp.ok ? "OK" : r.whatsapp.error}`].filter(Boolean);
-    return NextResponse.json({ enabled: telegramEnabled() || whatsappEnabled(), detail: parts.length ? parts.join(" · ") : "chưa cấu hình kênh nào" });
+    const parts = [r.telegram && `Telegram: ${r.telegram.ok ? "OK" : r.telegram.error}`].filter(Boolean);
+    return NextResponse.json({ enabled: telegramEnabled(), detail: parts.length ? parts.join(" · ") : "chưa cấu hình kênh nào" });
   }
   return NextResponse.json(readAll());
 }

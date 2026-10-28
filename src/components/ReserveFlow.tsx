@@ -4,15 +4,15 @@ import Link from "next/link";
 import { useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { Stepper } from "./EventRsvp";
 import { Burst } from "./fx";
-import { CalendarIcon, PinIcon, WhatsAppIcon } from "./Icons";
-import { waHref, type Hours, type Lang } from "@/lib/content";
+import { CalendarIcon, PinIcon } from "./Icons";
+import { type Hours, type Lang } from "@/lib/content";
 import { DICT, fill } from "@/lib/i18n";
 import { downloadIcs } from "@/lib/ics";
 import { addDays, fmt12, fmtDate, inRange, slots, toMin, vnNow, weekday } from "@/lib/time";
 
 type Props = {
   lang: Lang; hours: Hours[]; happyHour: { start: string; end: string } | null;
-  holidays: { date: string; label: string }[]; phone: string; whatsapp: string; address: string; mapsUrl: string;
+  holidays: { date: string; label: string }[]; phone: string; address: string; mapsUrl: string;
 };
 
 const noop = () => () => {};
@@ -27,7 +27,7 @@ export const tagLabel = (v: string, lang: Lang) => {
   return v;
 };
 
-export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, whatsapp, address, mapsUrl }: Props) {
+export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, address, mapsUrl }: Props) {
   const t = DICT[lang];
   // Ngày giờ chỉ tính ở trình duyệt (server render khung trống) để không lệch giờ giữa hai bên.
   const mounted = useSyncExternalStore(noop, () => true, () => false);
@@ -78,13 +78,6 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, w
     setTimeout(() => step2.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
   };
 
-  // Tin nhắn WhatsApp soạn sẵn: lời chào (kèm mã nếu đã đặt), ngày giờ số khách nếu đã chọn, tên nếu đã nhập.
-  const waText = (code?: string) => [
-    code ? fill(t.waMine, { c: code }) : t.waHi,
-    date && time ? `${fmtDate(date, lang)} · ${fmt12(time)} · ${guests === 1 ? t.guest1 : fill(t.guestsN, { n: guests })}` : "",
-    f.name.trim() ? fill(t.waName, { n: f.name.trim() }) : "",
-  ].filter(Boolean).join("\n");
-
   const summary = date && time ? `${fmtDate(date, lang)} · ${guests === 1 ? t.guest1 : fill(t.guestsN, { n: guests })} · ${fmt12(time)}` : "";
 
   async function submit(e: React.FormEvent) {
@@ -129,7 +122,6 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, w
           <button type="button" className="btn btn-solid" onClick={() => downloadIcs({ uid: done.code, title: "Himitsu – reservation", date, start: time, location: address, description: `${location.origin}/${lang}/booking/${done.code}` })}>{t.addCal}</button>
           <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="btn btn-ghost"><PinIcon className="w-4 h-4" />{t.directions}</a>
         </div>
-        {whatsapp && <a href={waHref(whatsapp, waText(done.code))} target="_blank" rel="noopener noreferrer" className="btn btn-ghost mt-3 mr-3"><WhatsAppIcon className="w-4 h-4" />{t.waSend}</a>}
         <Link href={`/${lang}/booking/${done.code}`} className="btn btn-ghost mt-3">{t.viewCancel}</Link>
         <p className="mt-10"><button type="button" className="link" onClick={() => { setDone(null); setTime(""); setF({ ...f, note: "", agree: false }); }}>{t.another}</button></p>
       </div>
@@ -190,11 +182,6 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, w
             {happyHour && <span>{t.hhLegend}</span>}
             <span>{t.loLegend}</span>
           </div>
-        )}
-        {whatsapp && (
-          <a href={waHref(whatsapp, waText())} target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex items-center gap-2 text-sm link">
-            <WhatsAppIcon className="w-4 h-4" />{t.waBook}
-          </a>
         )}
       </div>
 

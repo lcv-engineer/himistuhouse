@@ -432,7 +432,6 @@ const SITE_FIELDS: Field[] = [
   { k: "facebook", label: "Facebook URL", type: "text", half: true },
   { k: "messenger", label: "Messenger URL", type: "text", half: true },
   { k: "zalo", label: "Zalo URL", type: "text", half: true },
-  { k: "whatsapp", label: "Số WhatsApp (có mã nước, vd 84963181479)", type: "text", half: true, hint: "Dùng cho nút đặt bàn qua WhatsApp. Để trống sẽ ẩn nút." },
   { k: "mapsUrl", label: "Google Maps URL (nút Chỉ đường)", type: "text", half: true },
   { k: "mapEmbed", label: "Link nhúng bản đồ (để trống = tự tạo)", type: "text", half: true },
   { k: "menuPdf", label: "Menu PDF URL", type: "text", half: true },
@@ -480,7 +479,7 @@ export function SettingsSection({ c, save }: P) {
 
       <section className="border border-line bg-card p-6">
         <p className="eyebrow mb-3">Thông báo đặt bàn</p>
-        <p className="text-sm text-fg/80">Mỗi đặt bàn mới được gửi về Telegram / WhatsApp (cấu hình trong file .env.local).</p>
+        <p className="text-sm text-fg/80">Mỗi đặt bàn mới được gửi về Telegram (cấu hình trong file .env.local).</p>
         <button type="button" className="btn btn-ghost !py-2.5 mt-4" onClick={async () => {
           setTest("Đang gửi…");
           const j = await fetch("/api/admin?telegram=test").then((r) => r.json()).catch(() => ({ detail: "lỗi kết nối" }));

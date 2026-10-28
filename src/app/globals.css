@@ -135,12 +135,15 @@ input.field:-webkit-autofill { -webkit-box-shadow: 0 0 0 40px #2a3240 inset; -we
 /* ---------- Phòng trưng bày signature (Showcase.tsx) ----------
    JS đặt --e (thẻ đi vào 0→1) và --c (bị thẻ sau che 0→1); data-on khi thẻ đã vào hẳn. Không có JS thì --e mặc định 1 (mở sẵn). */
 .sig-deck { margin: 2.5rem -1rem 0; display: grid; gap: 3rem; }
-.sig-card { position: sticky; top: calc(5.5rem + var(--i) * .7rem); background: var(--bg); }
-.sig-stage { padding-bottom: 1.5rem; transform-origin: 50% 0; will-change: transform;
-  transform: scale(calc(1 - var(--c, 0) * .08)); filter: brightness(calc(1 - var(--c, 0) * .6)); }
-/* Cổng tròn nở theo nhịp cuộn */
-.sig-pic { position: relative; aspect-ratio: 4 / 5; max-height: calc(100svh - 17rem); width: 100%; overflow: hidden; background: #000; isolation: isolate;
-  clip-path: circle(calc(min(1, var(--e, 1) * 1.35) * 75%) at 50% 55%); }
+.sig-card { background: var(--bg); }
+.sig-stage { padding-bottom: 1.5rem; transform-origin: 50% 0; }
+.sig-pic { position: relative; aspect-ratio: 4 / 5; max-height: calc(100svh - 17rem); width: 100%; overflow: hidden; background: #000; isolation: isolate; }
+/* Chỉ máy tính, màn ngang: thẻ dính và đè lên nhau, cổng tròn nở theo nhịp cuộn. Mobile/tablet cuộn bình thường. */
+@media (min-width: 1024px) and (orientation: landscape) {
+  .sig-card { position: sticky; top: calc(5.5rem + var(--i) * .7rem); }
+  .sig-stage { will-change: transform; transform: scale(calc(1 - var(--c, 0) * .08)); filter: brightness(calc(1 - var(--c, 0) * .6)); }
+  .sig-pic { clip-path: circle(calc(min(1, var(--e, 1) * 1.35) * 75%) at 50% 55%); }
+}
 .sig-wide .sig-pic { aspect-ratio: 4 / 5; }
 /* Ly lơ lửng */
 .sig-float { position: absolute; inset: -4%; animation: levitate 7s ease-in-out infinite alternate; }

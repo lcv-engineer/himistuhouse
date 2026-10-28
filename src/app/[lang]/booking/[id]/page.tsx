@@ -20,7 +20,7 @@ export default async function Booking({ params }: { params: Promise<{ lang: stri
         <p className="eyebrow">{t.reserveEyebrow}</p>
         {/* Không in tiêu đề và mã đặt bàn ra trang (khách thấy thừa); tiêu đề chỉ còn cho trình đọc màn hình. */}
         <h1 className="sr-only">{t.reservation}</h1>
-        <BookingView code={code} lang={lang} phone={c.site.phone} tel={telHref(c.site.phone)} whatsapp={c.site.whatsapp} />
+        <BookingView code={code} lang={lang} phone={c.site.phone} tel={telHref(c.site.phone)} />
       </div>
     </Wrap>
   );

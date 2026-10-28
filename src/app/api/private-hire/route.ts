@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     type: str(b?.type, 100), note: str(b?.note, 800), status: "new",
   };
   writePrivate([row, ...readPrivate()]);
-  // Báo về Telegram / WhatsApp; lỗi thông báo không làm hỏng yêu cầu.
+  // Báo về Telegram; lỗi thông báo không làm hỏng yêu cầu.
   await notifyAll(
     [
       "🥂 Yêu cầu thuê riêng – Himitsu",

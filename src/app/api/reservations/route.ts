@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     note: str(b?.note, 280), status: "confirmed", event, eventTitle, lang: b?.lang === "vi" ? "vi" : "en",
   };
   writeAll([row, ...rows]);
-  // Báo về Telegram / WhatsApp; lỗi thông báo không làm hỏng việc đặt bàn.
+  // Báo về Telegram; lỗi thông báo không làm hỏng việc đặt bàn.
   await notifyAll(reservationText(row));
   return NextResponse.json({ ok: true, code: row.code });
 }

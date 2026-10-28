@@ -3,7 +3,7 @@ import Link from "next/link";
 import Logo from "@/components/Logo";
 import Reveal from "@/components/Reveal";
 import EventRsvp from "@/components/EventRsvp";
-import { CountUp, HeroFade, HeroFx, Parallax } from "@/components/fx";
+import { HeroFade, HeroFx, Parallax } from "@/components/fx";
 import Showcase from "@/components/Showcase";
 import { More, OpenDaily, PhotoRow, Split, Title, Wrap } from "@/components/ui";
 import { DICT, fill } from "@/lib/i18n";
@@ -104,18 +104,18 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
         </Reveal>
         <div className="mt-10 md:mt-14 grid gap-10 md:grid-cols-[5fr_7fr] items-start">
           {happy && (
-            <Reveal>
-              <div className="relative border border-line p-8 md:p-10 min-h-[26rem] md:min-h-[32rem] overflow-hidden flex flex-col img-zoom">
+            <div>
+              <div className="relative border border-line p-8 md:p-10 min-h-[26rem] md:min-h-[32rem] overflow-hidden flex flex-col">
                 {happy.image && <Image src={happy.image} alt="" fill sizes="500px" className="object-cover opacity-50" />}
                 <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/75 to-bg/30" />
                 <div className="relative flex-1 flex flex-col">
                   <p className="eyebrow flex items-center gap-3"><span className="dot-live" />{t.happyHour}</p>
-                  <p className="serif display text-[6.5rem] md:text-[9rem] mt-auto pt-10"><CountUp value={happy.discount} /></p>
+                  <p className="serif display text-[6.5rem] md:text-[9rem] mt-auto pt-10">{happy.discount}</p>
                   <p className="serif text-3xl mt-2">{fmt12(happy.start)}–{fmt12(happy.end)} {t.everyDay}</p>
                   {happy.desc[lang] && <p className="text-fg/80 mt-6">{happy.desc[lang]}</p>}
                 </div>
               </div>
-            </Reveal>
+            </div>
           )}
           <Reveal delay={120}>
             <div className="wipe relative aspect-[6/5] overflow-hidden img-zoom">
@@ -158,7 +158,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                   <div className="absolute left-4 right-4 bottom-4 md:left-5 md:bottom-5">
                     <p className="eyebrow">{t.days[p.weekday]}</p>
-                    <p className="serif display text-[2.4rem] sm:text-5xl md:text-6xl mt-2"><CountUp value={p.discount} ms={1200} /></p>
+                    <p className="serif display text-[2.4rem] sm:text-5xl md:text-6xl mt-2">{p.discount}</p>
                     <p className="text-sm text-fg/85 mt-1">{p.label[lang]}</p>
                   </div>
                 </div>

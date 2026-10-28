@@ -40,8 +40,6 @@ const en = {
   errFields: "Please fill in your name and phone number.", errAgree: "Please confirm you are 18 or older.", err: "Something went wrong, please try again or call us.",
   seeYou: "See you {d} at {t}.", saved: "Your seats are saved.",
   guestsLabel: "Guests", nameLabel: "Name", whenLabel: "When", bartenderRead: "We will read this before you arrive.",
-  waBook: "Prefer to chat? Book on WhatsApp", waSend: "Send to Himitsu on WhatsApp",
-  waHi: "Hi Himitsu, I would like to book a table.", waMine: "Hi Himitsu, this is my reservation {c}.", waName: "Name: {n}",
   addCal: "Add to calendar (.ics)", directions: "Directions", viewCancel: "View / cancel booking", another: "Make another booking",
   // booking
   reservation: "Reservation", received: "Received", confirmed: "Confirmed", cancelled: "Cancelled", arrived: "Arrived", noshow: "No-show",
@@ -104,8 +102,6 @@ const vi: Dict = {
   errFields: "Vui lòng nhập tên và số điện thoại.", errAgree: "Vui lòng xác nhận bạn đủ 18 tuổi.", err: "Có lỗi xảy ra, vui lòng thử lại hoặc gọi cho quán.",
   seeYou: "Hẹn gặp bạn {d} lúc {t}.", saved: "Chỗ của bạn đã được giữ.",
   guestsLabel: "Số khách", nameLabel: "Tên", whenLabel: "Thời gian", bartenderRead: "Quán sẽ đọc phần này trước khi bạn đến.",
-  waBook: "Thích nhắn tin hơn? Đặt bàn qua WhatsApp", waSend: "Gửi cho Himitsu qua WhatsApp",
-  waHi: "Chào Himitsu, mình muốn đặt bàn.", waMine: "Chào Himitsu, đây là đặt bàn {c} của mình.", waName: "Tên: {n}",
   addCal: "Thêm vào lịch (.ics)", directions: "Chỉ đường", viewCancel: "Xem / huỷ đặt bàn", another: "Đặt bàn khác",
   reservation: "Đặt bàn", received: "Đã nhận", confirmed: "Đã xác nhận", cancelled: "Đã huỷ", arrived: "Đã đến", noshow: "Không đến",
   cancelBtn: "Huỷ đặt bàn", cancelAsk: "Huỷ đặt bàn này?", notFound: "Không tìm thấy đặt bàn này.", loading: "Đang tải…",
