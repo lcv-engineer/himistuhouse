@@ -133,17 +133,11 @@ input.field:-webkit-autofill { -webkit-box-shadow: 0 0 0 40px #2a3240 inset; -we
 @keyframes fadeUp { from { opacity: 0; transform: translate3d(0, 24px, 0); } to { opacity: 1; transform: none; } }
 
 /* ---------- Phòng trưng bày signature (Showcase.tsx) ----------
-   JS đặt --e (thẻ đi vào 0→1) và --c (bị thẻ sau che 0→1); data-on khi thẻ đã vào hẳn. Không có JS thì --e mặc định 1 (mở sẵn). */
+   Cuộn bình thường, không hiệu ứng chuyển cảnh (thẻ dính/đè, cổng tròn) vì trải nghiệm trên điện thoại không tốt. */
 .sig-deck { margin: 2rem -1rem 0; display: grid; gap: .5rem; }
 .sig-card { background: var(--bg); }
-.sig-stage { position: relative; transform-origin: 50% 0; }
+.sig-stage { position: relative; }
 .sig-pic { position: relative; aspect-ratio: 4 / 5; width: 100%; overflow: hidden; background: #000; isolation: isolate; }
-/* Chỉ máy tính, màn ngang: thẻ dính và đè lên nhau, cổng tròn nở theo nhịp cuộn. Mobile/tablet cuộn bình thường. */
-@media (min-width: 1024px) and (orientation: landscape) {
-  .sig-card { position: sticky; top: calc(5.5rem + var(--i) * .7rem); }
-  .sig-stage { will-change: transform; transform: scale(calc(1 - var(--c, 0) * .08)); filter: brightness(calc(1 - var(--c, 0) * .6)); }
-  .sig-pic { clip-path: circle(calc(min(1, var(--e, 1) * 1.35) * 75%) at 50% 55%); }
-}
 .sig-wide .sig-pic { aspect-ratio: 4 / 5; }
 /* Ly lơ lửng */
 .sig-float { position: absolute; inset: -4%; animation: levitate 7s ease-in-out infinite alternate; }
@@ -157,27 +151,14 @@ input.field:-webkit-autofill { -webkit-box-shadow: 0 0 0 40px #2a3240 inset; -we
   -webkit-mask-image: radial-gradient(50% 80% at 50% 100%, #000, transparent); mask-image: radial-gradient(50% 80% at 50% 100%, #000, transparent); }
 @keyframes beamHum { from { opacity: .65; } to { opacity: 1; } }
 @keyframes rise { from { background-position: 0 0, 0 0, 0 0; } to { background-position: 0 -830px, 0 -610px, 0 -1370px; } }
-/* Tia quét hologram chạy một lượt khi thẻ vào hẳn */
-.sig-scan { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0;
-  background: linear-gradient(180deg, transparent 0, transparent 38%, rgb(255 220 180 / .2) 49%, rgb(255 244 228 / .95) 50%, transparent 50.5%), repeating-linear-gradient(0deg, rgb(255 255 255 / .06) 0 1px, transparent 1px 4px);
-  background-size: 100% 200%, auto; background-position: 0 100%, 0 0; }
-.sig-card[data-on] .sig-scan { animation: scan 1.7s cubic-bezier(.45,.1,.3,1) .15s forwards; }
-@keyframes scan { 0% { opacity: 1; background-position: 0 100%, 0 0; } 80% { opacity: 1; } 100% { opacity: 0; background-position: 0 -40%, 0 0; } }
-/* Tên ly: một vệt sáng lướt qua chữ; thành phần hiện như dòng dữ liệu (giải mã ở Motion.tsx) */
 /* Mobile / tablet: tên và thành phần nằm đè lên chân ảnh, trên nền tối dần */
 .sig-meta { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; padding: 4rem 1.25rem 1.4rem; background: linear-gradient(180deg, transparent, rgb(21 24 29 / .55) 40%, rgb(21 24 29 / .92)); }
-.sig-name { font-size: clamp(2.3rem, 10vw, 6.5rem); line-height: .98; letter-spacing: -.02em; color: transparent; -webkit-background-clip: text; background-clip: text;
-  background-image: linear-gradient(100deg, var(--fg) 42%, #ffd9a8 50%, var(--fg) 58%); background-size: 320% 100%; background-position: 100% 0; }
-.sig-card[data-on] .sig-name { animation: shine 2.4s cubic-bezier(.3,.6,.2,1) .4s forwards; }
-@keyframes shine { to { background-position: 0 0; } }
+.sig-name { font-size: clamp(2.3rem, 10vw, 6.5rem); line-height: .98; letter-spacing: -.02em; }
 .sig-notes { margin-top: 1.1rem; display: flex; flex-wrap: wrap; gap: .5rem; }
-.sig-notes li { font-size: .72rem; letter-spacing: .16em; text-transform: uppercase; padding: .45rem .7rem; border: 1px solid var(--line); color: rgb(243 240 234 / .88);
-  opacity: 0; translate: 0 10px; transition: opacity .6s, translate .6s; transition-delay: calc(.7s + var(--k) * .12s); }
-.sig-card[data-on] .sig-notes li, .sig-card:not([style*="--e"]) .sig-notes li { opacity: 1; translate: 0 0; }
+.sig-notes li { font-size: .72rem; letter-spacing: .16em; text-transform: uppercase; padding: .45rem .7rem; border: 1px solid var(--line); color: rgb(243 240 234 / .88); }
 @media (min-width: 768px) { .sig-deck { margin: 3rem 0 0; gap: 1rem; } .sig-meta { padding: 5rem 2rem 2rem; } }
 /* Máy tính, màn ngang: ảnh lớn bên trái cao gần trọn màn hình, tên và thành phần bên phải */
 @media (min-width: 1024px) and (orientation: landscape) {
-  .sig-card { top: calc(6rem + var(--i) * .9rem); }
   .sig-stage { display: grid; grid-template-columns: 7fr 5fr; gap: 3.5rem; align-items: center; height: calc(100svh - 8rem); padding-bottom: 0; }
   .sig-deck { gap: 5rem; }
   .sig-pic { aspect-ratio: auto; height: 100%; max-height: none; }
