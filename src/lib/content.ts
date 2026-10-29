@@ -23,7 +23,7 @@ export type Hours = { open: string; close: string; last: string; closed: boolean
 export type Content = {
   site: {
     name: string; intro: Bi; address: Bi; directions: Bi; phone: string; email: string;
-    handle: string; instagram: string; facebook: string; messenger: string; zalo: string;
+    handle: string; instagram: string; facebook: string; messenger: string; zalo: string; telegram: string;
     mapsUrl: string; mapEmbed: string; menuPdf: string;
   };
   hours: Hours[];
@@ -67,6 +67,8 @@ export const DEFAULTS: Content = {
     facebook: "https://www.facebook.com/himistuhouse",
     messenger: "https://m.me/himistuhouse",
     zalo: "https://zalo.me/0363561805",
+    // Số Telegram của quán, có mã nước, không dấu +. Để trống sẽ ẩn nút.
+    telegram: "84963181479",
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=Himitsu+House+154+Bis+Tr%E1%BA%A7n+Quang+Kh%E1%BA%A3i+T%C3%A2n+%C4%90%E1%BB%8Bnh",
     mapEmbed: "",
     menuPdf: "",
@@ -265,5 +267,13 @@ export const DEFAULTS: Content = {
 export const happyHourOf = (c: Content) => c.promos.find((p) => p.visible && p.weekday === -1);
 
 export const telHref = (phone: string) => `tel:${phone.replace(/[^\d+]/g, "")}`;
+/** Link mở chat Telegram với quán. Nhận username (@abc), link t.me/... hoặc số điện thoại có mã nước. Trống => chuỗi rỗng (ẩn nút). */
+export const tgHref = (v: string) => {
+  const x = v.trim();
+  if (!x) return "";
+  if (/^https?:\/\//.test(x)) return x;
+  if (/^[+\d][\d\s.-]*$/.test(x)) return `https://t.me/+${x.replace(/\D/g, "")}`;
+  return `https://t.me/${x.replace(/^@/, "")}`;
+};
 export const mapSrc = (site: Content["site"]) =>
   site.mapEmbed || `https://www.google.com/maps?q=${encodeURIComponent("Himitsu House, " + site.address.en)}&output=embed`;

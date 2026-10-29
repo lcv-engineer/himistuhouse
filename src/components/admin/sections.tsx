@@ -432,6 +432,7 @@ const SITE_FIELDS: Field[] = [
   { k: "facebook", label: "Facebook URL", type: "text", half: true },
   { k: "messenger", label: "Messenger URL", type: "text", half: true },
   { k: "zalo", label: "Zalo URL", type: "text", half: true },
+  { k: "telegram", label: "Telegram (@username hoặc số có mã nước)", type: "text", half: true, hint: "Ưu tiên @username vì chắc chắn mở được chat; số điện thoại chỉ mở được nếu tài khoản cho phép tìm bằng số. Để trống sẽ ẩn nút." },
   { k: "mapsUrl", label: "Google Maps URL (nút Chỉ đường)", type: "text", half: true },
   { k: "mapEmbed", label: "Link nhúng bản đồ (để trống = tự tạo)", type: "text", half: true },
   { k: "menuPdf", label: "Menu PDF URL", type: "text", half: true },

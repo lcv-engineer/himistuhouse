@@ -2,8 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import Reveal from "./Reveal";
 import Logo from "./Logo";
-import { FacebookIcon, InstagramIcon, MessengerIcon, ZaloIcon } from "./Icons";
-import { Content, Lang, telHref } from "@/lib/content";
+import { FacebookIcon, InstagramIcon, MessengerIcon, TelegramIcon, ZaloIcon } from "./Icons";
+import { Content, Lang, telHref, tgHref } from "@/lib/content";
 import { DICT } from "@/lib/i18n";
 import { fmt12 } from "@/lib/time";
 
@@ -17,6 +17,7 @@ export default function Footer({ lang, c }: { lang: Lang; c: Content }) {
     { href: s.facebook, label: "Facebook", I: FacebookIcon },
     { href: s.messenger, label: "Messenger", I: MessengerIcon },
     { href: s.zalo, label: "Zalo", I: ZaloIcon },
+    { href: tgHref(s.telegram), label: "Telegram", I: TelegramIcon },
   ].filter((x) => x.href);
   return (
     <footer className="border-t border-line bg-bg2 mt-24">
@@ -57,11 +58,7 @@ export default function Footer({ lang, c }: { lang: Lang; c: Content }) {
       </div>
       {/* Logo lớn tràn ngang ở đáy trang, trồi lên khi cuộn tới */}
       <Reveal className="mx-auto max-w-[80rem] px-4 md:px-10 pb-8 overflow-hidden">
-        {/* Bản logo vàng nằm chồng lên, lộ ra trong một quầng sáng tự quét ngang. */}
-        <div className="relative">
-          <Image src="/images/logo.png" alt="" width={640} height={197} className="foot-logo w-full h-auto" />
-          <Image src="/images/logo.png" alt="" width={640} height={197} className="foot-logo foot-lit absolute inset-0 w-full h-auto" aria-hidden="true" />
-        </div>
+        <Image src="/images/logo.png" alt="" width={640} height={197} className="foot-logo w-full h-auto" />
       </Reveal>
     </footer>
   );

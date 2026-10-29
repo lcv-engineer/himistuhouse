@@ -1,6 +1,6 @@
 import ReserveFlow from "@/components/ReserveFlow";
 import { Wrap } from "@/components/ui";
-import { happyHourOf, telHref } from "@/lib/content";
+import { happyHourOf, telHref, tgHref } from "@/lib/content";
 import { DICT } from "@/lib/i18n";
 import { getLang } from "@/lib/lang";
 import { getContent } from "@/lib/content-server";
@@ -19,7 +19,8 @@ export default async function Reservation({ params }: { params: Promise<{ lang: 
         <p className="eyebrow fx-up">{t.reserveEyebrow}</p>
         <h1 className="serif text-5xl md:text-6xl mt-6 leading-[1.1] fx-up" style={{ "--d": ".1s" } as React.CSSProperties}>{t.reserveTitle}</h1>
         <p className="text-lg text-fg/80 mt-6 max-w-sm leading-relaxed">{t.reserveSub}</p>
-        <p className="text-sm text-fg/80 mt-6">{t.orCall} <a href={telHref(s.phone)} className="hover:underline">{s.phone}</a></p>
+        <p className="text-sm text-fg/80 mt-6">{t.orCall} <a href={telHref(s.phone)} className="hover:underline">{s.phone}</a>
+          {s.telegram && <> · <a href={tgHref(s.telegram)} target="_blank" rel="noopener noreferrer" className="link">Telegram</a></>}</p>
       </div>
       <ReserveFlow
         lang={lang} hours={c.hours} happyHour={happyHourOf(c) ?? null} phone={s.phone} address={s.address[lang]} mapsUrl={s.mapsUrl}

@@ -8,6 +8,7 @@ export const InstagramIcon = (p: P) => <S {...p}><rect x="3.5" y="3.5" width="17
 export const FacebookIcon = (p: P) => <S {...p}><path d="M14.5 8.5h2V5h-2.6C11.6 5 10.5 6.6 10.5 8.9V11H8v3.3h2.5V21h3.3v-6.7h2.4l.4-3.3h-2.8V9.3c0-.5.3-.8.7-.8Z" /></S>;
 export const MessengerIcon = (p: P) => <S {...p}><path d="M12 3.5c-4.7 0-8.5 3.5-8.5 7.9 0 2.4 1.1 4.6 3 6.1v3l2.8-1.5c.9.2 1.8.3 2.7.3 4.7 0 8.5-3.5 8.5-7.9S16.7 3.5 12 3.5Z" /><path d="m7.5 13.5 3-3.2 2 2 3-2.3-3 3.3-2-2-3 2.2Z" /></S>;
 export const ZaloIcon = (p: P) => <S {...p}><rect x="3.5" y="4.5" width="17" height="14" rx="4" /><path d="M7 18.5 6 21l3-2.5" /><text x="12" y="13.8" fontSize="5.6" fontWeight="700" textAnchor="middle" fill="currentColor" stroke="none" fontFamily="Arial, sans-serif">Zalo</text></S>;
+export const TelegramIcon = (p: P) => <S {...p}><path d="M20.5 4.5 3.5 11l5.2 1.9 1.9 5.6 2.7-3.3 4.2 3.1 3-13.8Z" /><path d="m8.7 12.9 8.6-5.6-6.7 7.7" /></S>;
 export const CalendarIcon = (p: P) => <S {...p}><rect x="4" y="5" width="16" height="15" rx="1.5" /><path d="M4 9.5h16M8.5 3v4M15.5 3v4" /></S>;
 export const PinIcon = (p: P) => <S {...p}><path d="M12 21s-6.5-6.2-6.5-11a6.5 6.5 0 0 1 13 0c0 4.8-6.5 11-6.5 11Z" /><circle cx="12" cy="10" r="2.3" /></S>;
 export const CloseIcon = (p: P) => <S {...p}><path d="M6 6l12 12M18 6 6 18" /></S>;

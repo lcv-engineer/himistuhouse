@@ -1,13 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
 import { tagLabel } from "./ReserveFlow";
-import { type Lang } from "@/lib/content";
+import { tgHref, type Lang } from "@/lib/content";
 import { DICT, fill } from "@/lib/i18n";
 import { fmt12, fmtDate } from "@/lib/time";
 
 type B = { code: string; name: string; date: string; time: string; guests: number; status: string; occasion: string; seating: string; taste: string[]; note: string; eventTitle: string };
 
-export default function BookingView({ code, lang, phone, tel }: { code: string; lang: Lang; phone: string; tel: string }) {
+export default function BookingView({ code, lang, phone, tel, telegram }: { code: string; lang: Lang; phone: string; tel: string; telegram: string }) {
   const t = DICT[lang];
   const [b, setB] = useState<B | null | "missing">(null);
   const [busy, setBusy] = useState(false);
@@ -25,7 +25,8 @@ export default function BookingView({ code, lang, phone, tel }: { code: string; 
   }
 
   if (b === null) return <p className="text-fg/70">{t.loading}</p>;
-  if (b === "missing") return <p className="text-lg text-fg/80">{t.notFound} {t.orCall} <a href={tel} className="underline">{phone}</a></p>;
+  if (b === "missing") return <p className="text-lg text-fg/80">{t.notFound} {t.orCall} <a href={tel} className="underline">{phone}</a>
+        {telegram && <> · <a href={tgHref(telegram)} target="_blank" rel="noopener noreferrer" className="link">Telegram</a></>}</p>;
 
   const cancelled = b.status === "cancelled";
   const last = cancelled ? t.cancelled : b.status === "arrived" ? t.arrived : b.status === "noshow" ? t.noshow : b.status === "new" ? "" : t.confirmed;
