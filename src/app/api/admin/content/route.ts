@@ -19,6 +19,8 @@ export async function PUT(req: Request) {
     return NextResponse.json({ error: "invalid content" }, { status: 400 });
   }
   fs.mkdirSync(path.dirname(CONTENT_FILE), { recursive: true });
+  // Giữ lại bản trước đó phòng khi lỡ tay xoá nhầm (chỉ một bản, bản mới ghi đè bản cũ).
+  try { fs.copyFileSync(CONTENT_FILE, CONTENT_FILE.replace(/\.json$/, ".bak.json")); } catch { /* chưa có file */ }
   fs.writeFileSync(CONTENT_FILE, JSON.stringify(body, null, 2));
   return NextResponse.json({ ok: true });
 }

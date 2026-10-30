@@ -3,12 +3,14 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import Logo from "../Logo";
-import { ExternalIcon, GearIcon, GlassIcon, ImageIcon, KeyIcon, LogoutIcon, PageIcon, PercentIcon, SparkIcon, TonightIcon, UsersIcon } from "../Icons";
+import { ExternalIcon, GearIcon, GlassIcon, ImageIcon, KeyIcon, ListIcon, LogoutIcon, PageIcon, PercentIcon, SparkIcon, TonightIcon, UsersIcon } from "../Icons";
 import type { Content } from "@/lib/content";
-import { EventsSection, GallerySection, MenuSection, PagesSection, PrivateSection, PromosSection, SecretsSection, SettingsSection, TonightSection } from "./sections";
+import { EventsSection, GallerySection, MenuSection, PagesSection, PrivateSection, PromosSection, SecretsSection, SettingsSection } from "./sections";
+import { ReservationsSection, TonightSection } from "./reservations";
 
 const NAV = [
   { id: "", label: "Tối nay", I: TonightIcon },
+  { id: "reservations", label: "Đặt bàn", I: ListIcon },
   { id: "events", label: "Sự kiện", I: SparkIcon },
   { id: "menu", label: "Menu", I: GlassIcon },
   { id: "promotions", label: "Ưu đãi", I: PercentIcon },
@@ -20,6 +22,7 @@ const NAV = [
 ] as const;
 
 export type Save = (next: Content) => Promise<void>;
+type Summary = { tonight: { bookings: number; guests: number }; privateNew: number };
 
 export default function AdminApp() {
   const path = usePathname() ?? "/admin";
@@ -29,6 +32,7 @@ export default function AdminApp() {
   const [content, setContent] = useState<Content | null>(null);
   const [email, setEmail] = useState("");
   const [toast, setToast] = useState("");
+  const [summary, setSummary] = useState<Summary | null>(null);
 
   const load = useCallback(() => {
     fetch("/api/admin/content")
@@ -42,6 +46,17 @@ export default function AdminApp() {
       .catch(() => setAuth("no"));
   }, []);
   useEffect(load, [load]);
+
+  // Số báo trên thanh điều hướng: làm mới mỗi 30 giây và mỗi lần chuyển mục.
+  const refresh = useCallback(() => {
+    fetch("/api/admin/summary").then((r) => (r.ok ? r.json() : null)).then((d) => d && setSummary(d)).catch(() => {});
+  }, []);
+  useEffect(() => {
+    if (auth !== "yes") return;
+    refresh();
+    const id = setInterval(refresh, 30_000);
+    return () => clearInterval(id);
+  }, [auth, tab, refresh]);
 
   const flash = useCallback((m: string) => {
     setToast(m);
@@ -68,6 +83,8 @@ export default function AdminApp() {
   }
   if (!content) return null;
 
+  const badge = (id: string) => (id === "" ? summary?.tonight.bookings : id === "private" ? summary?.privateNew : 0) ?? 0;
+
   const body = (() => {
     switch (tab) {
       case "events": return <EventsSection c={content} save={save} />;
@@ -75,7 +92,8 @@ export default function AdminApp() {
       case "promotions": return <PromosSection c={content} save={save} />;
       case "secrets": return <SecretsSection c={content} save={save} />;
       case "pages": return <PagesSection c={content} save={save} />;
-      case "private": return <PrivateSection flash={flash} />;
+      case "private": return <PrivateSection flash={flash} refresh={refresh} />;
+      case "reservations": return <ReservationsSection flash={flash} />;
       case "gallery": return <GallerySection c={content} save={save} />;
       case "settings": return <SettingsSection c={content} save={save} />;
       default: return <TonightSection c={content} flash={flash} />;
@@ -95,6 +113,7 @@ export default function AdminApp() {
             return (
               <Link key={id} href={`/admin${id ? `/${id}` : ""}`} className={`flex items-center gap-3 px-3 py-2.5 text-sm font-medium whitespace-nowrap ${on ? "bg-white/[.07]" : "hover:bg-white/[.04]"}`} aria-current={on ? "page" : undefined}>
                 <I className="w-4 h-4 opacity-80" />{label}
+                {badge(id) > 0 && <span className="chip !text-[.65rem] !px-1.5 !py-0 ml-auto" aria-label={`${badge(id)} mục`}>{badge(id)}</span>}
               </Link>
             );
           })}

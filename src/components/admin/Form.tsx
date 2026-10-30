@@ -157,11 +157,19 @@ export const AddButton = ({ onClick }: { onClick: () => void }) => (
 );
 
 /** Danh sách có nút sửa / xoá, form hiện ở đầu danh sách. */
-export function ListEditor<T extends { id: string }>({ title, items, fields, blank, row, onChange, empty = "Chưa có gì ở đây." }: {
+/** Nút bật/tắt nhanh ngay trên dòng (vd Hiện/Ẩn món, Đã đăng/Nháp) không cần mở form. */
+export type Toggle<T> = { on: string; off: string; get: (it: T) => boolean; set: (it: T, v: boolean) => T };
+
+export function ListEditor<T extends { id: string }>({ title, items, fields, blank, row, onChange, empty = "Chưa có gì ở đây.", searchText, toggle }: {
   title: string; items: T[]; fields: Field[]; blank: () => T; row: (it: T) => { title: React.ReactNode; sub?: React.ReactNode };
   onChange: (items: T[]) => void; empty?: string;
+  /** Có hàm này và danh sách dài hơn 6 mục thì hiện ô tìm kiếm. */
+  searchText?: (it: T) => string; toggle?: Toggle<T>;
 }) {
   const [editing, setEditing] = useState<{ v: T; isNew: boolean } | null>(null);
+  const [q, setQ] = useState("");
+  const fold = (x: string) => x.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/đ/gi, "d").toLowerCase();
+  const shown = searchText && q.trim() ? items.filter((it) => fold(searchText(it)).includes(fold(q.trim()))) : items;
   return (
     <section className="mb-16">
       <div className="flex items-center justify-between gap-4 mb-6">
@@ -179,9 +187,12 @@ export function ListEditor<T extends { id: string }>({ title, items, fields, bla
           }}
         />
       )}
-      {items.length === 0 ? <p className="text-fg/75">{empty}</p> : (
+      {searchText && items.length > 6 && (
+        <input type="search" aria-label={`Tìm trong ${title}`} className="field !py-2 mb-4 max-w-sm" placeholder="Tìm…" value={q} onChange={(e) => setQ(e.target.value)} />
+      )}
+      {items.length === 0 ? <p className="text-fg/75">{empty}</p> : shown.length === 0 ? <p className="text-fg/75">Không tìm thấy.</p> : (
         <ul className="border-t border-line">
-          {items.map((it) => {
+          {shown.map((it) => {
             const r = row(it);
             return (
               <li key={it.id} className="flex items-center gap-4 border-b border-line py-3.5">
@@ -189,6 +200,10 @@ export function ListEditor<T extends { id: string }>({ title, items, fields, bla
                   <p className="font-medium truncate">{r.title}</p>
                   {r.sub && <p className="text-sm text-fg/70 truncate">{r.sub}</p>}
                 </div>
+                {toggle && (() => {
+                  const on = toggle.get(it);
+                  return <button type="button" className="pill !text-[.7rem]" aria-pressed={on} onClick={() => onChange(items.map((i) => (i.id === it.id ? toggle.set(i, !on) : i)))}>{on ? toggle.on : toggle.off}</button>;
+                })()}
                 <button type="button" aria-label="Sửa" className="p-2 hover:opacity-70" onClick={() => { setEditing({ v: it, isNew: false }); window.scrollTo({ top: 0, behavior: "smooth" }); }}><PencilIcon className="w-4 h-4" /></button>
                 <button type="button" aria-label="Xoá" className="p-2 hover:opacity-70" onClick={() => confirm("Xoá mục này?") && onChange(items.filter((i) => i.id !== it.id))}><TrashIcon className="w-4 h-4" /></button>
               </li>

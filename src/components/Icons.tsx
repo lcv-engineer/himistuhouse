@@ -20,6 +20,7 @@ export const ArrowIcon = (p: P) => <S {...p}><path d="M4 12h15M14 7l5 5-5 5" /><
 export const ExternalIcon = (p: P) => <S {...p}><path d="M14 4.5h5.5V10M19.5 4.5 11 13M18 14v5.5H4.5V6H10" /></S>;
 export const LogoutIcon = (p: P) => <S {...p}><path d="M9.5 20H5V4h4.5M15 8l4 4-4 4M19 12H9" /></S>;
 export const TonightIcon = CalendarIcon;
+export const ListIcon = (p: P) => <S {...p}><path d="M8.5 6.5H20M8.5 12H20M8.5 17.5H20M4.5 6.5h.01M4.5 12h.01M4.5 17.5h.01" /></S>;
 export const SparkIcon = (p: P) => <S {...p}><path d="M5 19 14 10M14 4v3M18.5 5.5l-2 2M20 10h-3M9 6.5l1.5 1.5M18.5 14.5l-2-2" /></S>;
 export const GlassIcon = (p: P) => <S {...p}><path d="M7 3.5h10v6.5a5 5 0 0 1-10 0V3.5ZM12 15v5.5M8.5 20.5h7M7 7.5h10" /></S>;
 export const PercentIcon = (p: P) => <S {...p}><path d="M18 6 6 18" /><circle cx="7.5" cy="7.5" r="2" /><circle cx="16.5" cy="16.5" r="2" /></S>;

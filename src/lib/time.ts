@@ -31,6 +31,11 @@ export const addDays = (d: string, n: number) => {
   x.setUTCDate(x.getUTCDate() + n);
   return x.toISOString().slice(0, 10);
 };
+/** Ngày của "đêm" hiện tại: sau nửa đêm tới 5h sáng vẫn tính là đêm hôm trước. */
+export const nightDate = () => {
+  const { date, min } = vnNow();
+  return min < 300 ? addDays(date, -1) : date;
+};
 /** 0 = Thứ Hai … 6 = Chủ nhật */
 export const weekday = (d: string) => (new Date(`${d}T12:00:00Z`).getUTCDay() + 6) % 7;
 export const mondayOf = (d: string) => addDays(d, -weekday(d));

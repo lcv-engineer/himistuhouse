@@ -15,6 +15,7 @@ export type Reservation = {
   event?: string; // id sự kiện nếu khách giữ chỗ cho sự kiện
   eventTitle?: string;
   lang?: string;
+  source?: "admin"; // đặt bàn do nhân viên nhập tay (khách gọi điện, walk-in)
   table?: string; // dữ liệu cũ từ sơ đồ chỗ ngồi
 };
 
@@ -36,7 +37,25 @@ export function newCode(taken: Set<string>) {
   }
 }
 
-export const findByCode = (rows: Reservation[], code: string) => {
+const str = (v: unknown, n: number) => String(v ?? "").trim().slice(0, n);
+
+/** Lọc các trường nhân viên được phép nhập/sửa; trường nào thiếu hoặc sai thì bỏ qua. */
+export function cleanEdit(b: Record<string, unknown> | null | undefined): Partial<Reservation> {
+  const out: Partial<Reservation> = {};
+  if (!b) return out;
+  if (b.name !== undefined && str(b.name, 100)) out.name = str(b.name, 100);
+  if (b.phone !== undefined) out.phone = str(b.phone, 30);
+  if (b.email !== undefined) out.email = str(b.email, 120) || undefined;
+  if (typeof b.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(b.date)) out.date = b.date;
+  if (typeof b.time === "string" && /^\d{2}:\d{2}$/.test(b.time)) out.time = b.time;
+  if (b.guests !== undefined) out.guests = Math.max(1, Math.min(60, Math.round(Number(b.guests)) || 1));
+  if (b.note !== undefined) out.note = str(b.note, 280);
+  if (b.seating !== undefined) out.seating = str(b.seating, 60) || undefined;
+  if (b.occasion !== undefined) out.occasion = str(b.occasion, 60) || undefined;
+  return out;
+}
+
+export const findByCode =(rows: Reservation[], code: string) => {
   const c = code.trim().toUpperCase();
   return rows.find((r) => r.code === c || r.id === code.trim());
 };

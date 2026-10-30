@@ -1,13 +1,13 @@
 "use client";
 // Các mục trong trang quản trị, theo bố cục bản cũ (14/10).
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowIcon, PlusIcon, TrashIcon } from "../Icons";
 import { EntityForm, Field, ImageField, ListEditor, slugify, uid, uploadImage } from "./Form";
 import type { Save } from "./AdminApp";
 import type { Bi, Content, EventItem, GalleryImage, Highlight, MenuCat, MenuItem, Moment, Promo, Secret } from "@/lib/content";
-import type { PrivateHire, Reservation, Status } from "@/lib/store";
+import type { PrivateHire, Reservation } from "@/lib/store";
 import { DICT } from "@/lib/i18n";
-import { addDays, mondayOf, toMin, vnNow, weekday } from "@/lib/time";
+import { addDays, mondayOf, vnNow, weekday } from "@/lib/time";
 
 type P = { c: Content; save: Save };
 const WD = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
@@ -18,100 +18,6 @@ const bi = (s = ""): Bi => ({ vi: s, en: s });
 const H1 = ({ children, right }: { children: React.ReactNode; right?: React.ReactNode }) => (
   <div className="flex flex-wrap items-start justify-between gap-4 mb-8"><div>{children}</div>{right}</div>
 );
-
-/* ---------------- Tối nay ---------------- */
-const ST: Record<Status, string> = { new: "Mới", confirmed: "Đã xác nhận", cancelled: "Đã huỷ", arrived: "Đã đến", noshow: "No-show" };
-
-export function TonightSection({ c, flash }: { c: Content; flash: (m: string) => void }) {
-  // Trang admin chỉ render ở trình duyệt (sau khi kiểm tra đăng nhập) nên đọc URL ngay được.
-  const [date, setDate] = useState(() => new URLSearchParams(location.search).get("date") || vnNow().date);
-  const [rows, setRows] = useState<Reservation[]>([]);
-  const today = useMemo(() => vnNow().date, []);
-
-  const load = useCallback(() => {
-    fetch("/api/admin").then((r) => (r.ok ? r.json() : [])).then(setRows).catch(() => {});
-  }, []);
-  useEffect(() => {
-    load();
-    const id = setInterval(load, 30_000);
-    return () => clearInterval(id);
-  }, [load]);
-
-  const pick = (d: string) => {
-    setDate(d);
-    history.replaceState(null, "", d === today ? "/admin" : `/admin?date=${d}`);
-  };
-  async function setStatus(r: Reservation, status: Status) {
-    if (status === "cancelled" && !confirm(`Huỷ ${r.code ?? r.name}?`)) return;
-    const res = await fetch("/api/admin", { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ id: r.id, status }) });
-    if (!res.ok) return flash("Không lưu được, thử lại.");
-    setRows((x) => x.map((y) => (y.id === r.id ? { ...y, status } : y)));
-    flash("Đã lưu · trang web cập nhật trong vài giây");
-  }
-
-  const list = rows.filter((r) => r.date === date).sort((a, b) => toMin(a.time) - toMin(b.time));
-  const active = list.filter((r) => r.status !== "cancelled");
-  const guests = active.reduce((s, r) => s + r.guests, 0);
-  const bySlot = Object.entries(active.reduce<Record<string, number>>((m, r) => ({ ...m, [r.time]: (m[r.time] ?? 0) + r.guests }), {}))
-    .sort((a, b) => toMin(a[0]) - toMin(b[0]));
-  const secret = c.secrets.find((s) => s.week === mondayOf(date));
-
-  return (
-    <>
-      <H1 right={
-        <div>
-          <label className="label !text-sm" htmlFor="ad-date">Chọn ngày</label>
-          <input id="ad-date" type="date" className="field !py-2" value={date} onChange={(e) => e.target.value && pick(e.target.value)} />
-        </div>
-      }>
-        <h1 className="serif text-5xl">{date === today ? "Tối nay" : `Đặt bàn ngày ${viDate(date)}`}</h1>
-        <p className="text-sm text-fg/75 mt-1">Đặt bàn ngày {viDate(date)} · {guests} khách</p>
-      </H1>
-
-      <div className="border border-line bg-card px-4 py-4 mb-8">
-        <p className="eyebrow text-red !text-[.65rem]">Mật khẩu tuần này</p>
-        {secret ? <p className="mt-1"><span className="serif text-2xl mr-3">{secret.password}</span><span className="text-sm text-fg/75">{secret.note}</span></p> : <p className="text-sm text-fg/80 mt-1">Chưa có mật khẩu cho tuần này.</p>}
-      </div>
-
-      {bySlot.length > 0 && (
-        <div className="mb-6">
-          <p className="eyebrow !text-[.65rem] text-fg/80 mb-2">Theo khung giờ</p>
-          <div className="flex flex-wrap gap-2">{bySlot.map(([t, n]) => <span key={t} className="chip !text-[.7rem]">{t} · {n}</span>)}</div>
-        </div>
-      )}
-
-      {list.length === 0 ? <p className="text-fg/75">Chưa có đặt bàn nào cho ngày này.</p> : (
-        <ul className="space-y-2">
-          {list.map((r) => {
-            const tags = [r.occasion, r.seating, ...(r.taste ?? [])].filter(Boolean).join(" · ");
-            const off = r.status === "cancelled";
-            return (
-              <li key={r.id} className={`border border-line bg-card px-4 py-4 flex flex-wrap items-center gap-4 ${off ? "opacity-50" : ""}`}>
-                <span className="serif text-2xl w-16">{r.time}</span>
-                <div className="flex-1 min-w-[14rem]">
-                  <p className="font-medium">{r.name} · {r.guests} khách <span className="chip !text-[.65rem] ml-1 text-fg/80">{ST[r.status] ?? r.status}</span></p>
-                  <p className="text-sm text-fg/70">{[r.phone, r.code, r.eventTitle, r.note].filter(Boolean).join(" · ")}{r.email ? ` · ${r.email}` : ""}</p>
-                  {tags && <p className="text-sm font-medium mt-0.5">{tags}</p>}
-                </div>
-                {!off && (
-                  <div className="flex gap-2">
-                    <button type="button" className="btn btn-ghost !py-2 !px-4 !text-[.7rem]" disabled={r.status === "arrived"} onClick={() => setStatus(r, "arrived")}>Đã đến</button>
-                    <button type="button" className="btn btn-ghost !py-2 !px-4 !text-[.7rem]" disabled={r.status === "noshow"} onClick={() => setStatus(r, "noshow")}>No-show</button>
-                    <button type="button" className="btn btn-danger !py-2 !px-4 !text-[.7rem]" onClick={() => setStatus(r, "cancelled")}>Huỷ</button>
-                  </div>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      )}
-      <div className="mt-8 flex gap-3 text-sm">
-        <button type="button" className="link" onClick={() => pick(addDays(date, -1))}>← Ngày trước</button>
-        <button type="button" className="link" onClick={() => pick(addDays(date, 1))}>Ngày sau →</button>
-      </div>
-    </>
-  );
-}
 
 /* ---------------- Sự kiện ---------------- */
 const EVENT_FIELDS: Field[] = [
@@ -134,12 +40,23 @@ const HL_FIELDS: Field[] = [
 
 export function EventsSection({ c, save }: P) {
   const events = [...c.events].sort((a, b) => b.date.localeCompare(a.date));
+  // Số giữ chỗ (RSVP) của từng sự kiện, lấy từ danh sách đặt bàn.
+  const [rsvp, setRsvp] = useState<Record<string, { n: number; g: number }>>({});
+  useEffect(() => {
+    fetch("/api/admin").then((r) => (r.ok ? r.json() : [])).then((rows: Reservation[]) => {
+      const m: Record<string, { n: number; g: number }> = {};
+      for (const r of rows) if (r.event && r.status !== "cancelled") { const x = m[r.event] ?? { n: 0, g: 0 }; m[r.event] = { n: x.n + 1, g: x.g + r.guests }; }
+      setRsvp(m);
+    }).catch(() => {});
+  }, []);
   return (
     <>
       <ListEditor<EventItem>
         title="Sự kiện" items={events} fields={EVENT_FIELDS}
         blank={() => ({ id: uid(), slug: "", title: bi(), date: vnNow().date, start: "20:00", end: "23:00", price: { vi: "Miễn phí", en: "Free" }, desc: bi(), image: "", published: false, rsvp: true })}
-        row={(e) => ({ title: e.title.vi, sub: `${viDate(e.date)} · ${e.start} · ${e.published ? "Đã đăng" : "Nháp"}${e.published && e.rsvp ? " · RSVP open" : ""}` })}
+        row={(e) => ({ title: e.title.vi, sub: `${viDate(e.date)} · ${e.start} · ${e.published ? "Đã đăng" : "Nháp"}${e.published && e.rsvp ? " · RSVP open" : ""}${rsvp[e.id] ? ` · ${rsvp[e.id].n} giữ chỗ (${rsvp[e.id].g} khách)` : ""}` })}
+        searchText={(e) => `${e.title.vi} ${e.title.en}`}
+        toggle={{ on: "Đã đăng", off: "Nháp", get: (e) => e.published, set: (e, v) => ({ ...e, published: v }) }}
         onChange={(items) => save({ ...c, events: items.map((e) => ({ ...e, slug: e.slug || slugify(`${e.title.vi}-${dm(e.date).replace("/", "-")}`) })) })}
       />
       <ListEditor<Highlight>
@@ -202,6 +119,8 @@ export function MenuSection({ c, save }: P) {
         blank={() => ({ id: uid(), cat: c.menu[0]?.id ?? "", name: "", desc: bi(), price: 260, tags: [], signature: false, image: "", visible: true })}
         row={(i) => ({ title: <>{i.name}{i.signature && <span className="chip !text-[.6rem] ml-2">Signature</span>}</>, sub: `${c.menu.find((m) => m.id === i.cat)?.name.vi ?? "?"}${i.group ? ` · ${i.group}` : ""} · ${money(i.price)}${i.bottle ? ` / chai ${money(i.bottle)}` : ""}${i.visible ? "" : " · Ẩn"}` })}
         onChange={saveItems}
+        searchText={(i) => `${i.name} ${i.desc.vi} ${i.group ?? ""} ${i.tags.join(" ")}`}
+        toggle={{ on: "Hiện", off: "Ẩn", get: (i) => i.visible, set: (i, v) => ({ ...i, visible: v }) }}
       />
     </>
   );
@@ -227,6 +146,7 @@ export function PromosSection({ c, save }: P) {
       blank={() => ({ id: uid(), title: bi(), weekday: 4, start: "20:00", end: "01:00", discount: "−30%", label: bi(), desc: bi(), image: "", visible: true })}
       row={(p) => ({ title: `${p.title.vi} ${p.weekday >= 0 ? p.discount : ""}`, sub: `${p.weekday < 0 ? "Mỗi ngày" : DAYS[p.weekday]} · ${p.start}–${p.end} · ${p.discount}${p.visible ? "" : " · Ẩn"}` })}
       onChange={(items) => save({ ...c, promos: items })}
+      toggle={{ on: "Hiện", off: "Ẩn", get: (p) => p.visible, set: (p, v) => ({ ...p, visible: v }) }}
     />
   );
 }
@@ -382,38 +302,52 @@ export function GallerySection({ c, save }: P) {
 }
 
 /* ---------------- Thuê riêng ---------------- */
-export function PrivateSection({ flash }: { flash: (m: string) => void }) {
+type PhFilter = "new" | "done" | "all";
+
+export function PrivateSection({ flash, refresh }: { flash: (m: string) => void; refresh: () => void }) {
   const [rows, setRows] = useState<PrivateHire[] | null>(null);
+  const [filter, setFilter] = useState<PhFilter>("new");
   useEffect(() => {
     fetch("/api/admin/private").then((r) => (r.ok ? r.json() : [])).then(setRows).catch(() => setRows([]));
   }, []);
   async function call(method: "PATCH" | "DELETE", body: object) {
     const r = await fetch("/api/admin/private", { method, headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
     if (!r.ok) flash("Không lưu được, thử lại.");
+    else refresh();
     return r.ok;
   }
+  const all = rows ?? [];
+  const nNew = all.filter((r) => r.status === "new").length;
+  const list = all.filter((r) => filter === "all" || r.status === filter).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const FILTERS_PH: { k: PhFilter; label: string; n: number }[] = [{ k: "new", label: "Mới", n: nNew }, { k: "done", label: "Đã xử lý", n: all.length - nNew }, { k: "all", label: "Tất cả", n: all.length }];
   return (
     <>
       <h1 className="serif text-5xl mb-2">Thuê riêng</h1>
-      <p className="text-sm text-fg/75 mb-8">Yêu cầu gửi từ nút “Hỏi về thuê riêng” ở trang Liên hệ (cũng được báo về Telegram).</p>
-      {rows === null ? <p className="text-fg/75">Đang tải…</p> : rows.length === 0 ? <p className="text-fg/75">Chưa có yêu cầu nào.</p> : (
+      <p className="text-sm text-fg/75 mb-6">Yêu cầu gửi từ nút “Hỏi về thuê riêng” ở trang Liên hệ (cũng được báo về Telegram).</p>
+      <div className="flex flex-wrap gap-2 mb-6">
+        {FILTERS_PH.map((f) => <button key={f.k} type="button" className="pill !text-sm" aria-pressed={filter === f.k} onClick={() => setFilter(f.k)}>{f.label} <span className="opacity-60 ml-1">{f.n}</span></button>)}
+      </div>
+      {rows === null ? <p className="text-fg/75">Đang tải…</p> : list.length === 0 ? <p className="text-fg/75">{all.length === 0 ? "Chưa có yêu cầu nào." : "Không có yêu cầu nào trong mục này."}</p> : (
         <ul className="space-y-2">
-          {rows.map((r) => (
-            <li key={r.id} className={`border border-line bg-card px-4 py-4 flex flex-wrap items-center gap-4 ${r.status === "done" ? "opacity-50" : ""}`}>
-              <div className="flex-1 min-w-[14rem]">
-                <p className="font-medium">{r.name} · {r.guests} khách{r.date ? ` · ${viDate(r.date)}/${r.date.slice(0, 4)}` : ""}</p>
-                <p className="text-sm text-fg/70">{[r.phone, r.type, r.note].filter(Boolean).join(" · ")}</p>
-                <p className="text-xs text-fg/60 mt-0.5">Gửi lúc {new Date(r.createdAt).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</p>
-              </div>
-              <button type="button" className="btn btn-ghost !py-2 !px-4 !text-[.7rem]" onClick={async () => {
-                const status = r.status === "done" ? "new" : "done";
-                if (await call("PATCH", { id: r.id, status })) setRows(rows.map((x) => (x.id === r.id ? { ...x, status } : x)));
-              }}>{r.status === "done" ? "Mở lại" : "Đã xử lý"}</button>
-              <button type="button" aria-label="Xoá" className="p-2 hover:opacity-70" onClick={async () => {
-                if (confirm("Xoá yêu cầu này?") && (await call("DELETE", { id: r.id }))) setRows(rows.filter((x) => x.id !== r.id));
-              }}><TrashIcon className="w-4 h-4" /></button>
-            </li>
-          ))}
+          {list.map((r) => {
+            const tel = r.phone.replace(/[^d+]/g, "");
+            return (
+              <li key={r.id} className={`border border-line bg-card px-4 py-4 flex flex-wrap items-center gap-4 ${r.status === "done" ? "opacity-50" : ""}`}>
+                <div className="flex-1 min-w-[14rem]">
+                  <p className="font-medium">{r.name} · {r.guests} khách{r.date ? ` · ${viDate(r.date)}/${r.date.slice(0, 4)}` : ""}</p>
+                  <p className="text-sm text-fg/70">{tel && <a className="link" href={`tel:${tel}`}>{r.phone}</a>}{[r.type, r.note].filter(Boolean).map((x) => ` · ${x}`).join("")}</p>
+                  <p className="text-xs text-fg/60 mt-0.5">Gửi lúc {new Date(r.createdAt).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</p>
+                </div>
+                <button type="button" className="btn btn-ghost !py-2 !px-4 !text-[.7rem]" onClick={async () => {
+                  const status = r.status === "done" ? "new" : "done";
+                  if (await call("PATCH", { id: r.id, status })) setRows(all.map((x) => (x.id === r.id ? { ...x, status } : x)));
+                }}>{r.status === "done" ? "Mở lại" : "Đã xử lý"}</button>
+                <button type="button" aria-label="Xoá" className="p-2 hover:opacity-70" onClick={async () => {
+                  if (confirm("Xoá yêu cầu này?") && (await call("DELETE", { id: r.id }))) setRows(all.filter((x) => x.id !== r.id));
+                }}><TrashIcon className="w-4 h-4" /></button>
+              </li>
+            );
+          })}
         </ul>
       )}
     </>
