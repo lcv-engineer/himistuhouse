@@ -133,16 +133,11 @@ input.field:-webkit-autofill { -webkit-box-shadow: 0 0 0 40px #2a3240 inset; -we
 @keyframes fadeUp { from { opacity: 0; transform: translate3d(0, 24px, 0); } to { opacity: 1; transform: none; } }
 
 /* ---------- Phòng trưng bày signature (Showcase.tsx) ----------
-   Lưới thẻ 2 cột ở mọi cỡ màn hình, không hiệu ứng cuộn (thẻ dính/đè, cổng tròn bị bỏ vì trải nghiệm trên điện thoại không tốt). */
-.sig-deck { margin: 2rem 0 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.75rem .75rem; }
+   Lưới ảnh 2 cột ở mọi cỡ màn hình, không hiệu ứng cuộn (thẻ dính/đè, cổng tròn bị bỏ vì trải nghiệm trên điện thoại không tốt). */
+.sig-deck { margin: 2rem 0 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
 .sig-pic { position: relative; aspect-ratio: 4 / 5; width: 100%; overflow: hidden; background: #000; }
-.sig-meta { margin-top: .85rem; }
-.sig-name { font-size: clamp(1.3rem, 5.2vw, 2rem); line-height: 1.1; letter-spacing: -.01em; }
-.sig-notes { margin-top: .4rem; font-size: .8rem; line-height: 1.45; color: rgb(243 240 234 / .72);
-  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
 @media (min-width: 768px) {
-  .sig-deck { margin: 3rem auto 0; max-width: 62rem; gap: 3rem 1.5rem; }
-  .sig-notes { font-size: .9rem; -webkit-line-clamp: 1; }
+  .sig-deck { margin: 3rem auto 0; max-width: 62rem; gap: 1.5rem; }
 }
 
 /* Chữ bật sáng như biển đèn neon: chớp vài nhịp rồi sáng hẳn, thỉnh thoảng nháy nhẹ */

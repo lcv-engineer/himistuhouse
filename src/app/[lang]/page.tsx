@@ -22,7 +22,6 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
   const t = DICT[lang];
   const s = c.site;
   const today = vnNow().date;
-  const signature = c.menu.flatMap((m) => (m.visible ? m.items : [])).filter((i) => i.visible && i.signature);
   const drinks = c.photos.drinks.filter(Boolean);
   const happy = c.promos.find((p) => p.visible && p.weekday === -1);
   const weekly = c.promos.filter((p) => p.visible && p.weekday >= 0).sort((a, b) => a.weekday - b.weekday);
@@ -78,7 +77,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
       </Wrap>
 
       {/* Signature */}
-      {signature.length + drinks.length > 0 && (
+      {drinks.length > 0 && (
         <Wrap className="py-14 md:py-20">
           <Reveal className="flex flex-wrap items-end justify-between gap-6">
             <div className="max-w-4xl">
@@ -87,11 +86,8 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
             </div>
             <More href={`/${lang}/menu`}>{t.fullMenu}</More>
           </Reveal>
-          {/* Lưới thẻ 2 cột, tên và thành phần dưới ảnh; ảnh chưa có tên (chờ anh Đạt gửi) chỉ hiện ảnh. Không giá, không nhãn trên hình (góp ý 23.10). */}
-          <Showcase items={[
-            ...signature.filter((it) => it.image).map((it) => ({ key: it.id, image: it.image, name: it.name, notes: it.desc[lang].split("·").map((x) => x.trim()).filter(Boolean) })),
-            ...drinks.map((src, i) => ({ key: src + i, image: src })),
-          ]} />
+          {/* Lưới 2 cột ảnh 4:5; tên ly và thành phần đã nằm trong ảnh (admin: Hình ảnh → ảnh các ly signature). */}
+          <Showcase images={drinks} />
         </Wrap>
       )}
 

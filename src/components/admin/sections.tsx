@@ -283,7 +283,7 @@ export function GallerySection({ c, save }: P) {
             </div>
           ))}
           <div>
-            <p className="label !text-sm">Ảnh cocktail thêm cho mục Signature (hiện sau các món Signature, không kèm chữ)</p>
+            <p className="label !text-sm">Ảnh các ly Signature ở trang chủ (tên ly và thành phần nằm sẵn trong ảnh, nên dùng ảnh tỉ lệ 4:5)</p>
             <div className="space-y-3">
               {photos.drinks.map((src, i) => (
                 <div key={i} className="flex items-start gap-2">
