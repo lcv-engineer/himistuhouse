@@ -13,7 +13,7 @@ export function downloadIcs(o: { uid: string; title: string; date: string; start
   const body = [
     "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Himitsu House//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
     "BEGIN:VEVENT",
-    `UID:${o.uid}@himistuhousebar.com`,
+    `UID:${o.uid}@himitsubar.com`,
     `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").slice(0, 15)}Z`,
     `DTSTART:${utc(o.date, o.start)}`,
     `DTEND:${utc(o.date, o.start, dur > 0 ? dur : 120)}`,
