@@ -87,7 +87,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
             </div>
             <More href={`/${lang}/menu`}>{t.fullMenu}</More>
           </Reveal>
-          {/* Mỗi ly một thẻ lớn xếp chồng khi cuộn; ảnh chưa có tên (chờ anh Đạt gửi) chỉ hiện ảnh. Không giá, không nhãn trên hình (góp ý 23.10). */}
+          {/* Lưới thẻ 2 cột, tên và thành phần dưới ảnh; ảnh chưa có tên (chờ anh Đạt gửi) chỉ hiện ảnh. Không giá, không nhãn trên hình (góp ý 23.10). */}
           <Showcase items={[
             ...signature.filter((it) => it.image).map((it) => ({ key: it.id, image: it.image, name: it.name, notes: it.desc[lang].split("·").map((x) => x.trim()).filter(Boolean) })),
             ...drinks.map((src, i) => ({ key: src + i, image: src })),
