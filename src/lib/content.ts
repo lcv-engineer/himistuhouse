@@ -188,8 +188,8 @@ export const DEFAULTS: Content = {
     { id: "p1", title: same("Happy Hour"), weekday: -1, start: "17:00", end: "20:00", discount: "−50%", label: { vi: "Tất cả đồ uống", en: "All drinks" },
       desc: { vi: "5PM – 8PM mỗi ngày: giảm 50% tất cả đồ uống.", en: "5PM – 8PM every day: 50% off all drinks." }, image: ph("g268"), visible: true },
     { id: "p2", title: { vi: "Thứ Hai · Aperitif", en: "Monday · Aperitif" }, weekday: 0, start: "20:00", end: "01:00", discount: "−30%", label: same("Aperitif"), desc: same(""), image: ph("martini-bokeh"), visible: true },
-    { id: "p3", title: { vi: "Thứ Ba · All Night", en: "Tuesday · All Night" }, weekday: 1, start: "20:00", end: "01:00", discount: "−30%", label: same("All Night"), desc: same(""), image: ph("g71"), visible: true },
-    { id: "p4", title: { vi: "Thứ Tư · After", en: "Wednesday · After" }, weekday: 2, start: "20:00", end: "01:00", discount: "−30%", label: same("After"), desc: same(""), image: ph("g115"), visible: true },
+    { id: "p3", title: { vi: "Thứ Ba · All Night", en: "Tuesday · All Night" }, weekday: 1, start: "20:00", end: "01:00", discount: "−30%", label: same("All Night"), desc: same(""), image: ph("g83"), visible: true },
+    { id: "p4", title: { vi: "Thứ Tư · After", en: "Wednesday · After" }, weekday: 2, start: "20:00", end: "01:00", discount: "−30%", label: same("After"), desc: same(""), image: ph("g191"), visible: true },
     { id: "p5", title: { vi: "Thứ Năm · Theo ly", en: "Thursday · By Glass" }, weekday: 3, start: "20:00", end: "01:00", discount: "−30%", label: { vi: "Theo ly", en: "By Glass" }, desc: same(""), image: ph("olive-martini"), visible: true },
   ],
   events: [
