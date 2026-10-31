@@ -334,9 +334,6 @@ input.field:-webkit-autofill { -webkit-box-shadow: 0 0 0 40px #2a3240 inset; -we
 .roll::after { content: attr(data-t); position: absolute; left: 0; top: 100%; }
 a:hover .roll > span, a:hover .roll::after { transform: translateY(-100%); }
 
-/* Logo lớn ở đáy trang */
-.foot-logo { filter: brightness(0) invert(1); opacity: .07; transition: transform 1.6s cubic-bezier(.2,.7,.2,1); }
-@media (scripting: enabled) { .rv:not(.in) .foot-logo { transform: translate3d(0, 45%, 0); } }
 
 .page-in { animation: fadeUp .6s cubic-bezier(.2,.7,.2,1) both; }
 
@@ -349,8 +346,7 @@ a:hover .roll > span, a:hover .roll::after { transform: translateY(-100%); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; transition-duration: .01ms !important; }
   .intro { display: none; }
-  .rv, .rv:not(.in), .rv .mask-up > span, .split .w > span, .stagger > *, .wipe img, .foot-logo { opacity: 1 !important; transform: none !important; }
-  .foot-logo { opacity: .07 !important; }
+  .rv, .rv:not(.in), .rv .mask-up > span, .split .w > span, .stagger > *, .wipe img { opacity: 1 !important; transform: none !important; }
   .wipe, .rv:not(.in) .wipe, .logo-in { clip-path: none !important; filter: none !important; }
   .curtain, .hero-light, .hero-motes, .burst, .foot-lit, .sig-scan, .sig-beam::after { display: none !important; }
   .sig-pic { clip-path: none; }
