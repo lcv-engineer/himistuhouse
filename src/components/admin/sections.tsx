@@ -295,7 +295,19 @@ export function GallerySection({ c, save }: P) {
             <button type="button" className="btn btn-ghost !py-2 !px-3 mt-3" onClick={() => setPhotos({ ...photos, drinks: [...photos.drinks, ""] })}><PlusIcon className="w-4 h-4" />Thêm ảnh</button>
           </div>
         </div>
-        <button type="button" className="btn btn-solid !py-2.5 mt-6" onClick={() => save({ ...c, photos: { ...photos, drinks: photos.drinks.filter(Boolean) } })}>Lưu</button>
+        <div className="mt-6">
+          <p className="label !text-sm">Ảnh trang Câu chuyện (ảnh đầu là banner ngang dưới tiêu đề, các ảnh sau xếp lưới dọc cuối trang)</p>
+          <div className="space-y-3">
+            {photos.story.map((src, i) => (
+              <div key={i} className="flex items-start gap-2">
+                <div className="flex-1"><ImageField value={src} onChange={(v) => setPhotos({ ...photos, story: photos.story.map((x, j) => (j === i ? v : x)) })} /></div>
+                <button type="button" aria-label="Bỏ ảnh" className="p-2 hover:opacity-70" onClick={() => setPhotos({ ...photos, story: photos.story.filter((_, j) => j !== i) })}><TrashIcon className="w-4 h-4" /></button>
+              </div>
+            ))}
+          </div>
+          <button type="button" className="btn btn-ghost !py-2 !px-3 mt-3" onClick={() => setPhotos({ ...photos, story: [...photos.story, ""] })}><PlusIcon className="w-4 h-4" />Thêm ảnh</button>
+        </div>
+        <button type="button" className="btn btn-solid !py-2.5 mt-6" onClick={() => save({ ...c, photos: { ...photos, drinks: photos.drinks.filter(Boolean), story: photos.story.filter(Boolean) } })}>Lưu</button>
       </section>
     </>
   );

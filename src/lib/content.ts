@@ -34,7 +34,7 @@ export type Content = {
   secrets: Secret[];
   pages: { story: { title: Bi; body: Bi }; policies: { title: Bi; body: Bi } };
   moments: Moment[];
-  photos: { hero: string; door: string; offers: string; drinks: string[]; privateHire: string; closing: string };
+  photos: { hero: string; door: string; offers: string; drinks: string[]; privateHire: string; closing: string; story: string[] };
   holidays: { date: string; vi: string; en: string }[];
 };
 
@@ -249,8 +249,8 @@ export const DEFAULTS: Content = {
       P("m168", 1400, 933, "Không gian quầy bar", "Bar atmosphere"),
     ]},
   ],
-  // door: ảnh không gian quán có khách ở mục Câu chuyện; drinks: ảnh cocktail thêm cho mục Signature; privateHire: nền khối Thuê riêng.
-  photos: { hero: ph("hero-flower"), door: ph("street-guests"), offers: ph("front-guests"), drinks: [ph("cherry-martini"), ph("red-highball")], privateHire: ph("bar-green-chairs"), closing: ph("bar-guests") },
+  // door: ảnh không gian quán có khách ở mục Câu chuyện; drinks: ảnh cocktail thêm cho mục Signature; privateHire: nền khối Thuê riêng; story: ảnh trang Câu chuyện (ảnh đầu là banner ngang, còn lại xếp lưới dọc).
+  photos: { hero: ph("hero-flower"), door: ph("street-guests"), offers: ph("front-guests"), drinks: [ph("cherry-martini"), ph("red-highball")], privateHire: ph("bar-green-chairs"), closing: ph("bar-guests"), story: [ph("front-lights"), ph("g142"), ph("m150"), ph("m247")] },
   // Ngày lễ: chỉ hiện chú thích nhỏ khi khách chọn ngày đặt bàn.
   holidays: [
     { date: "2026-12-24", vi: "Đêm Giáng sinh", en: "Christmas Eve" },
