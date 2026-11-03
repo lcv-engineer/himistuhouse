@@ -5,7 +5,7 @@ import { tgHref, type Lang } from "@/lib/content";
 import { DICT, fill } from "@/lib/i18n";
 import { fmt12, fmtDate } from "@/lib/time";
 
-type B = { code: string; name: string; date: string; time: string; guests: number; status: string; occasion: string; seating: string; taste: string[]; note: string; eventTitle: string };
+type B = { code: string; name: string; date: string; time: string; guests: number; status: string; occasion: string; seating: string; table: string; taste: string[]; note: string; eventTitle: string };
 
 export default function BookingView({ code, lang, phone, tel, telegram }: { code: string; lang: Lang; phone: string; tel: string; telegram: string }) {
   const t = DICT[lang];
@@ -46,6 +46,7 @@ export default function BookingView({ code, lang, phone, tel, telegram }: { code
         <dt className="text-fg/70">{t.whenLabel}</dt><dd className="font-medium">{fmtDate(b.date, lang)} · {fmt12(b.time)}</dd>
         <dt className="text-fg/70">{t.guestsLabel}</dt><dd className="font-medium">{b.guests === 1 ? t.guest1 : fill(t.guestsN, { n: b.guests })}</dd>
         <dt className="text-fg/70">{t.nameLabel}</dt><dd className="font-medium">{b.name}</dd>
+        {b.table && <><dt className="text-fg/70">{t.seatLabel}</dt><dd className="font-medium">{b.table}</dd></>}
       </dl>
       {(tags.length > 0 || b.note || b.eventTitle) && (
         <div className="mt-12 border-l border-fg/60 pl-5">

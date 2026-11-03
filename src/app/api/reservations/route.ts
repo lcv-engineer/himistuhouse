@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { newCode, readAll, writeAll, Reservation } from "@/lib/store";
 import { notifyAll, reservationText } from "@/lib/telegram";
 import { readContentFile } from "@/lib/content-server";
+import { busyTables, parseTables, validTables } from "@/lib/tables";
 
 const str = (v: unknown, n: number) => String(v ?? "").trim().slice(0, n);
 
@@ -26,12 +27,20 @@ export async function POST(req: Request) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !/^\d{2}:\d{2}$/.test(time)) return NextResponse.json({ error: "bad date" }, { status: 400 });
 
   const rows = readAll();
+  // Chỗ khách chọn không được trùng đặt bàn khác quanh giờ này (kiểm tra lại ở server vì sơ đồ trên máy khách có thể đã cũ).
+  const wanted = event ? [] : validTables(parseTables(str(b?.table, 80)));
+  if (wanted.length) {
+    const busy = busyTables(rows, date, time);
+    const taken = wanted.filter((t) => busy.has(t));
+    if (taken.length) return NextResponse.json({ error: "taken", taken }, { status: 409 });
+  }
   const row: Reservation = {
     id: crypto.randomUUID(), code: newCode(new Set(rows.map((r) => r.code ?? ""))), createdAt: new Date().toISOString(),
     name, phone, email: str(b?.email, 120) || undefined,
     date, time, guests: Math.max(1, Math.min(30, Number(b?.guests) || 2)),
     occasion: str(b?.occasion, 60) || undefined, seating: str(b?.seating, 60) || undefined,
     taste: Array.isArray(b?.taste) ? b.taste.slice(0, 6).map((x: unknown) => str(x, 40)).filter(Boolean) : undefined,
+    table: wanted.length ? wanted.join(", ") : undefined,
     note: str(b?.note, 280), status: "confirmed", event, eventTitle, lang: b?.lang === "vi" ? "vi" : "en",
   };
   writeAll([row, ...rows]);

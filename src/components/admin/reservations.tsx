@@ -83,7 +83,8 @@ const FORM_FIELDS: Field[] = [
   { k: "date", label: "Ngày", type: "date", required: true, half: true },
   { k: "time", label: "Giờ", type: "time", required: true, half: true },
   { k: "guests", label: "Số khách", type: "number", required: true, half: true },
-  { k: "seating", label: "Chỗ ngồi (vd Quầy bar)", type: "text", half: true },
+  { k: "seating", label: "Khu vực (vd Quầy bar)", type: "text", half: true },
+  { k: "table", label: "Ghế / bàn trên sơ đồ (vd B1, B2, W1)", type: "text", half: true },
   { k: "email", label: "Email", type: "text", half: true },
   { k: "occasion", label: "Dịp (vd Sinh nhật)", type: "text", half: true },
   { k: "note", label: "Ghi chú", type: "textarea" },
@@ -109,7 +110,7 @@ function ResRow({ r, api, showDate, onEdit }: { r: Reservation; api: Api; showDa
       </span>
       <div className="flex-1 min-w-[14rem]">
         <p className="font-medium">
-          {r.name} · {r.guests} khách <span className="chip !text-[.65rem] ml-1 text-fg/80">{ST[r.status] ?? r.status}</span>
+          {r.name} · {r.guests} khách{r.table && <span className="chip !text-[.65rem] ml-1 text-fg/80">Ghế {r.table}</span>} <span className="chip !text-[.65rem] ml-1 text-fg/80">{ST[r.status] ?? r.status}</span>
           {r.source === "admin" && <span className="chip !text-[.65rem] ml-1 text-fg/80">Nhập tay</span>}
         </p>
         <p className="text-sm text-fg/70">

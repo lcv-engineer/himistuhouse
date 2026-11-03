@@ -43,6 +43,7 @@ export function reservationText(r: Reservation) {
     r.email ? `Email: ${r.email}` : "",
     `Ngày giờ: ${r.date} ${r.time}`,
     `Số khách: ${r.guests}`,
+    r.table ? `Chỗ ngồi: ${r.table}` : "",
     tags ? `Bartender cần biết: ${tags}` : "",
     r.note ? `Ghi chú: ${r.note}` : "",
     `Nhắn Zalo: ${zalo}`,

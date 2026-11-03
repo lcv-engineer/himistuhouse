@@ -1,9 +1,9 @@
 "use client";
-import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { Stepper } from "./EventRsvp";
 import { Burst } from "./fx";
+import SeatPicker from "./SeatPicker";
 import { CalendarIcon, PinIcon } from "./Icons";
 import { type Hours, type Lang } from "@/lib/content";
 import { DICT, fill } from "@/lib/i18n";
@@ -47,7 +47,8 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, a
   const [guests, setGuests] = useState(2);
   const [chosen, setTime] = useState("");
   const [f, setF] = useState({ name: "", phone: "", email: "", note: "", agree: false });
-  const [floor, setFloor] = useState(0);
+  const [seats, setSeats] = useState<string[]>([]);
+  const [taken, setTaken] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [done, setDone] = useState<{ code: string } | null>(null);
@@ -78,6 +79,17 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, a
     setTimeout(() => step2.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
   };
 
+  // Chỗ đã có người giữ quanh giờ đã chọn; chỗ khách chọn mà vừa bị lấy thì bỏ ra.
+  useEffect(() => {
+    if (!date || !time) return;
+    let off = false;
+    fetch(`/api/availability?date=${date}&time=${time}`, { cache: "no-store" })
+      .then((r) => r.json())
+      .then((j: { taken?: string[] }) => { if (off) return; const tk = j.taken ?? []; setTaken(tk); setSeats((s) => s.filter((x) => !tk.includes(x))); })
+      .catch(() => {});
+    return () => { off = true; };
+  }, [date, time]);
+
   const summary = date && time ? `${fmtDate(date, lang)} · ${guests === 1 ? t.guest1 : fill(t.guestsN, { n: guests })} · ${fmt12(time)}` : "";
 
   async function submit(e: React.FormEvent) {
@@ -89,10 +101,15 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, a
       const r = await fetch("/api/reservations", {
         method: "POST", headers: { "content-type": "application/json" },
         body: JSON.stringify({
-          name: f.name, phone: f.phone, email: f.email, note: f.note, date, time, guests, lang,
+          name: f.name, phone: f.phone, email: f.email, note: f.note, date, time, guests, lang, table: seats.join(", "),
         }),
       });
       const j = await r.json();
+      if (r.status === 409 && Array.isArray(j.taken)) {
+        setTaken((x) => [...new Set([...x, ...j.taken])]);
+        setSeats((s) => s.filter((x) => !j.taken.includes(x)));
+        return setErr(fill(t.seatGone, { s: j.taken.join(", ") }));
+      }
       if (!r.ok) throw new Error();
       setDone({ code: j.code });
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -110,6 +127,7 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, a
           <dt className="text-fg/70">{t.whenLabel}</dt><dd className="font-medium">{fmtDate(date, lang)} · {fmt12(time)}</dd>
           <dt className="text-fg/70">{t.guestsLabel}</dt><dd className="font-medium">{guests === 1 ? t.guest1 : fill(t.guestsN, { n: guests })}</dd>
           <dt className="text-fg/70">{t.nameLabel}</dt><dd className="font-medium">{f.name}</dd>
+          {seats.length > 0 && <><dt className="text-fg/70">{t.seatLabel}</dt><dd className="font-medium">{seats.join(", ")}</dd></>}
         </dl>
         {f.note && (
           <div className="mt-10 border-l border-fg/60 pl-5">
@@ -123,7 +141,7 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, a
           <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="btn btn-ghost"><PinIcon className="w-4 h-4" />{t.directions}</a>
         </div>
         <Link href={`/${lang}/booking/${done.code}`} className="btn btn-ghost mt-3">{t.viewCancel}</Link>
-        <p className="mt-10"><button type="button" className="link" onClick={() => { setDone(null); setTime(""); setF({ ...f, note: "", agree: false }); }}>{t.another}</button></p>
+        <p className="mt-10"><button type="button" className="link" onClick={() => { setDone(null); setTime(""); setSeats([]); setF({ ...f, note: "", agree: false }); }}>{t.another}</button></p>
       </div>
     );
   }
@@ -209,17 +227,7 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, a
 
           <fieldset className="mt-10 border border-line px-5 pb-6 pt-2 min-w-0">
             <legend className="px-2 font-semibold">{t.area}</legend>
-            {/* Sơ đồ quán (mẫu) để khách hình dung khu vực; muốn ngồi đâu thì ghi vào ghi chú. */}
-            <div className="mt-4 flex gap-2" role="tablist">
-              {t.floors.map((x, i) => (
-                <button key={x} type="button" role="tab" aria-selected={floor === i} onClick={() => setFloor(i)}
-                  className={`px-4 py-1.5 text-sm border ${floor === i ? "bg-fg text-[#111] border-fg" : "border-line hover:border-fg/70"}`}>{x}</button>
-              ))}
-            </div>
-            <div className="relative mt-3 border border-line aspect-[2000/1507]">
-              <Image src={`/images/maps/f${floor + 1}-${lang}.webp`} alt={t.floors[floor]} fill sizes="(min-width:1024px) 700px, 100vw" className="object-contain" />
-            </div>
-            <p className="text-xs text-fg/70 mt-2">{t.areaHint}</p>
+            <SeatPicker lang={lang} guests={guests} taken={taken} selected={seats} onChange={setSeats} />
             <div className="mt-6 flex justify-between">
               <label className="label" htmlFor="rv-note">{t.note}</label>
               <span className="text-xs text-fg/70">{f.note.length}/280</span>

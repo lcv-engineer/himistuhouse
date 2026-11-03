@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   const row: Reservation = {
     id: crypto.randomUUID(), code: newCode(new Set(rows.map((r) => r.code ?? ""))), createdAt: new Date().toISOString(),
     name: e.name, phone: e.phone ?? "", email: e.email, date: e.date, time: e.time, guests: e.guests ?? 2,
-    seating: e.seating, occasion: e.occasion, note: e.note ?? "", status: "confirmed", source: "admin",
+    seating: e.seating, occasion: e.occasion, table: e.table, note: e.note ?? "", status: "confirmed", source: "admin",
   };
   writeAll([row, ...rows]);
   return NextResponse.json({ ok: true, row });

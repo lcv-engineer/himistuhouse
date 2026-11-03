@@ -132,6 +132,14 @@ input.field:-webkit-autofill { -webkit-box-shadow: 0 0 0 40px #2a3240 inset; -we
 @keyframes drip { to { top: 110%; } }
 @keyframes fadeUp { from { opacity: 0; transform: translate3d(0, 24px, 0); } to { opacity: 1; transform: none; } }
 
+/* ---------- Chọn ghế trên sơ đồ (SeatPicker.tsx) ---------- */
+.seat { cursor: pointer; outline: none; }
+.seat .s { fill: transparent; stroke: transparent; transition: fill .15s, stroke .15s; }
+.seat:hover .s, .seat:focus-visible .s { fill: rgb(243 240 234 / .22); stroke: #f3f0ea; }
+.seat.sel .s { fill: rgb(243 240 234 / .6); stroke: #f3f0ea; }
+.seat.tk { cursor: not-allowed; }
+.seat.tk .s { fill: rgb(200 53 59 / .5); stroke: #c8353b; }
+
 /* ---------- Phòng trưng bày signature (Showcase.tsx) ----------
    Lưới ảnh 2 cột ở mọi cỡ màn hình, không hiệu ứng cuộn (thẻ dính/đè, cổng tròn bị bỏ vì trải nghiệm trên điện thoại không tốt). */
 .sig-deck { margin: 2rem 0 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }

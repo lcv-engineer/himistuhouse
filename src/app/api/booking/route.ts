@@ -9,7 +9,7 @@ export async function GET(req: Request) {
   if (!r) return NextResponse.json({ error: "not found" }, { status: 404 });
   return NextResponse.json({
     code: r.code ?? "", name: r.name, date: r.date, time: r.time, guests: r.guests, status: r.status,
-    occasion: r.occasion ?? "", seating: r.seating ?? "", taste: r.taste ?? [], note: r.note, eventTitle: r.eventTitle ?? "",
+    occasion: r.occasion ?? "", seating: r.seating ?? "", table: r.table ?? "", taste: r.taste ?? [], note: r.note, eventTitle: r.eventTitle ?? "",
   });
 }
 

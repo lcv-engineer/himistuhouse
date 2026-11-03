@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { parseTables, validTables } from "./tables";
 
 const FILE = path.join(process.cwd(), "data", "reservations.json");
 
@@ -16,7 +17,7 @@ export type Reservation = {
   eventTitle?: string;
   lang?: string;
   source?: "admin"; // đặt bàn do nhân viên nhập tay (khách gọi điện, walk-in)
-  table?: string; // dữ liệu cũ từ sơ đồ chỗ ngồi
+  table?: string; // mã chỗ ngồi trên sơ đồ, vd "B1, B2" (khách chọn khi đặt hoặc nhân viên xếp)
 };
 
 export function readAll(): Reservation[] {
@@ -52,6 +53,7 @@ export function cleanEdit(b: Record<string, unknown> | null | undefined): Partia
   if (b.note !== undefined) out.note = str(b.note, 280);
   if (b.seating !== undefined) out.seating = str(b.seating, 60) || undefined;
   if (b.occasion !== undefined) out.occasion = str(b.occasion, 60) || undefined;
+  if (b.table !== undefined) out.table = validTables(parseTables(String(b.table))).join(", ") || undefined;
   return out;
 }
 
