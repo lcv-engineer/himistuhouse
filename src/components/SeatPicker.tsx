@@ -1,7 +1,7 @@
 "use client";
 // Sơ đồ quán bấm được: khách chạm vào ghế để chọn chỗ ngồi; ghế đã có người giữ quanh giờ đã chọn thì khoá.
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Lang } from "@/lib/content";
 import { DICT, fill } from "@/lib/i18n";
 import { capOf, FLOORS } from "@/lib/tables";
@@ -11,6 +11,13 @@ type Props = { lang: Lang; guests: number; taken: string[]; selected: string[]; 
 export default function SeatPicker({ lang, guests, taken, selected, onChange }: Props) {
   const t = DICT[lang];
   const [floor, setFloor] = useState<"f1" | "f2">("f1");
+  // Trên điện thoại sơ đồ phóng to ~2,2 lần, kéo ngang để xem hết; bấm nút để thu về vừa màn hình.
+  const [zoom, setZoom] = useState(true);
+  const pan = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = pan.current;
+    if (el) el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2;
+  }, [floor, zoom]);
   const { w, h, seats } = FLOORS[floor];
   const label = floor === "f1" ? t.floors[0] : t.floors[1];
   const cap = capOf(selected);
@@ -31,7 +38,9 @@ export default function SeatPicker({ lang, guests, taken, selected, onChange }: 
           </button>
         ))}
       </div>
-      <div className="relative mt-3 border border-line" style={{ aspectRatio: `${w} / ${h}` }}>
+      <button type="button" className="link text-sm mt-3 md:hidden" onClick={() => setZoom(!zoom)}>{zoom ? t.seatFit : t.seatZoom}</button>
+      <div ref={pan} className="mt-3 border border-line overflow-x-auto md:overflow-visible">
+      <div className={`relative ${zoom ? "w-[220%] md:w-full" : "w-full"}`} style={{ aspectRatio: `${w} / ${h}` }}>
         <Image src={`/images/maps/${floor}-${lang}.webp`} alt={label} fill sizes="(min-width:1024px) 700px, 100vw" className="object-contain" />
         <svg viewBox={`0 0 ${w} ${h}`} className="absolute inset-0 w-full h-full" aria-label={label}>
           {seats.map((s) => {
@@ -46,13 +55,15 @@ export default function SeatPicker({ lang, guests, taken, selected, onChange }: 
             return (
               <g key={s.id} className={`seat${isTaken ? " tk" : ""}${isSel ? " sel" : ""}`} {...press}>
                 {s.kind === "circle"
-                  ? <circle className="s" cx={s.cx} cy={s.cy} r={s.r! + 4} strokeWidth={6} />
-                  : <rect className="s" x={s.x! - 4} y={s.y! - 4} width={s.w! + 8} height={s.h! + 8} rx={12} strokeWidth={6} />}
+                  ? <circle className="s" cx={s.cx} cy={s.cy} r={s.r! + 7} strokeWidth={6} />
+                  : <rect className="s" x={s.x! - 9} y={s.y! - 9} width={s.w! + 18} height={s.h! + 18} rx={14} strokeWidth={6} />}
               </g>
             );
           })}
         </svg>
       </div>
+      </div>
+      {zoom && <p className="text-xs text-fg/70 mt-2 md:hidden">{t.seatPan}</p>}
       <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs text-fg/75">
         <span><i className="inline-block w-3 h-3 mr-1.5 align-middle border border-fg/50" />{t.seatFree}</span>
         <span><i className="inline-block w-3 h-3 mr-1.5 align-middle bg-fg/60" />{t.seatPick}</span>

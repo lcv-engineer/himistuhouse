@@ -1,6 +1,7 @@
 // Sơ đồ chỗ ngồi dùng chung cho khách (chọn chỗ khi đặt bàn), server (chống đặt trùng) và admin.
 // Toạ độ theo ảnh sơ đồ public/images/maps (f1: 2000×1507, f2: 2000×1545).
 import type { Reservation } from "./store";
+import { toMin } from "./time"; // giờ sau nửa đêm (00:00–04:59) tính là cùng đêm nên cộng 24h
 
 export type Seat = { id: string; kind: "circle" | "rect"; cx?: number; cy?: number; r?: number; x?: number; y?: number; w?: number; h?: number; cap: number };
 
@@ -37,7 +38,6 @@ export const validTables = (list: string[]) => list.filter((t) => TABLE_IDS.incl
 
 // Chỗ coi là đang giữ trong 2 tiếng kể từ giờ đặt: hai đặt bàn cùng chỗ cách nhau dưới 2 tiếng thì trùng.
 export const HOLD_MINUTES = 120;
-const toMin = (t: string) => { const [h, m] = t.split(":").map(Number); return (h || 0) * 60 + (m || 0); };
 
 /** Các chỗ đã có người giữ quanh giờ này (bỏ qua đặt bàn đã huỷ và đặt bàn `exceptId`). */
 export function busyTables(rows: Reservation[], date: string, time: string, exceptId?: string) {
