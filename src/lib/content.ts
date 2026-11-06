@@ -49,7 +49,7 @@ const item = (name: string, desc: string, price: number, extra: Partial<MenuItem
 const sig = { signature: true };
 // Rượu mạnh theo nhóm (Vodka, Gin…), giá theo ly, không mô tả.
 const spirits = (group: string, list: [string, number][]) => list.map(([name, price]) => item(name, "", price, { group }));
-const H = (closed = false): Hours => ({ open: "17:00", close: "01:00", last: "00:30", closed });
+const H = (closed = false): Hours => ({ open: "17:00", close: "01:00", last: "23:30", closed });
 
 export const DEFAULTS: Content = {
   site: {

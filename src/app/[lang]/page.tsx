@@ -3,10 +3,10 @@ import Link from "next/link";
 import Logo from "@/components/Logo";
 import Reveal from "@/components/Reveal";
 import EventRsvp from "@/components/EventRsvp";
-import { HeroFade, HeroFx, Parallax } from "@/components/fx";
+import { HeroFade, HeroFx } from "@/components/fx";
 import Showcase from "@/components/Showcase";
-import { More, OpenDaily, PhotoRow, Split, Title, Wrap } from "@/components/ui";
-import { DICT, fill } from "@/lib/i18n";
+import { More, OpenDaily, PhotoRow, Title, Wrap } from "@/components/ui";
+import { DICT } from "@/lib/i18n";
 import { getLang } from "@/lib/lang";
 import { getContent } from "@/lib/content-server";
 import { fmt12, fmtDate, vnNow } from "@/lib/time";
@@ -177,22 +177,6 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
           <PhotoRow images={moments} lang={lang} />
         </Wrap>
       )}
-
-      {/* Hẹn gặp tối nay – khép lại trang chủ ngay trước chân trang */}
-      <Parallax className="closing -mb-24 mt-10 md:mt-16 min-h-[75svh] md:min-h-[85svh] flex items-center">
-        <div className="closing-bg" style={{ backgroundImage: `url("${c.photos.closing}")` }} aria-hidden="true" />
-        <Wrap className="w-full py-24 md:py-40 text-center">
-          <Reveal>
-            <p className="eyebrow">{fill(t.openDaily, { t: fmt12(c.hours.find((h) => !h.closed)?.open ?? "17:00") })}</p>
-            <h2 className="split neon serif display text-[3.2rem] md:text-8xl lg:text-9xl mt-8" aria-label={t.closingTitle}><span aria-hidden="true"><Split text={t.closingTitle} /></span></h2>
-            <p className="text-lg text-fg/85 mt-8 max-w-md mx-auto">{t.closingSub}</p>
-            <div className="mt-12 flex flex-wrap justify-center gap-3">
-              <Link href={`/${lang}/reservation`} className="btn btn-solid">{t.nav.reserve}</Link>
-              <a href={s.mapsUrl} target="_blank" rel="noopener noreferrer" className="btn btn-ghost">{t.findUs}</a>
-            </div>
-          </Reveal>
-        </Wrap>
-      </Parallax>
     </>
   );
 }
