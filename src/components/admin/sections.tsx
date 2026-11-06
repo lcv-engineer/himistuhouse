@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { ArrowIcon, PlusIcon, TrashIcon } from "../Icons";
 import { EntityForm, Field, ImageField, ListEditor, slugify, uid, uploadImage } from "./Form";
 import type { Save } from "./AdminApp";
-import type { Bi, Content, EventItem, GalleryImage, Highlight, MenuCat, MenuItem, Moment, Promo, Secret } from "@/lib/content";
+import { evImages, type Bi, type Content, type EventItem, type GalleryImage, type Highlight, type MenuCat, type MenuItem, type Moment, type Promo, type Secret } from "@/lib/content";
 import type { PrivateHire, Reservation } from "@/lib/store";
 import { DICT } from "@/lib/i18n";
 import { addDays, mondayOf, vnNow, weekday } from "@/lib/time";
@@ -28,7 +28,7 @@ const EVENT_FIELDS: Field[] = [
   { k: "end", label: "Kết thúc", type: "time", required: true, half: true },
   { k: "price", label: "Giá / nhãn (vd Miễn phí)", type: "bi" },
   { k: "desc", label: "Mô tả", type: "bitext" },
-  { k: "image", label: "Ảnh", type: "image" },
+  { k: "images", label: "Ảnh sự kiện (tối đa 5, ảnh số 1 là ảnh bìa)", type: "images" },
   { k: "published", label: "Đăng lên web", type: "check" },
   { k: "rsvp", label: "Mở giữ chỗ (RSVP)", type: "check" },
 ];
@@ -53,11 +53,11 @@ export function EventsSection({ c, save }: P) {
     <>
       <ListEditor<EventItem>
         title="Sự kiện" items={events} fields={EVENT_FIELDS}
-        blank={() => ({ id: uid(), slug: "", title: bi(), date: vnNow().date, start: "20:00", end: "23:00", price: { vi: "Miễn phí", en: "Free" }, desc: bi(), image: "", published: false, rsvp: true })}
+        blank={() => ({ id: uid(), slug: "", title: bi(), date: vnNow().date, start: "20:00", end: "23:00", price: { vi: "Miễn phí", en: "Free" }, desc: bi(), image: "", images: [], published: false, rsvp: true })}
         row={(e) => ({ title: e.title.vi, sub: `${viDate(e.date)} · ${e.start} · ${e.published ? "Đã đăng" : "Nháp"}${e.published && e.rsvp ? " · RSVP open" : ""}${rsvp[e.id] ? ` · ${rsvp[e.id].n} giữ chỗ (${rsvp[e.id].g} khách)` : ""}` })}
         searchText={(e) => `${e.title.vi} ${e.title.en}`}
         toggle={{ on: "Đã đăng", off: "Nháp", get: (e) => e.published, set: (e, v) => ({ ...e, published: v }) }}
-        onChange={(items) => save({ ...c, events: items.map((e) => ({ ...e, slug: e.slug || slugify(`${e.title.vi}-${dm(e.date).replace("/", "-")}`) })) })}
+        onChange={(items) => save({ ...c, events: items.map((e) => ({ ...e, images: evImages(e), image: evImages(e)[0] ?? "", slug: e.slug || slugify(`${e.title.vi}-${dm(e.date).replace("/", "-")}`) })) })}
       />
       <ListEditor<Highlight>
         title="Đêm nổi bật" items={c.highlights} fields={HL_FIELDS}

@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import Reveal from "@/components/Reveal";
+import { evImages } from "@/lib/content";
 import EventStack, { type HomeEvent } from "@/components/EventStack";
 import { HeroFade, HeroFx } from "@/components/fx";
 import Showcase from "@/components/Showcase";
@@ -27,7 +28,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
   const weekly = c.promos.filter((p) => p.visible && p.weekday >= 0).sort((a, b) => a.weekday - b.weekday);
   // Tối đa 5 sự kiện sắp tới; trang chủ hiện sự kiện gần nhất, còn lại mở ra bằng "Xem thêm".
   const upcoming = c.events.filter((e) => e.published && e.date >= today).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 5);
-  const homeEvents: HomeEvent[] = upcoming.map((e) => ({ id: e.id, title: e.title[lang] || e.title.vi || e.title.en, date: e.date, start: e.start, end: e.end, price: e.price[lang] || e.price.vi || e.price.en, desc: e.desc[lang] || e.desc.vi || e.desc.en, image: e.image, rsvp: e.rsvp }));
+  const homeEvents: HomeEvent[] = upcoming.map((e) => ({ id: e.id, title: e.title[lang] || e.title.vi || e.title.en, date: e.date, start: e.start, end: e.end, price: e.price[lang] || e.price.vi || e.price.en, desc: e.desc[lang] || e.desc.vi || e.desc.en, images: evImages(e), rsvp: e.rsvp }));
   // Trang chủ lấy 3 ảnh đầu của mỗi nhóm Khoảnh khắc.
   const moments = c.moments.flatMap((m) => m.images.slice(0, 3));
 

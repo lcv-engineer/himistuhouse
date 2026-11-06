@@ -12,7 +12,9 @@ export type MenuItem = { id: string; name: string; desc: Bi; price: number; bott
 export type MenuCat = { id: string; slug: string; name: Bi; mood?: Bi; note?: Bi; visible: boolean; items: MenuItem[] };
 /** weekday: -1 = mỗi ngày, 0 = Thứ Hai … 6 = Chủ nhật */
 export type Promo = { id: string; title: Bi; weekday: number; start: string; end: string; discount: string; label: Bi; desc: Bi; image: string; visible: boolean };
-export type EventItem = { id: string; slug: string; title: Bi; date: string; start: string; end: string; price: Bi; desc: Bi; image: string; published: boolean; rsvp: boolean };
+export type EventItem = { id: string; slug: string; title: Bi; date: string; start: string; end: string; price: Bi; desc: Bi; image: string; /** Tối đa 5 ảnh; ảnh đầu là ảnh bìa (cũng được chép vào image). */ images?: string[]; published: boolean; rsvp: boolean };
+/** Các ảnh của sự kiện (tối đa 5). Sự kiện cũ chỉ có `image` thì coi như 1 ảnh. */
+export const evImages = (e: { image: string; images?: string[] }) => (Array.isArray(e.images) ? e.images : e.image ? [e.image] : []).filter(Boolean).slice(0, 5);
 export type Moment = { id: string; title: Bi; images: GalleryImage[] };
 export type Highlight = { id: string; title: Bi; desc: Bi; image: string };
 /** Mật khẩu bí mật theo tuần; week là ngày Thứ Hai đầu tuần (YYYY-MM-DD). */

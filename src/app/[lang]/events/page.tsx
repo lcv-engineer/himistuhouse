@@ -2,7 +2,7 @@ import Image from "next/image";
 import Reveal from "@/components/Reveal";
 import EventRsvp from "@/components/EventRsvp";
 import { PageHead, Wrap } from "@/components/ui";
-import type { EventItem, Lang } from "@/lib/content";
+import { evImages, type EventItem, type Lang } from "@/lib/content";
 import { DICT } from "@/lib/i18n";
 import { getLang } from "@/lib/lang";
 import { getContent } from "@/lib/content-server";
@@ -13,6 +13,22 @@ function DateBlock({ date }: { date: string }) {
     <div className="text-center shrink-0 w-14">
       <p className="serif text-5xl leading-none">{date.slice(8)}</p>
       <p className="eyebrow mt-2">{fmtDate(date, "en", { month: "short" })}</p>
+    </div>
+  );
+}
+
+// Ảnh bìa lớn, các ảnh còn lại (tối đa 4) xếp thành lưới nhỏ bên dưới.
+function Photos({ images, alt }: { images: string[]; alt: string }) {
+  const [cover, ...rest] = images;
+  if (!cover) return null;
+  return (
+    <div>
+      <div className="relative aspect-[3/2] overflow-hidden img-zoom"><Image src={cover} alt={alt} fill sizes="(min-width:768px) 520px, 100vw" className="object-cover" /></div>
+      {rest.length > 0 && (
+        <div className="mt-2 grid grid-cols-4 gap-2">
+          {rest.map((src, i) => <div key={src + i} className="relative aspect-[4/3] overflow-hidden img-zoom"><Image src={src} alt="" fill sizes="(min-width:768px) 130px, 25vw" className="object-cover" /></div>)}
+        </div>
+      )}
     </div>
   );
 }
@@ -48,7 +64,7 @@ export default async function Events({ params }: { params: Promise<{ lang: strin
           <div className="space-y-16 mb-16">
             {upcoming.map((e) => (
               <Reveal key={e.id} className="grid gap-8 md:grid-cols-[minmax(0,520px)_1fr] items-start">
-                {e.image && <div className="relative aspect-[3/2] overflow-hidden img-zoom"><Image src={e.image} alt={tx(e.title, lang)} fill sizes="(min-width:768px) 520px, 100vw" className="object-cover" /></div>}
+                <Photos images={evImages(e)} alt={tx(e.title, lang)} />
                 <div className="flex gap-8">
                   <DateBlock date={e.date} />
                   <div>
@@ -70,7 +86,7 @@ export default async function Events({ params }: { params: Promise<{ lang: strin
             <div className="mt-24 grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
               {past.map((e) => (
                 <Reveal key={e.id}>
-                  {e.image && <div className="relative aspect-[3/2] overflow-hidden"><Image src={e.image} alt={tx(e.title, lang)} fill sizes="400px" className="object-cover opacity-80" /></div>}
+                  {evImages(e)[0] && <div className="relative aspect-[3/2] overflow-hidden"><Image src={evImages(e)[0]} alt={tx(e.title, lang)} fill sizes="400px" className="object-cover opacity-80" /></div>}
                   <div className="flex gap-6 mt-5">
                     <DateBlock date={e.date} />
                     <div>

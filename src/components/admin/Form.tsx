@@ -6,7 +6,7 @@ import type { Bi } from "@/lib/content";
 
 export type Field = {
   k: string; label: string; required?: boolean; half?: boolean; hint?: string;
-  type: "text" | "bi" | "bitext" | "number" | "date" | "time" | "check" | "image" | "select" | "tags" | "textarea";
+  type: "text" | "bi" | "bitext" | "number" | "date" | "time" | "check" | "image" | "images" | "select" | "tags" | "textarea";
   options?: { v: string | number; label: string }[];
 };
 type Obj = Record<string, unknown>;
@@ -54,6 +54,43 @@ export function ImageField({ value, onChange }: { value: string; onChange: (v: s
   );
 }
 
+/** Nhiều ảnh (tối đa max): mỗi ảnh một dòng có nút xoá, kèm nút tải nhiều ảnh cùng lúc. */
+export function ImagesField({ value, onChange, max = 5 }: { value: string[]; onChange: (v: string[]) => void; max?: number }) {
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  const room = max - value.length;
+  return (
+    <div className="space-y-4">
+      {value.map((src, i) => (
+        <div key={i} className="flex items-start gap-3">
+          <span className="text-xs text-muted w-5 pt-2">{i + 1}</span>
+          <div className="flex-1"><ImageField value={src} onChange={(s) => onChange(value.map((x, j) => (j === i ? s : x)))} /></div>
+          <button type="button" className="link text-sm pt-2" onClick={() => onChange(value.filter((_, j) => j !== i))}>Xoá</button>
+        </div>
+      ))}
+      {room > 0 && (
+        <div>
+          <label className="btn btn-ghost !py-2 !px-3 cursor-pointer">
+            {busy ? "Đang tải…" : value.length ? `Thêm ảnh (còn ${room})` : "Tải ảnh lên (tối đa " + max + ")"}
+            <input type="file" accept="image/*" multiple className="hidden" onChange={async (e) => {
+              const files = Array.from(e.target.files ?? []).slice(0, room);
+              if (!files.length) return;
+              setBusy(true); setErr("");
+              try {
+                const up: string[] = [];
+                for (const f of files) up.push((await uploadImage(f)).src);
+                onChange([...value, ...up]);
+              } catch (x) { setErr((x as Error).message); } finally { setBusy(false); e.target.value = ""; }
+            }} />
+          </label>
+          <span className="text-xs text-muted ml-3">Chọn được nhiều ảnh cùng lúc. Ảnh số 1 là ảnh bìa.</span>
+        </div>
+      )}
+      {err && <p className="text-xs text-[#e36b6f]">{err}</p>}
+    </div>
+  );
+}
+
 /** Form tạo mới / chỉnh sửa một đối tượng. Trường song ngữ có nút VI / EN như bản cũ. */
 export function EntityForm({ title, fields, value, onSave, onCancel }: { title: string; fields: Field[]; value: Obj; onSave: (v: Obj) => void; onCancel?: () => void }) {
   const [v, setV] = useState<Obj>(value);
@@ -95,7 +132,7 @@ export function EntityForm({ title, fields, value, onSave, onCancel }: { title: 
               {f.label}{f.required && " *"}{(f.type === "bi" || f.type === "bitext") && <span className="text-muted font-normal"> ({lang.toUpperCase()})</span>}
             </label>
           );
-          const full = !f.half || f.type === "bitext" || f.type === "textarea" || f.type === "image";
+          const full = !f.half || f.type === "bitext" || f.type === "textarea" || f.type === "image" || f.type === "images";
           let input: React.ReactNode;
           switch (f.type) {
             case "bi":
@@ -118,6 +155,9 @@ export function EntityForm({ title, fields, value, onSave, onCancel }: { title: 
               );
             case "image":
               input = <ImageField value={String(x ?? "")} onChange={(s) => set(f.k, s)} />;
+              break;
+            case "images":
+              input = <ImagesField value={Array.isArray(x) ? (x as string[]) : v.image ? [String(v.image)] : []} onChange={(s) => set(f.k, s)} />;
               break;
             case "select":
               input = (
