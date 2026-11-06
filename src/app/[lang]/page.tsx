@@ -2,14 +2,14 @@ import Image from "next/image";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import Reveal from "@/components/Reveal";
-import EventRsvp from "@/components/EventRsvp";
+import EventStack, { type HomeEvent } from "@/components/EventStack";
 import { HeroFade, HeroFx } from "@/components/fx";
 import Showcase from "@/components/Showcase";
 import { More, OpenDaily, PhotoRow, Title, Wrap } from "@/components/ui";
 import { DICT } from "@/lib/i18n";
 import { getLang } from "@/lib/lang";
 import { getContent } from "@/lib/content-server";
-import { fmt12, fmtDate, vnNow } from "@/lib/time";
+import { fmt12, vnNow } from "@/lib/time";
 
 const d = (s: number) => ({ "--d": `${s}s` }) as React.CSSProperties;
 
@@ -25,7 +25,9 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
   const drinks = c.photos.drinks.filter(Boolean);
   const happy = c.promos.find((p) => p.visible && p.weekday === -1);
   const weekly = c.promos.filter((p) => p.visible && p.weekday >= 0).sort((a, b) => a.weekday - b.weekday);
-  const next = c.events.filter((e) => e.published && e.date >= today).sort((a, b) => a.date.localeCompare(b.date))[0];
+  // Tối đa 5 sự kiện sắp tới; trang chủ hiện sự kiện gần nhất, còn lại mở ra bằng "Xem thêm".
+  const upcoming = c.events.filter((e) => e.published && e.date >= today).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 5);
+  const homeEvents: HomeEvent[] = upcoming.map((e) => ({ id: e.id, title: e.title[lang] || e.title.vi || e.title.en, date: e.date, start: e.start, end: e.end, price: e.price[lang] || e.price.vi || e.price.en, desc: e.desc[lang] || e.desc.vi || e.desc.en, image: e.image, rsvp: e.rsvp }));
   // Trang chủ lấy 3 ảnh đầu của mỗi nhóm Khoảnh khắc.
   const moments = c.moments.flatMap((m) => m.images.slice(0, 3));
 
@@ -95,7 +97,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
       <Wrap className="py-14 md:py-24">
         <Reveal className="max-w-2xl">
           <p className="eyebrow rule">{t.offersEyebrow}</p>
-          <Title className="mt-6">{t.offersTitle}</Title>
+          <Link href={`/${lang}/events`} className="block"><Title className="mt-6">{t.offersTitle}</Title></Link>
           <p className="text-lg text-fg/80 mt-6">{t.offersSub}</p>
         </Reveal>
         <div className="mt-10 md:mt-14 grid gap-10 md:grid-cols-[5fr_7fr] items-start">
@@ -114,22 +116,12 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
             </div>
           )}
           <Reveal delay={120}>
-            <div className="wipe relative aspect-[6/5] overflow-hidden img-zoom">
-              <Image src={next?.image || c.photos.offers} alt={next?.title[lang] ?? ""} fill sizes="(min-width:768px) 720px, 100vw" className="object-cover" />
-            </div>
-            {/* Chưa có sự kiện thì chỉ còn ảnh và link "Tất cả sự kiện", không in câu "chưa có đêm đặc biệt". */}
-            {next && (
-              <div className="mt-6 flex gap-6 md:gap-8">
-                <div className="text-center shrink-0">
-                  <p className="serif display text-6xl leading-none">{next.date.slice(8)}</p>
-                  <p className="eyebrow mt-2">{fmtDate(next.date, "en", { month: "short" })}</p>
-                </div>
-                <div className="min-w-0">
-                  <h3 className="serif text-3xl">{next.title[lang]}</h3>
-                  <p className="text-sm text-fg/85 mt-2 flex items-center gap-3">{fmt12(next.start)}–{fmt12(next.end)}{next.price[lang] && <span className="chip">{next.price[lang]}</span>}</p>
-                  {next.rsvp && <div className="mt-5"><EventRsvp lang={lang} phone={s.phone} handle={s.handle} instagram={s.instagram} address={s.address[lang]} ev={{ id: next.id, title: next.title[lang], date: next.date, start: next.start, end: next.end }} /></div>}
-                </div>
-              </div>
+            {homeEvents.length ? (
+              <EventStack events={homeEvents} lang={lang} contact={{ phone: s.phone, handle: s.handle, instagram: s.instagram, address: s.address[lang] }} />
+            ) : (
+              <Link href={`/${lang}/events`} className="wipe relative block aspect-[6/5] overflow-hidden img-zoom">
+                <Image src={c.photos.offers} alt="" fill sizes="(min-width:768px) 720px, 100vw" className="object-cover" />
+              </Link>
             )}
             <div className="mt-10"><More href={`/${lang}/events`}>{t.allEvents}</More></div>
           </Reveal>

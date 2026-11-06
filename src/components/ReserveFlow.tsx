@@ -67,8 +67,8 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, a
     return slots(hours[weekday(date)]).filter((x) => date !== today.date || toMin(x) > today.min + 15);
   }, [date, today, hours]);
   const dayClosed = date ? !!hours[weekday(date)]?.closed : false;
-  // Các khung trong 60 phút trước giờ đóng cửa gắn nhãn L.O (last order).
-  const lastOrder = (x: string) => !!date && toMin(x) >= toMin(hours[weekday(date)]?.close ?? "01:00") - 60;
+  // Khung giờ cuối của ngày là L.O (last order).
+  const lastOrder = (x: string) => !!date && x === hours[weekday(date)]?.last;
   const holiday = holidays.find((h) => h.date === date);
 
   // Đổi ngày mà giờ đã chọn không còn thì coi như chưa chọn giờ.

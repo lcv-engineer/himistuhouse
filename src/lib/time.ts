@@ -48,7 +48,8 @@ export const fmtDate = (d: string, lang: Lang, opt: Intl.DateTimeFormatOptions =
 export function slots(h: Hours | undefined) {
   if (!h || h.closed) return [];
   const out: string[] = [];
-  for (let v = toMin(h.open); v <= toMin(h.last); v += 30) out.push(fromMin(v));
+  // Không có khung 12AM (00:00): sau 11:30PM là 12:30AM, khung cuối (L.O).
+  for (let v = toMin(h.open); v <= toMin(h.last); v += 30) if (v !== 1440) out.push(fromMin(v));
   return out;
 }
 

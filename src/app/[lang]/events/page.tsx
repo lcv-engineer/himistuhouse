@@ -3,7 +3,7 @@ import Reveal from "@/components/Reveal";
 import EventRsvp from "@/components/EventRsvp";
 import { PageHead, Wrap } from "@/components/ui";
 import type { EventItem, Lang } from "@/lib/content";
-import { DICT, fill } from "@/lib/i18n";
+import { DICT } from "@/lib/i18n";
 import { getLang } from "@/lib/lang";
 import { getContent } from "@/lib/content-server";
 import { fmt12, fmtDate, vnNow } from "@/lib/time";
@@ -20,10 +20,13 @@ function DateBlock({ date }: { date: string }) {
 const Meta = ({ e, lang, ended }: { e: EventItem; lang: Lang; ended?: string }) => (
   <p className="text-sm text-fg/85 mt-2 flex flex-wrap items-center gap-3">
     {fmt12(e.start)}–{fmt12(e.end)}
-    {e.price[lang] && <span className="chip">{e.price[lang]}</span>}
+    {tx(e.price, lang) && <span className="chip">{tx(e.price, lang)}</span>}
     {ended && <span className="text-fg/70">{ended}</span>}
   </p>
 );
+
+// Bản dịch còn trống thì dùng bản ngôn ngữ kia, để không hiện chỗ trống.
+const tx = (b: { vi: string; en: string }, lang: Lang) => b[lang] || b.vi || b.en;
 
 // Đọc nội dung mới ở mỗi lượt truy cập, xem [lang]/layout.tsx.
 export const instant = false;
@@ -45,14 +48,14 @@ export default async function Events({ params }: { params: Promise<{ lang: strin
           <div className="space-y-16 mb-16">
             {upcoming.map((e) => (
               <Reveal key={e.id} className="grid gap-8 md:grid-cols-[minmax(0,520px)_1fr] items-start">
-                {e.image && <div className="relative aspect-[3/2] overflow-hidden img-zoom"><Image src={e.image} alt={e.title[lang]} fill sizes="(min-width:768px) 520px, 100vw" className="object-cover" /></div>}
+                {e.image && <div className="relative aspect-[3/2] overflow-hidden img-zoom"><Image src={e.image} alt={tx(e.title, lang)} fill sizes="(min-width:768px) 520px, 100vw" className="object-cover" /></div>}
                 <div className="flex gap-8">
                   <DateBlock date={e.date} />
                   <div>
-                    <h2 className="serif text-3xl md:text-4xl">{e.title[lang]}</h2>
+                    <h2 className="serif text-3xl md:text-4xl">{tx(e.title, lang)}</h2>
                     <Meta e={e} lang={lang} />
-                    {e.desc[lang] && <p className="text-fg/80 mt-5 text-lg">{e.desc[lang]}</p>}
-                    {e.rsvp && <div className="mt-6"><EventRsvp lang={lang} phone={s.phone} handle={s.handle} instagram={s.instagram} address={s.address[lang]} ev={{ id: e.id, title: e.title[lang], date: e.date, start: e.start, end: e.end }} /></div>}
+                    {tx(e.desc, lang) && <p className="text-fg/80 mt-5 text-lg">{tx(e.desc, lang)}</p>}
+                    {e.rsvp && <div className="mt-6"><EventRsvp lang={lang} phone={s.phone} handle={s.handle} instagram={s.instagram} address={s.address[lang]} ev={{ id: e.id, title: tx(e.title, lang), date: e.date, start: e.start, end: e.end }} /></div>}
                   </div>
                 </div>
               </Reveal>
@@ -60,22 +63,18 @@ export default async function Events({ params }: { params: Promise<{ lang: strin
           </div>
         )}
 
-        {/* Khung theo dõi Instagram luôn hiện, dù có hay chưa có sự kiện mới. */}
-        <div className="border border-line bg-card p-8 md:p-10 max-w-xl">
-          <p className="text-lg text-fg/85 leading-relaxed">{fill(upcoming.length ? t.followNext : t.noUpcoming, { h: s.handle })}</p>
-          <a href={s.instagram} target="_blank" rel="noopener noreferrer" className="link inline-block mt-6">@{s.handle} →</a>
-        </div>
+        {upcoming.length === 0 && <p className="text-lg text-fg/80 mb-16">{t.noEvent}</p>}
 
         {past.length > 0 && (
           <>
             <div className="mt-24 grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
               {past.map((e) => (
                 <Reveal key={e.id}>
-                  {e.image && <div className="relative aspect-[3/2] overflow-hidden"><Image src={e.image} alt={e.title[lang]} fill sizes="400px" className="object-cover opacity-80" /></div>}
+                  {e.image && <div className="relative aspect-[3/2] overflow-hidden"><Image src={e.image} alt={tx(e.title, lang)} fill sizes="400px" className="object-cover opacity-80" /></div>}
                   <div className="flex gap-6 mt-5">
                     <DateBlock date={e.date} />
                     <div>
-                      <h3 className="serif text-2xl">{e.title[lang]}</h3>
+                      <h3 className="serif text-2xl">{tx(e.title, lang)}</h3>
                       <Meta e={e} lang={lang} ended={t.ended} />
                     </div>
                   </div>
