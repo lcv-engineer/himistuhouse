@@ -3,6 +3,7 @@ import Link from "next/link";
 import Logo from "@/components/Logo";
 import Reveal from "@/components/Reveal";
 import { evImages } from "@/lib/content";
+import { pickLang } from "@/lib/text";
 import EventStack, { type HomeEvent } from "@/components/EventStack";
 import { HeroFade, HeroFx } from "@/components/fx";
 import Showcase from "@/components/Showcase";
@@ -28,7 +29,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
   const weekly = c.promos.filter((p) => p.visible && p.weekday >= 0).sort((a, b) => a.weekday - b.weekday);
   // Tối đa 5 sự kiện sắp tới; trang chủ hiện sự kiện gần nhất, còn lại mở ra bằng "Xem thêm".
   const upcoming = c.events.filter((e) => e.published && e.date >= today).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 5);
-  const homeEvents: HomeEvent[] = upcoming.map((e) => ({ id: e.id, title: e.title[lang] || e.title.vi || e.title.en, date: e.date, start: e.start, end: e.end, price: e.price[lang] || e.price.vi || e.price.en, desc: e.desc[lang] || e.desc.vi || e.desc.en, images: evImages(e), rsvp: e.rsvp }));
+  const homeEvents: HomeEvent[] = upcoming.map((e) => ({ id: e.id, title: e.title[lang] || e.title.vi || e.title.en, date: e.date, start: e.start, end: e.end, price: e.price[lang] || e.price.vi || e.price.en, desc: pickLang(e.desc[lang] || e.desc.vi || e.desc.en, lang), images: evImages(e), rsvp: e.rsvp }));
   // Trang chủ lấy 3 ảnh đầu của mỗi nhóm Khoảnh khắc.
   const moments = c.moments.flatMap((m) => m.images.slice(0, 3));
 
@@ -104,12 +105,12 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
         <div className="mt-10 md:mt-14 grid gap-10 md:grid-cols-[5fr_7fr] items-start">
           {happy && (
             <div>
-              <div className="relative border border-line p-8 md:p-10 min-h-[26rem] md:min-h-[32rem] overflow-hidden flex flex-col">
+              <div className="relative border border-line p-6 sm:p-8 md:p-10 min-h-[26rem] md:min-h-[32rem] overflow-hidden flex flex-col">
                 {happy.image && <Image src={happy.image} alt="" fill sizes="500px" className="object-cover opacity-50" />}
                 <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/75 to-bg/30" />
                 <div className="relative flex-1 flex flex-col">
                   <p className="eyebrow flex items-center gap-3"><span className="dot-live" />{t.happyHour}</p>
-                  <p className="serif display text-[6.5rem] md:text-[9rem] mt-auto pt-10">{happy.discount}</p>
+                  <p className="serif display text-[clamp(4.5rem,26vw,6.5rem)] md:text-[9rem] mt-auto pt-10">{happy.discount}</p>
                   <p className="serif text-3xl mt-2">{fmt12(happy.start)}–{fmt12(happy.end)} {t.everyDay}</p>
                   {happy.desc[lang] && <p className="text-fg/80 mt-6">{happy.desc[lang]}</p>}
                 </div>

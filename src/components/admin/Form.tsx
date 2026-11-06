@@ -1,6 +1,6 @@
 "use client";
 // Form và danh sách dùng chung cho các mục trong /admin.
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PencilIcon, PlusIcon, TrashIcon } from "../Icons";
 import type { Bi } from "@/lib/content";
 
@@ -14,6 +14,28 @@ type Obj = Record<string, unknown>;
 export const slugify = (s: string) =>
   s.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/đ/gi, "d").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60);
 export const uid = () => Math.random().toString(36).slice(2, 10);
+
+/** Hộp xác nhận ngay trên trang, thay cho confirm() của trình duyệt (trình duyệt trong ứng dụng điện thoại hay chặn nó, bấm xoá/huỷ mà không có gì xảy ra). */
+type Ask = { msg: string; res: (v: boolean) => void };
+let openAsk: ((a: Ask | null) => void) | null = null;
+export const ask = (msg: string) => new Promise<boolean>((res) => (openAsk ? openAsk({ msg, res }) : res(window.confirm(msg))));
+export function ConfirmHost() {
+  const [q, setQ] = useState<Ask | null>(null);
+  useEffect(() => { openAsk = setQ; return () => { openAsk = null; }; }, []);
+  if (!q) return null;
+  const done = (v: boolean) => { q.res(v); setQ(null); };
+  return (
+    <div className="fixed inset-0 z-[100] grid place-items-center bg-black/65 px-4" role="alertdialog" aria-modal="true" aria-label={q.msg} onClick={() => done(false)}>
+      <div className="bg-card border border-line p-6 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
+        <p className="font-medium">{q.msg}</p>
+        <div className="mt-6 flex justify-end gap-3">
+          <button type="button" className="btn btn-ghost !py-2.5" onClick={() => done(false)}>Không</button>
+          <button type="button" className="btn btn-danger !py-2.5" onClick={() => done(true)} autoFocus>Đồng ý</button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export async function uploadImage(file: File): Promise<{ src: string; w: number; h: number }> {
   const fd = new FormData();
@@ -54,36 +76,51 @@ export function ImageField({ value, onChange }: { value: string; onChange: (v: s
   );
 }
 
-/** Nhiều ảnh (tối đa max): mỗi ảnh một dòng có nút xoá, kèm nút tải nhiều ảnh cùng lúc. */
+/** Nhiều ảnh (tối đa max): mỗi ảnh một dòng gọn (ảnh nhỏ + Đổi / Lên / Xoá), kèm nút tải nhiều ảnh cùng lúc. Ảnh số 1 là ảnh bìa. */
 export function ImagesField({ value, onChange, max = 5 }: { value: string[]; onChange: (v: string[]) => void; max?: number }) {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const room = max - value.length;
+  const up = (f: File) => uploadImage(f).then((r) => r.src);
+  const act = "link text-sm";
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {value.map((src, i) => (
-        <div key={i} className="flex items-start gap-3">
-          <span className="text-xs text-muted w-5 pt-2">{i + 1}</span>
-          <div className="flex-1"><ImageField value={src} onChange={(s) => onChange(value.map((x, j) => (j === i ? s : x)))} /></div>
-          <button type="button" className="link text-sm pt-2" onClick={() => onChange(value.filter((_, j) => j !== i))}>Xoá</button>
+        <div key={i} className="flex items-center gap-3 border border-line p-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={src} alt="" className="w-24 h-[4.5rem] object-cover shrink-0 bg-black" />
+          <div className="min-w-0 flex-1">
+            <p className="text-xs text-muted mb-1">{i === 0 ? "Ảnh bìa" : `Ảnh ${i + 1}`}</p>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+              <label className={`${act} cursor-pointer`}>Đổi ảnh
+                <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                  const f = e.target.files?.[0]; if (!f) return;
+                  setErr("");
+                  try { const s = await up(f); onChange(value.map((x, j) => (j === i ? s : x))); } catch (x) { setErr((x as Error).message); } finally { e.target.value = ""; }
+                }} />
+              </label>
+              {i > 0 && <button type="button" className={act} onClick={() => onChange(value.map((x, j) => (j === i - 1 ? value[i] : j === i ? value[i - 1] : x)))}>Lên trước</button>}
+              <button type="button" className={act} onClick={() => onChange(value.filter((_, j) => j !== i))}>Xoá</button>
+            </div>
+          </div>
         </div>
       ))}
       {room > 0 && (
         <div>
-          <label className="btn btn-ghost !py-2 !px-3 cursor-pointer">
-            {busy ? "Đang tải…" : value.length ? `Thêm ảnh (còn ${room})` : "Tải ảnh lên (tối đa " + max + ")"}
+          <label className="btn btn-ghost !py-2.5 !px-4 cursor-pointer">
+            {busy ? "Đang tải…" : value.length ? `Thêm ảnh (còn ${room})` : `Tải ảnh lên (tối đa ${max})`}
             <input type="file" accept="image/*" multiple className="hidden" onChange={async (e) => {
               const files = Array.from(e.target.files ?? []).slice(0, room);
               if (!files.length) return;
               setBusy(true); setErr("");
               try {
-                const up: string[] = [];
-                for (const f of files) up.push((await uploadImage(f)).src);
-                onChange([...value, ...up]);
+                const added: string[] = [];
+                for (const f of files) added.push(await up(f));
+                onChange([...value, ...added]);
               } catch (x) { setErr((x as Error).message); } finally { setBusy(false); e.target.value = ""; }
             }} />
           </label>
-          <span className="text-xs text-muted ml-3">Chọn được nhiều ảnh cùng lúc. Ảnh số 1 là ảnh bìa.</span>
+          <p className="text-xs text-muted mt-2">Chọn được nhiều ảnh cùng lúc.</p>
         </div>
       )}
       {err && <p className="text-xs text-[#e36b6f]">{err}</p>}
@@ -118,7 +155,7 @@ export function EntityForm({ title, fields, value, onSave, onCancel }: { title: 
         <div className="flex items-center gap-4 mb-6">
           <div className="inline-flex border border-line">
             {(["vi", "en"] as const).map((l) => (
-              <button key={l} type="button" onClick={() => setLang(l)} className={`px-4 py-2 text-xs font-semibold ${lang === l ? "bg-fg text-[#111]" : ""}`}>{l.toUpperCase()}</button>
+              <button key={l} type="button" onClick={() => setLang(l)} className={`px-4 py-3 md:py-2 text-xs font-semibold ${lang === l ? "bg-fg text-[#111]" : ""}`}>{l.toUpperCase()}</button>
             ))}
           </div>
           {enEmpty && <span className="text-sm text-[#e36b6f]">● Bản tiếng Anh đang trống.</span>}
@@ -244,8 +281,8 @@ export function ListEditor<T extends { id: string }>({ title, items, fields, bla
                   const on = toggle.get(it);
                   return <button type="button" className="pill !text-[.7rem]" aria-pressed={on} onClick={() => onChange(items.map((i) => (i.id === it.id ? toggle.set(i, !on) : i)))}>{on ? toggle.on : toggle.off}</button>;
                 })()}
-                <button type="button" aria-label="Sửa" className="p-2 hover:opacity-70" onClick={() => { setEditing({ v: it, isNew: false }); window.scrollTo({ top: 0, behavior: "smooth" }); }}><PencilIcon className="w-4 h-4" /></button>
-                <button type="button" aria-label="Xoá" className="p-2 hover:opacity-70" onClick={() => confirm("Xoá mục này?") && onChange(items.filter((i) => i.id !== it.id))}><TrashIcon className="w-4 h-4" /></button>
+                <button type="button" aria-label="Sửa" className="ibtn hover:opacity-70" onClick={() => { setEditing({ v: it, isNew: false }); window.scrollTo({ top: 0, behavior: "smooth" }); }}><PencilIcon className="w-4 h-4" /></button>
+                <button type="button" aria-label="Xoá" className="ibtn hover:opacity-70" onClick={async () => (await ask("Xoá mục này?")) && onChange(items.filter((i) => i.id !== it.id))}><TrashIcon className="w-4 h-4" /></button>
               </li>
             );
           })}

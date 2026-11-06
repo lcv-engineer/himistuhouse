@@ -21,7 +21,8 @@ export async function POST(req: Request) {
   if (!r) return NextResponse.json({ error: "not found" }, { status: 404 });
   if (r.status !== "cancelled") {
     writeAll(rows.map((x) => (x.id === r.id ? { ...x, status: "cancelled" as const } : x)));
-    await notifyAll(`❌ Khách huỷ đặt bàn${r.code ? ` ${r.code}` : ""}\nKhách: ${r.name}\nSĐT/Zalo: ${r.phone}\nNgày giờ: ${r.date} ${r.time}\nSố khách: ${r.guests}`);
+    // Không chờ Telegram: huỷ xong là báo ngay cho khách, thông báo gửi sau.
+    void notifyAll(`❌ Khách huỷ đặt bàn${r.code ? ` ${r.code}` : ""}\nKhách: ${r.name}\nSĐT/Zalo: ${r.phone}\nNgày giờ: ${r.date} ${r.time}\nSố khách: ${r.guests}`);
   }
   return NextResponse.json({ ok: true });
 }

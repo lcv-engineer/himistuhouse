@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import Logo from "../Logo";
+import { ConfirmHost } from "./Form";
 import { ExternalIcon, GearIcon, GlassIcon, ImageIcon, KeyIcon, ListIcon, LogoutIcon, PageIcon, PercentIcon, SparkIcon, TonightIcon, UsersIcon } from "../Icons";
 import type { Content } from "@/lib/content";
 import { EventsSection, GallerySection, MenuSection, PagesSection, PrivateSection, PromosSection, SecretsSection, SettingsSection } from "./sections";
@@ -102,16 +103,23 @@ export default function AdminApp() {
 
   return (
     <div className="min-h-screen md:grid md:grid-cols-[200px_1fr] bg-bg2">
-      <aside className="md:sticky md:top-0 md:h-screen border-b md:border-b-0 md:border-r border-line bg-bg2 flex md:flex-col p-4 md:p-5 gap-4">
-        <div className="flex items-center gap-3 md:mb-6">
-          <Logo height={26} />
-          <span className="serif text-lg text-fg/85">Quản trị</span>
+      <aside className="md:sticky md:top-0 md:h-screen border-b md:border-b-0 md:border-r border-line bg-bg2 flex flex-col p-4 md:p-5 gap-3 md:gap-4">
+        {/* Điện thoại: hàng trên có logo + nút xem web / đăng xuất; hàng dưới là các mục, vuốt ngang được. */}
+        <div className="flex items-center justify-between gap-3 md:mb-6">
+          <div className="flex items-center gap-3 min-w-0">
+            <Logo height={26} />
+            <span className="serif text-lg text-fg/85">Quản trị</span>
+          </div>
+          <div className="flex items-center md:hidden -mr-2">
+            <a href="/en" target="_blank" aria-label="Xem trang web" className="p-3 hover:opacity-70"><ExternalIcon className="w-5 h-5" /></a>
+            <button type="button" onClick={logout} aria-label="Đăng xuất" className="p-3 hover:opacity-70"><LogoutIcon className="w-5 h-5" /></button>
+          </div>
         </div>
-        <nav className="flex md:flex-col gap-1 overflow-x-auto flex-1" aria-label="Quản trị">
+        <nav className="flex md:flex-col gap-1 overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 md:flex-1 [scrollbar-width:none]" aria-label="Quản trị">
           {NAV.map(({ id, label, I }) => {
             const on = tab === id;
             return (
-              <Link key={id} href={`/admin${id ? `/${id}` : ""}`} className={`flex items-center gap-3 px-3 py-2.5 text-sm font-medium whitespace-nowrap ${on ? "bg-white/[.07]" : "hover:bg-white/[.04]"}`} aria-current={on ? "page" : undefined}>
+              <Link key={id} href={`/admin${id ? `/${id}` : ""}`} className={`flex items-center gap-3 px-3 py-3 md:py-2.5 text-sm font-medium whitespace-nowrap shrink-0 ${on ? "bg-white/[.07]" : "hover:bg-white/[.04]"}`} aria-current={on ? "page" : undefined}>
                 <I className="w-4 h-4 opacity-80" />{label}
                 {badge(id) > 0 && <span className="chip !text-[.65rem] !px-1.5 !py-0 ml-auto" aria-label={`${badge(id)} mục`}>{badge(id)}</span>}
               </Link>
@@ -125,6 +133,7 @@ export default function AdminApp() {
         </div>
       </aside>
       <main className="px-4 md:px-6 py-8 md:py-10 min-w-0 bg-bg2">{body}</main>
+      <ConfirmHost />
       {toast && <div className="toast" role="status">{toast}</div>}
     </div>
   );

@@ -40,15 +40,15 @@ export default function Footer({ lang, c }: { lang: Lang; c: Content }) {
             )}
           </div>
           <div className="space-y-3 font-medium">
-            <p><a href={telHref(s.phone)} className="hover:opacity-75">{s.phone}</a></p>
-            {s.email && <p><a href={`mailto:${s.email}`} className="hover:opacity-75">{s.email}</a></p>}
+            <p><a href={telHref(s.phone)} className="hover:opacity-75 inline-block py-2 -my-2">{s.phone}</a></p>
+            {s.email && <p><a href={`mailto:${s.email}`} className="hover:opacity-75 inline-block py-2 -my-2 break-all">{s.email}</a></p>}
           </div>
         </div>
         <div>
           <p className="eyebrow text-muted mb-4">{t.follow}</p>
           <div className="flex gap-5">
             {icons.map(({ href, label, I }) => (
-              <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className="hover:opacity-70"><I className="w-6 h-6" /></a>
+              <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className="hover:opacity-70 p-2.5 -m-2.5"><I className="w-6 h-6" /></a>
             ))}
           </div>
           <Link href={`/${lang}/reservation`} className="btn btn-solid mt-10">{t.nav.reserve}</Link>

@@ -68,6 +68,11 @@ a, button, input, textarea, select { transition: color .2s, background-color .2s
 .btn:disabled { opacity: .5; cursor: not-allowed; }
 .link { border-bottom: 1px solid currentColor; padding-bottom: 2px; font-weight: 500; }
 .link:hover { opacity: .75; }
+/* Nút biểu tượng trong trang quản trị: 40px trên điện thoại, gọn hơn trên máy tính. */
+.ibtn { padding: .75rem; } @media (min-width: 768px) { .ibtn { padding: .5rem; } }
+/* Điện thoại: vùng chạm của link chữ rộng ra ~44px mà không đổi bố cục. */
+@media (pointer: coarse) { .link { position: relative; } .link::after { content: ""; position: absolute; inset: -.7rem -.4rem; }
+  main a[href^="tel:"], main a[href^="mailto:"] { position: relative; } main a[href^="tel:"]::after, main a[href^="mailto:"]::after { content: ""; position: absolute; inset: -.6rem -.3rem; } }
 
 /* Thanh đầu trang: trong suốt khi nằm trên ảnh hero, đặc lại khi cuộn. */
 .site-head { transition: background-color .4s, border-color .4s, backdrop-filter .4s; }

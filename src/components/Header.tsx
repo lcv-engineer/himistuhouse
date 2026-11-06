@@ -47,7 +47,7 @@ export default function Header({ lang, nav, instagram, facebook }: { lang: Lang;
 
   return (
     <header className="site-head sticky top-0 z-40 bg-bg/85 backdrop-blur-md border-b border-line" data-clear={home && top && !open}>
-      <div className="mx-auto max-w-[80rem] px-4 md:px-10 h-20 flex items-center justify-between gap-6">
+      <div className="mx-auto max-w-[80rem] px-4 md:px-10 h-20 flex items-center justify-between gap-3 sm:gap-6">
         <Link href={`/${lang}`} aria-label="Himitsu – home" className="shrink-0"><Logo height={42} /></Link>
         <nav className="hidden lg:flex items-center gap-8" aria-label="Main">
           {KEYS.map((k) => (
@@ -60,9 +60,9 @@ export default function Header({ lang, nav, instagram, facebook }: { lang: Lang;
           <a href={facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="hover:opacity-70"><FacebookIcon /></a>
           <Link href={`/${lang}/reservation`} className="btn btn-solid !py-2.5 !px-5">{nav.reserve}</Link>
         </div>
-        <div className="flex lg:hidden items-center gap-4">
-          <Link href={`/${lang}/reservation`} className="btn btn-solid !py-2 !px-4">{nav.reserve}</Link>
-          <button className="p-2 -mr-2" aria-label="Menu" aria-expanded={open} aria-controls="mobile-menu" onClick={() => setOpen(!open)}>
+        <div className="flex lg:hidden items-center gap-1 min-[360px]:gap-3">
+          <Link href={`/${lang}/reservation`} className="btn btn-solid !py-2.5 !px-3 min-[360px]:!px-4 !text-[.72rem] !tracking-[.14em] min-[360px]:!tracking-[.2em]">{nav.reserve}</Link>
+          <button className="p-3 -mr-3" aria-label="Menu" aria-expanded={open} aria-controls="mobile-menu" onClick={() => setOpen(!open)}>
             <span className={`block w-6 h-px bg-fg mb-2 transition-transform ${open ? "translate-y-[4.5px] rotate-45" : ""}`} />
             <span className={`block w-6 h-px bg-fg transition-transform ${open ? "-translate-y-[4.5px] -rotate-45" : ""}`} />
           </button>
@@ -71,10 +71,10 @@ export default function Header({ lang, nav, instagram, facebook }: { lang: Lang;
       {open && (
         <div id="mobile-menu" className="lg:hidden border-t border-line bg-bg px-4 py-6 flex flex-col gap-5">
           {KEYS.map((k) => <Link key={k} href={`/${lang}/${k}`} className="serif text-3xl">{nav[k]}</Link>)}
-          <div className="flex items-center gap-6 pt-3">
-            {langSwitch}
-            <a href={instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram"><InstagramIcon /></a>
-            <a href={facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook"><FacebookIcon /></a>
+          <div className="flex items-center gap-4 pt-1 [&_.lang_a]:inline-block [&_.lang_a]:py-3 [&_.lang_a]:px-1">
+            <span className="lang">{langSwitch}</span>
+            <a href={instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="p-2.5"><InstagramIcon /></a>
+            <a href={facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="p-2.5"><FacebookIcon /></a>
           </div>
         </div>
       )}

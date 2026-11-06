@@ -35,14 +35,14 @@ export default async function Contact({ params }: { params: Promise<{ lang: stri
         </div>
         <div className="space-y-3 font-medium">
           <p className="eyebrow text-muted mb-4">{t.contactEyebrow}</p>
-          <p><a href={telHref(s.phone)} className="hover:underline">{s.phone}</a></p>
-          {s.email && <p><a href={`mailto:${s.email}`} className="hover:underline break-all">{s.email}</a></p>}
+          <p><a href={telHref(s.phone)} className="hover:underline inline-block py-2 -my-2">{s.phone}</a></p>
+          {s.email && <p><a href={`mailto:${s.email}`} className="hover:underline break-all inline-block py-2 -my-2">{s.email}</a></p>}
         </div>
         <div>
           <p className="eyebrow text-muted mb-4">{t.follow}</p>
-          <ul className="space-y-3">
+          <ul className="space-y-0.5">
             {links.map(({ href, label, I }) => (
-              <li key={label}><a href={href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 hover:opacity-70"><I />{label}</a></li>
+              <li key={label}><a href={href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 hover:opacity-70 py-2.5"><I />{label}</a></li>
             ))}
           </ul>
         </div>

@@ -1,18 +1,20 @@
 import Image from "next/image";
 import Reveal from "@/components/Reveal";
+import Desc from "@/components/Desc";
 import EventPhotos from "@/components/EventPhotos";
 import EventRsvp from "@/components/EventRsvp";
 import { PageHead, Wrap } from "@/components/ui";
 import { evImages, type EventItem, type Lang } from "@/lib/content";
 import { DICT } from "@/lib/i18n";
+import { pickLang } from "@/lib/text";
 import { getLang } from "@/lib/lang";
 import { getContent } from "@/lib/content-server";
 import { fmt12, fmtDate, vnNow } from "@/lib/time";
 
 function DateBlock({ date }: { date: string }) {
   return (
-    <div className="text-center shrink-0 w-14">
-      <p className="serif text-5xl leading-none">{date.slice(8)}</p>
+    <div className="text-center">
+      <p className="serif text-4xl md:text-5xl leading-none">{date.slice(8)}</p>
       <p className="eyebrow mt-2">{fmtDate(date, "en", { month: "short" })}</p>
     </div>
   );
@@ -48,14 +50,17 @@ export default async function Events({ params }: { params: Promise<{ lang: strin
         {upcoming.length > 0 && (
           <div className="space-y-16 mb-16">
             {upcoming.map((e) => (
-              <Reveal key={e.id} className="grid gap-8 md:grid-cols-[minmax(0,520px)_1fr] items-start">
+              <Reveal key={e.id} className="grid gap-6 md:gap-8 grid-cols-1 md:grid-cols-[minmax(0,520px)_minmax(0,1fr)] items-start">
                 <EventPhotos images={evImages(e)} alt={tx(e.title, lang)} />
-                <div className="flex gap-8">
+                {/* Điện thoại: ngày bên cạnh tên, phần mô tả và nút giữ chỗ trải rộng hết bề ngang bên dưới. */}
+                <div className="grid grid-cols-[3rem_minmax(0,1fr)] md:grid-cols-[3.5rem_minmax(0,1fr)] gap-x-4 md:gap-x-8 min-w-0">
                   <DateBlock date={e.date} />
-                  <div>
-                    <h2 className="serif text-3xl md:text-4xl">{tx(e.title, lang)}</h2>
+                  <div className="min-w-0">
+                    <h2 className="serif text-[1.65rem] leading-tight sm:text-3xl md:text-4xl break-words">{tx(e.title, lang)}</h2>
                     <Meta e={e} lang={lang} />
-                    {tx(e.desc, lang) && <p className="text-fg/80 mt-5 text-lg">{tx(e.desc, lang)}</p>}
+                  </div>
+                  <div className="col-span-2 md:col-span-1 md:col-start-2 min-w-0">
+                    <Desc text={pickLang(tx(e.desc, lang), lang)} lang={lang} lines={6} className="text-fg/80 mt-5 text-base md:text-lg" />
                     {e.rsvp && <div className="mt-6"><EventRsvp lang={lang} phone={s.phone} handle={s.handle} instagram={s.instagram} address={s.address[lang]} ev={{ id: e.id, title: tx(e.title, lang), date: e.date, start: e.start, end: e.end }} /></div>}
                   </div>
                 </div>
@@ -72,9 +77,9 @@ export default async function Events({ params }: { params: Promise<{ lang: strin
               {past.map((e) => (
                 <Reveal key={e.id}>
                   {evImages(e)[0] && <div className="relative aspect-[3/2] overflow-hidden"><Image src={evImages(e)[0]} alt={tx(e.title, lang)} fill sizes="400px" className="object-cover opacity-80" /></div>}
-                  <div className="flex gap-6 mt-5">
+                  <div className="flex gap-4 md:gap-6 mt-5 min-w-0">
                     <DateBlock date={e.date} />
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <h3 className="serif text-2xl">{tx(e.title, lang)}</h3>
                       <Meta e={e} lang={lang} ended={t.ended} />
                     </div>

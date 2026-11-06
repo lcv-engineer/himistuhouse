@@ -161,7 +161,7 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, a
               <button key={d} type="button" role="radio" aria-checked={sel} disabled={closed} title={hol?.label}
                 onClick={() => setDate(d)}
                 className={`relative shrink-0 w-[3.6rem] py-2.5 border text-center ${sel ? "bg-fg text-[#111] border-fg" : "border-line hover:border-fg/70"} disabled:opacity-30 disabled:cursor-not-allowed`}>
-                <span className="block text-[.7rem] font-semibold uppercase">{fmtDate(d, lang, { weekday: "short" }).replace(".", "")}</span>
+                <span className="block text-xs font-semibold uppercase">{fmtDate(d, lang, { weekday: "short" }).replace(".", "")}</span>
                 <span className="block serif text-2xl leading-tight">{Number(d.slice(8))}</span>
                 {hol && <span className="absolute right-1 top-1 w-1.5 h-1.5 rounded-full bg-red" />}
               </button>
@@ -188,8 +188,8 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, a
                 <button key={x} type="button" role="radio" aria-checked={sel} onClick={() => pickTime(x)}
                   className={`relative py-3.5 border font-medium text-sm ${sel ? "bg-fg text-[#111] border-fg" : "border-line hover:border-fg/70"}`}>
                   {fmt12(x)}
-                  {happyHour && inRange(x, happyHour.start, happyHour.end) && <span className="absolute right-1.5 top-1 text-[.55rem] font-bold text-red">HH</span>}
-                  {lastOrder(x) && <span className="absolute right-1.5 top-1 text-[.55rem] font-bold text-red">L.O</span>}
+                  {happyHour && inRange(x, happyHour.start, happyHour.end) && <span className="absolute right-1.5 top-1 text-[.62rem] font-bold text-red">HH</span>}
+                  {lastOrder(x) && <span className="absolute right-1.5 top-1 text-[.62rem] font-bold text-red">L.O</span>}
                 </button>
               );
             })}
@@ -236,7 +236,7 @@ export default function ReserveFlow({ lang, hours, happyHour, holidays, phone, a
           </fieldset>
 
           <label className="flex items-center gap-3 mt-8 text-sm font-medium cursor-pointer">
-            <input type="checkbox" className="w-5 h-5 accent-white" checked={f.agree} onChange={(e) => setF({ ...f, agree: e.target.checked })} />
+            <input type="checkbox" className="w-6 h-6 shrink-0 accent-white" checked={f.agree} onChange={(e) => setF({ ...f, agree: e.target.checked })} />
             <span>{t.agree} <Link href={`/${lang}/policies`} target="_blank" className="underline underline-offset-4">{t.policy}</Link></span>
           </label>
           {err && <p className="text-sm text-[#e36b6f] mt-4" role="alert">{err}</p>}

@@ -68,7 +68,7 @@ export default function EventRsvp({ ev, lang, phone, handle, instagram, address,
                 <p className="label mt-5">{t.guests}</p>
                 <Stepper value={f.guests} onChange={(g) => setF({ ...f, guests: g })} lang={lang} />
                 <label className="flex items-center gap-3 mt-6 text-sm font-medium cursor-pointer">
-                  <input type="checkbox" className="w-5 h-5 accent-white" checked={f.agree} onChange={(e) => setF({ ...f, agree: e.target.checked })} />
+                  <input type="checkbox" className="w-6 h-6 shrink-0 accent-white" checked={f.agree} onChange={(e) => setF({ ...f, agree: e.target.checked })} />
                   {t.agreeShort}
                 </label>
                 {err && <p className="text-sm text-[#e36b6f] mt-4" role="alert">{err}</p>}

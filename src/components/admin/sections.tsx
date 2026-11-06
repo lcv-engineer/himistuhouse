@@ -2,7 +2,7 @@
 // Các mục trong trang quản trị, theo bố cục bản cũ (14/10).
 import { useEffect, useState } from "react";
 import { ArrowIcon, PlusIcon, TrashIcon } from "../Icons";
-import { EntityForm, Field, ImageField, ListEditor, slugify, uid, uploadImage } from "./Form";
+import { ask, EntityForm, Field, ImageField, ListEditor, slugify, uid, uploadImage } from "./Form";
 import type { Save } from "./AdminApp";
 import { evImages, type Bi, type Content, type EventItem, type GalleryImage, type Highlight, type MenuCat, type MenuItem, type Moment, type Promo, type Secret } from "@/lib/content";
 import type { PrivateHire, Reservation } from "@/lib/store";
@@ -231,7 +231,7 @@ function MomentGroup({ m, onChange, onRemove }: { m: Moment; onChange: (m: Momen
           }} />
           <span className="btn btn-solid !py-2.5 !px-4 !text-[.7rem]"><PlusIcon className="w-4 h-4" />{busy ? "Đang tải…" : "Thêm ảnh"}</span>
         </label>
-        <button type="button" aria-label="Xoá nhóm" className="p-2 hover:opacity-70" onClick={() => confirm(`Xoá nhóm “${m.title.vi}” và toàn bộ ảnh trong nhóm?`) && onRemove()}><TrashIcon className="w-4 h-4" /></button>
+        <button type="button" aria-label="Xoá nhóm" className="ibtn hover:opacity-70" onClick={async () => (await ask(`Xoá nhóm “${m.title.vi}” và toàn bộ ảnh trong nhóm?`)) && onRemove()}><TrashIcon className="w-4 h-4" /></button>
       </div>
       {g.length === 0 ? <p className="text-fg/75 text-sm">Chưa có ảnh.</p> : (
         <ul className="grid gap-3 grid-cols-2 md:grid-cols-4 xl:grid-cols-6">
@@ -241,10 +241,10 @@ function MomentGroup({ m, onChange, onRemove }: { m: Moment; onChange: (m: Momen
               <img src={im.src} alt={im.alt.vi} className="w-full aspect-square object-cover" />
               <div className="flex items-center justify-between px-2 py-1.5">
                 <div className="flex">
-                  <button type="button" aria-label="Lên trước" className="p-1.5 hover:opacity-70 disabled:opacity-20 rotate-180" disabled={i === 0} onClick={() => move(i, -1)}><ArrowIcon className="w-4 h-4" /></button>
-                  <button type="button" aria-label="Ra sau" className="p-1.5 hover:opacity-70 disabled:opacity-20" disabled={i === g.length - 1} onClick={() => move(i, 1)}><ArrowIcon className="w-4 h-4" /></button>
+                  <button type="button" aria-label="Lên trước" className="ibtn hover:opacity-70 disabled:opacity-20 rotate-180" disabled={i === 0} onClick={() => move(i, -1)}><ArrowIcon className="w-4 h-4" /></button>
+                  <button type="button" aria-label="Ra sau" className="ibtn hover:opacity-70 disabled:opacity-20" disabled={i === g.length - 1} onClick={() => move(i, 1)}><ArrowIcon className="w-4 h-4" /></button>
                 </div>
-                <button type="button" aria-label="Xoá" className="p-1.5 hover:opacity-70" onClick={() => confirm("Xoá ảnh này?") && onChange({ ...m, images: g.filter((_, k) => k !== i) })}><TrashIcon className="w-4 h-4" /></button>
+                <button type="button" aria-label="Xoá" className="ibtn hover:opacity-70" onClick={async () => (await ask("Xoá ảnh này?")) && onChange({ ...m, images: g.filter((_, k) => k !== i) })}><TrashIcon className="w-4 h-4" /></button>
               </div>
             </li>
           ))}
@@ -288,7 +288,7 @@ export function GallerySection({ c, save }: P) {
               {photos.drinks.map((src, i) => (
                 <div key={i} className="flex items-start gap-2">
                   <div className="flex-1"><ImageField value={src} onChange={(v) => setPhotos({ ...photos, drinks: photos.drinks.map((x, j) => (j === i ? v : x)) })} /></div>
-                  <button type="button" aria-label="Bỏ ảnh" className="p-2 hover:opacity-70" onClick={() => setPhotos({ ...photos, drinks: photos.drinks.filter((_, j) => j !== i) })}><TrashIcon className="w-4 h-4" /></button>
+                  <button type="button" aria-label="Bỏ ảnh" className="ibtn hover:opacity-70" onClick={() => setPhotos({ ...photos, drinks: photos.drinks.filter((_, j) => j !== i) })}><TrashIcon className="w-4 h-4" /></button>
                 </div>
               ))}
             </div>
@@ -301,7 +301,7 @@ export function GallerySection({ c, save }: P) {
             {photos.story.map((src, i) => (
               <div key={i} className="flex items-start gap-2">
                 <div className="flex-1"><ImageField value={src} onChange={(v) => setPhotos({ ...photos, story: photos.story.map((x, j) => (j === i ? v : x)) })} /></div>
-                <button type="button" aria-label="Bỏ ảnh" className="p-2 hover:opacity-70" onClick={() => setPhotos({ ...photos, story: photos.story.filter((_, j) => j !== i) })}><TrashIcon className="w-4 h-4" /></button>
+                <button type="button" aria-label="Bỏ ảnh" className="ibtn hover:opacity-70" onClick={() => setPhotos({ ...photos, story: photos.story.filter((_, j) => j !== i) })}><TrashIcon className="w-4 h-4" /></button>
               </div>
             ))}
           </div>
@@ -354,8 +354,8 @@ export function PrivateSection({ flash, refresh }: { flash: (m: string) => void;
                   const status = r.status === "done" ? "new" : "done";
                   if (await call("PATCH", { id: r.id, status })) setRows(all.map((x) => (x.id === r.id ? { ...x, status } : x)));
                 }}>{r.status === "done" ? "Mở lại" : "Đã xử lý"}</button>
-                <button type="button" aria-label="Xoá" className="p-2 hover:opacity-70" onClick={async () => {
-                  if (confirm("Xoá yêu cầu này?") && (await call("DELETE", { id: r.id }))) setRows(all.filter((x) => x.id !== r.id));
+                <button type="button" aria-label="Xoá" className="ibtn hover:opacity-70" onClick={async () => {
+                  if ((await ask("Xoá yêu cầu này?")) && (await call("DELETE", { id: r.id }))) setRows(all.filter((x) => x.id !== r.id));
                 }}><TrashIcon className="w-4 h-4" /></button>
               </li>
             );
@@ -395,21 +395,26 @@ export function SettingsSection({ c, save }: P) {
         onSave={(v) => save({ ...c, site: { ...c.site, ...(v as unknown as Content["site"]), handle: String(v.handle ?? "").replace(/^@/, "") } })} />
 
       <h2 className="serif text-4xl mt-14 mb-4">Giờ mở cửa</h2>
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[40rem] text-sm">
-          <thead><tr className="text-left text-fg/75"><th className="py-2 font-medium" /><th className="font-medium">Mở</th><th className="font-medium">Đóng</th><th className="font-medium">Nhận khách cuối</th><th className="font-medium">Nghỉ</th></tr></thead>
-          <tbody>
-            {hours.map((h, i) => (
-              <tr key={i} className="border-t border-line">
-                <td className="py-2 pr-4 font-medium">{DAYS[i]}</td>
-                {(["open", "close", "last"] as const).map((k) => (
-                  <td key={k} className="pr-3"><input type="time" className="field !py-2" value={h[k]} disabled={h.closed} onChange={(e) => setH(i, k, e.target.value)} /></td>
-                ))}
-                <td><input type="checkbox" className="w-5 h-5 accent-white" checked={h.closed} onChange={(e) => setH(i, "closed", e.target.checked)} /></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {/* Điện thoại: mỗi ngày là một thẻ (3 ô giờ cạnh nhau); máy tính: một hàng như bảng. */}
+      <div className="text-sm">
+        <div className="hidden md:grid grid-cols-[7rem_1fr_1fr_1fr_4rem] gap-3 text-fg/75 pb-2"><span /><span>Mở</span><span>Đóng</span><span>Nhận khách cuối</span><span>Nghỉ</span></div>
+        <div className="space-y-3 md:space-y-0">
+          {hours.map((h, i) => (
+            <div key={i} className="border border-line md:border-0 md:border-t p-3 md:px-0 md:py-2 grid grid-cols-3 md:grid-cols-[7rem_1fr_1fr_1fr_4rem] gap-x-2 gap-y-2 md:gap-3 items-end md:items-center">
+              <div className="col-span-3 md:col-span-1 flex items-center justify-between">
+                <span className="font-medium">{DAYS[i]}</span>
+                <label className="md:hidden flex items-center gap-2"><input type="checkbox" className="w-6 h-6 accent-white" checked={h.closed} onChange={(e) => setH(i, "closed", e.target.checked)} />Nghỉ</label>
+              </div>
+              {([["open", "Mở"], ["close", "Đóng"], ["last", "Khách cuối"]] as const).map(([k, lab]) => (
+                <label key={k} className="block min-w-0">
+                  <span className="block text-xs text-fg/70 mb-1 md:hidden">{lab}</span>
+                  <input type="time" className="field !py-2.5 !px-1.5 md:!px-3 !text-[.8rem] md:!text-base w-full [&::-webkit-calendar-picker-indicator]:hidden md:[&::-webkit-calendar-picker-indicator]:block" value={h[k]} disabled={h.closed} onChange={(e) => setH(i, k, e.target.value)} />
+                </label>
+              ))}
+              <input type="checkbox" aria-label="Nghỉ" className="hidden md:block w-5 h-5 accent-white" checked={h.closed} onChange={(e) => setH(i, "closed", e.target.checked)} />
+            </div>
+          ))}
+        </div>
       </div>
       <p className="text-xs text-fg/70 mt-2">“Nhận khách cuối” cũng là khung giờ đặt bàn muộn nhất khách chọn được.</p>
       <button type="button" className="btn btn-solid !py-2.5 mt-4" onClick={() => save({ ...c, hours })}>Lưu giờ mở cửa</button>

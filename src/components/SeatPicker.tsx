@@ -12,7 +12,7 @@ type Props = { lang: Lang; guests: number; taken: string[]; selected: string[]; 
 export default function SeatPicker({ lang, guests, taken, selected, onChange }: Props) {
   const t = DICT[lang];
   const [floor, setFloor] = useState<"f1" | "f2">("f1");
-  // Trên điện thoại sơ đồ phóng to ~2,2 lần, kéo ngang để xem hết; bấm nút để thu về vừa màn hình.
+  // Trên điện thoại sơ đồ phóng to ~2,5 lần, kéo ngang để xem hết; bấm nút để thu về vừa màn hình.
   const [zoom, setZoom] = useState(true);
   const pan = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -42,7 +42,7 @@ export default function SeatPicker({ lang, guests, taken, selected, onChange }: 
       </div>
       <button type="button" className="link text-sm mt-3 md:hidden" onClick={() => setZoom(!zoom)}>{zoom ? t.seatFit : t.seatZoom}</button>
       <div ref={pan} className="mt-3 border border-line overflow-x-auto md:overflow-visible">
-      <div className={`relative ${zoom ? "w-[220%] md:w-full" : "w-full"}`} style={{ aspectRatio: `${w} / ${h}` }}>
+      <div className={`relative ${zoom ? "w-[250%] md:w-full" : "w-full"}`} style={{ aspectRatio: `${w} / ${h}` }}>
         <Image src={`/images/maps/${floor}-${lang}.webp`} alt={label} fill sizes="(min-width:1024px) 700px, 100vw" className="object-contain" />
         <svg viewBox={`0 0 ${w} ${h}`} className="absolute inset-0 w-full h-full" aria-label={label}>
           {ids.map((id) => {

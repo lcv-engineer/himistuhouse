@@ -2,7 +2,7 @@
 // Đặt bàn trong trang quản trị: "Tối nay" (theo ngày, theo tuần) và "Đặt bàn" (toàn bộ, tìm kiếm, xuất CSV).
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowIcon, PencilIcon, PlusIcon, TrashIcon } from "../Icons";
-import { EntityForm, Field } from "./Form";
+import { ask, EntityForm, Field } from "./Form";
 import type { Content } from "@/lib/content";
 import type { Reservation, Status } from "@/lib/store";
 import { addDays, mondayOf, nightDate, toMin, weekday } from "@/lib/time";
@@ -54,7 +54,7 @@ function useReservations(flash: Flash) {
   return {
     rows,
     async setStatus(r: Reservation, status: Status) {
-      if (status === "cancelled" && !confirm(`Huỷ đặt bàn của ${r.name}?`)) return;
+      if (status === "cancelled" && !(await ask(`Huỷ đặt bàn của ${r.name}?`))) return;
       const j = await call("/api/admin", "PATCH", { id: r.id, status });
       if (j) { replace(j.row); flash("Đã lưu"); }
     },
@@ -69,7 +69,7 @@ function useReservations(flash: Flash) {
       return !!j;
     },
     async remove(r: Reservation) {
-      if (!confirm(`Xoá hẳn đặt bàn của ${r.name}? Không khôi phục được.`)) return;
+      if (!(await ask(`Xoá hẳn đặt bàn của ${r.name}? Không khôi phục được.`))) return;
       if (await call("/api/admin", "DELETE", { id: r.id })) { setRows((x) => (x ?? []).filter((y) => y.id !== r.id)); flash("Đã xoá"); }
     },
   };
@@ -95,7 +95,7 @@ function ResForm({ title, value, onSave, onCancel }: { title: string; value: Par
 }
 
 /* ---------- Một dòng đặt bàn ---------- */
-const BTN = "btn btn-ghost !py-2 !px-4 !text-[.7rem]";
+const BTN = "btn btn-ghost !py-2.5 !px-3 md:!px-4 !text-[.7rem]";
 
 function ResRow({ r, api, showDate, onEdit }: { r: Reservation; api: Api; showDate?: boolean; onEdit: () => void }) {
   const tags = [r.occasion, r.seating, ...(r.taste ?? [])].filter(Boolean).join(" · ");
@@ -123,15 +123,15 @@ function ResRow({ r, api, showDate, onEdit }: { r: Reservation; api: Api; showDa
         {off ? (
           <>
             <button type="button" className={BTN} onClick={() => api.setStatus(r, "confirmed")}>Khôi phục</button>
-            <button type="button" aria-label="Xoá hẳn" className="p-2 hover:opacity-70" onClick={() => api.remove(r)}><TrashIcon className="w-4 h-4" /></button>
+            <button type="button" aria-label="Xoá hẳn" className="ibtn hover:opacity-70" onClick={() => api.remove(r)}><TrashIcon className="w-4 h-4" /></button>
           </>
         ) : (
           <>
             <button type="button" className={BTN} disabled={r.status === "arrived"} onClick={() => api.setStatus(r, "arrived")}>Đã đến</button>
             <button type="button" className={BTN} disabled={r.status === "noshow"} onClick={() => api.setStatus(r, "noshow")}>No-show</button>
             {done && <button type="button" className={BTN} onClick={() => api.setStatus(r, "confirmed")}>Hoàn tác</button>}
-            <button type="button" className="btn btn-danger !py-2 !px-4 !text-[.7rem]" onClick={() => api.setStatus(r, "cancelled")}>Huỷ</button>
-            <button type="button" aria-label="Sửa" className="p-2 hover:opacity-70" onClick={onEdit}><PencilIcon className="w-4 h-4" /></button>
+            <button type="button" className="btn btn-danger !py-2.5 !px-3 md:!px-4 !text-[.7rem]" onClick={() => api.setStatus(r, "cancelled")}>Huỷ</button>
+            <button type="button" aria-label="Sửa" className="ibtn hover:opacity-70" onClick={onEdit}><PencilIcon className="w-4 h-4" /></button>
           </>
         )}
       </div>
@@ -226,7 +226,7 @@ export function TonightSection({ c, flash }: { c: Content; flash: Flash }) {
       </div>
 
       <div className="flex items-stretch gap-1 mb-6 overflow-x-auto" role="group" aria-label="Tuần này">
-        <button type="button" aria-label="Tuần trước" className="px-2 hover:opacity-70 rotate-180" onClick={() => pick(addDays(date, -7))}><ArrowIcon className="w-4 h-4" /></button>
+        <button type="button" aria-label="Tuần trước" className="px-3 hover:opacity-70 rotate-180" onClick={() => pick(addDays(date, -7))}><ArrowIcon className="w-4 h-4" /></button>
         {week.map((d) => {
           const { n, g } = count(d);
           return (
@@ -238,7 +238,7 @@ export function TonightSection({ c, flash }: { c: Content; flash: Flash }) {
             </button>
           );
         })}
-        <button type="button" aria-label="Tuần sau" className="px-2 hover:opacity-70" onClick={() => pick(addDays(date, 7))}><ArrowIcon className="w-4 h-4" /></button>
+        <button type="button" aria-label="Tuần sau" className="px-3 hover:opacity-70" onClick={() => pick(addDays(date, 7))}><ArrowIcon className="w-4 h-4" /></button>
       </div>
 
       <div className="grid gap-3 grid-cols-2 md:grid-cols-4 mb-6">
