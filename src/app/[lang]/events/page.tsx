@@ -3,6 +3,7 @@ import Reveal from "@/components/Reveal";
 import Desc from "@/components/Desc";
 import EventPhotos from "@/components/EventPhotos";
 import EventRsvp from "@/components/EventRsvp";
+import PastEvents from "@/components/PastEvents";
 import { PageHead, Wrap } from "@/components/ui";
 import { evImages, type EventItem, type Lang } from "@/lib/content";
 import { DICT } from "@/lib/i18n";
@@ -73,20 +74,13 @@ export default async function Events({ params }: { params: Promise<{ lang: strin
 
         {past.length > 0 && (
           <>
-            <div className="mt-24 grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
-              {past.map((e) => (
-                <Reveal key={e.id}>
-                  {evImages(e)[0] && <div className="relative aspect-[3/2] overflow-hidden"><Image src={evImages(e)[0]} alt={tx(e.title, lang)} fill sizes="400px" className="object-cover opacity-80" /></div>}
-                  <div className="flex gap-4 md:gap-6 mt-5 min-w-0">
-                    <DateBlock date={e.date} />
-                    <div className="min-w-0 flex-1">
-                      <h3 className="serif text-2xl">{tx(e.title, lang)}</h3>
-                      <Meta e={e} lang={lang} ended={t.ended} />
-                    </div>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
+            <Reveal className="mt-24">
+              <PastEvents slides={past.flatMap((e) => {
+                const base = { title: tx(e.title, lang), day: e.date.slice(8), month: fmtDate(e.date, "en", { month: "short" }), time: `${fmt12(e.start)}–${fmt12(e.end)}`, price: tx(e.price, lang), ended: t.ended };
+                const imgs = evImages(e);
+                return (imgs.length ? imgs : [""]).map((img) => ({ ...base, img }));
+              })} />
+            </Reveal>
           </>
         )}
 
