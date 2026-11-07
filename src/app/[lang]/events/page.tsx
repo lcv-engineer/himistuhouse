@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Reveal from "@/components/Reveal";
 import Desc from "@/components/Desc";
 import EventPhotos from "@/components/EventPhotos";
@@ -95,11 +94,7 @@ export default async function Events({ params }: { params: Promise<{ lang: strin
                 const wide = i % 4 === 0 || i % 4 === 3;
                 return (
                   <Reveal key={h.id} delay={(i % 2) * 120} className={wide ? "md:col-span-7" : "md:col-span-5"}>
-                    {h.image && (
-                      <div className={`relative overflow-hidden img-zoom ${wide ? "aspect-[3/2]" : "aspect-[4/5]"}`}>
-                        <Image src={h.image} alt={h.title[lang]} fill sizes="(min-width:768px) 700px, 100vw" className="object-cover" />
-                      </div>
-                    )}
+                    <EventPhotos images={evImages(h)} alt={h.title[lang]} aspect={wide ? "aspect-[3/2]" : "aspect-[4/5]"} sizes="(min-width:768px) 700px, 100vw" />
                     <h3 className="serif text-3xl mt-6">{h.title[lang]}</h3>
                     <p className="text-fg/80 mt-3 max-w-lg">{h.desc[lang]}</p>
                   </Reveal>

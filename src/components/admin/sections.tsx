@@ -35,7 +35,7 @@ const EVENT_FIELDS: Field[] = [
 const HL_FIELDS: Field[] = [
   { k: "title", label: "Tên", type: "bi", required: true },
   { k: "desc", label: "Mô tả", type: "bitext" },
-  { k: "image", label: "Ảnh", type: "image" },
+  { k: "images", label: "Ảnh (tối đa 5, ảnh số 1 là ảnh bìa)", type: "images" },
 ];
 
 export function EventsSection({ c, save }: P) {
@@ -61,9 +61,9 @@ export function EventsSection({ c, save }: P) {
       />
       <ListEditor<Highlight>
         title="Đêm nổi bật" items={c.highlights} fields={HL_FIELDS}
-        blank={() => ({ id: uid(), title: bi(), desc: bi(), image: "" })}
+        blank={() => ({ id: uid(), title: bi(), desc: bi(), image: "", images: [] })}
         row={(h) => ({ title: h.title.vi, sub: h.desc.vi })}
-        onChange={(items) => save({ ...c, highlights: items })}
+        onChange={(items) => save({ ...c, highlights: items.map((h) => ({ ...h, images: evImages(h), image: evImages(h)[0] ?? "" })) })}
       />
     </>
   );
